@@ -1,0 +1,22 @@
+@use "_theme.scss" as *;
+@use "_mixins.scss" as *;
+
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	@include color(var(--primary-color-1), var(--secondary-color-1));
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+[data-button-disabled="true"] {
+	pointer-events: none;
+}

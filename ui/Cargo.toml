@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 dioxus = { workspace = true }
 api = { workspace = true }
+dioxus-primitives = { git = "https://github.com/DioxusLabs/components", rev = "ffbc750" }
 
 [features]
 server = ["api/server"]

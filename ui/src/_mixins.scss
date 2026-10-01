@@ -1,0 +1,173 @@
+// Notes & Rules:
+
+// - Every mixin needs a fitting name, short description and, if necessary, comments.
+// - Mixins should usually contain at least two or more properties (otherwise what's the point).
+// - Many properties often don't need mixins since they have useful shorthands by default.
+//   For example border, animation, inset or transition don't need any mixins.
+// - Exceptions for the previous two rules can be made in cases such as "bg-image", where a lot of
+//   default properties are altered.
+// - It is often better to use shorthands for mixin arguments to reduce the amount of needed variables.
+//   For example, use "$flex" instead of "$grow", "$shrink" and "$basis" for the flex property.
+// - Keep in mind that when two mixins contain the same property that both are added to the code. Try
+//   to prevent unnecessary repetition. E.g. only use the position property with flex-center instead
+//   of the "default" mixin to prevent having two display properties.
+
+// TODOs & Ideas:
+
+// - Don't calculate the ratio during SASS compilation (e.g. 2 / 3 -> 0.6666666667)
+// - Order of CSS
+// - Maybe include presets for title etc.?
+// - Fix/check text-center
+// - Object needed?
+// - Max-width?
+
+// Sets position and display properties with optional z-index
+@mixin default($position, $display, $index: null) {
+	position: $position;
+	display: $display;
+	z-index: $index;
+}
+
+// Sets dimensions with optional aspect-ratio
+// Tip: Only needs one value for squares
+// Tip: Set width or height to "auto" for aspect ratio
+@mixin size($width, $height: $width, $ratio: null) {
+	width: $width;
+	height: $height;
+	aspect-ratio: $ratio;
+}
+
+// Sets padding and margin spacing
+// Tip: Removes spacing by default
+// Tip: Specify vertical/horizontal or top/right/bottom/left (e.g space(20px 0);)
+@mixin space($margin: 0, $padding: 0) {
+	margin: $margin;
+	padding: $padding;
+}
+
+// Sets background and text colors
+@mixin color($background, $text) {
+	background-color: $background;
+	color: $text;
+}
+
+// Sets border and border radius with optional outline
+@mixin border($border, $radius, $outline: null) {
+	border: $border;
+	border-radius: $radius;
+	outline: $outline;
+}
+
+// Sets font size, weight with optional family
+@mixin font($size, $weight, $family: null) {
+	font: {
+		size: $size;
+		weight: $weight;
+		family: $family;
+	}
+}
+
+// Centers content using flexbox with optional gap
+@mixin flex-center($gap: null) {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: $gap;
+}
+
+// Centers element absolutely
+@mixin absolute-center($position: absolute) {
+	position: $position;
+	inset: 50% 50%;
+	translate: -50% -50%;
+}
+
+// Centers content using CSS Grid with optional gap
+@mixin grid-center($gap: 0) {
+	display: grid;
+	place-items: center;
+	gap: $gap;
+}
+
+// Centers text horizontally with optional max-width
+@mixin text-center($max-width: 600px) {
+	text-align: center;
+	margin-inline: auto;
+	max-width: $max-width;
+}
+
+// Cut off text with ellipsis
+// Tip: Use a wrapper (<p></p>) for text when lines > 1 (or else height might cause an issue)
+@mixin text-truncate($lines: 1) {
+	text-overflow: ellipsis;
+	overflow: hidden;
+
+	@if $lines > 1 {
+		display: -webkit-box;
+		-webkit-line-clamp: $lines;
+		-webkit-box-orient: vertical;
+	} @else {
+		white-space: nowrap;
+	}
+}
+
+// Sets object-fit and object-position for images/videos
+@mixin object($fit: cover, $position: center) {
+	object: {
+		fit: $fit;
+		position: $position;
+	}
+}
+
+// Sets background image with property control
+@mixin bg-image(
+	$url,
+	$position: center,
+	$size: cover,
+	$repeat: no-repeat,
+	$origin: null,
+	$clip: null,
+	$attachment: null
+) {
+	background: url($url) $position/$size $repeat $origin $clip $attachment;
+}
+
+// Configures flexbox container with flow, alignment, and gap
+@mixin flex-parent($flow, $main, $cross, $gap: null, $content: null) {
+	display: flex;
+	flex-flow: $flow; // Controls the main axis direction (row/column) and whether items wrap
+	justify-content: $main; // Aligns items along the MAIN axis (horizontal for row, vertical for column)
+	align-items: $cross; // Aligns items along the CROSS axis (vertical for row, horizontal for column)
+	gap: $gap;
+	align-content: $content; // Aligns MULTIPLE LINES of items along the cross axis (only works with wrap)
+}
+
+// Configures flexbox item properties with flex, order, and alignment
+@mixin flex-child($flex, $order, $self: null) {
+	flex: $flex;
+	order: $order;
+	align-self: $self; // Override align-items for a SINGLE flex item
+}
+
+// Configures CSS Grid container with template, gap, and content alignment
+@mixin grid-parent($grid, $gap, $horizontal: null, $vertical: null) {
+	display: grid;
+	// Can define rows, columns, and areas all at once
+	// E.g. grid: 'header header header header'
+	//            'menu main main right right'
+	//            'menu footer footer footer';
+	// E.g. grid: 150px / 2fr 2fr auto;
+	grid: $grid;
+	gap: $gap;
+	place-content: $vertical $horizontal; // Shorthand for align-content (vertical) + justify-content (horizontal)
+}
+
+// Configures CSS Grid child with area placement, order, and self-alignment
+@mixin grid-child($area, $order, $horizontal: null, $vertical: null) {
+	// Assigns an item to a named area OR specifies position with row/column numbers
+	// E.g. grid-area: header;
+	// E.g. grid-area: 2 / 1 / span 2 / 3; (row-start, column-start, row-end, column-end)
+	grid-area: $area;
+	order: $order;
+	place-self: $vertical $horizontal; // Shorthand for align-self (vertical) + justify-self (horizontal)
+}

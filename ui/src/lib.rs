@@ -1,10 +1,23 @@
 //! This crate contains all shared UI for the workspace.
 
-mod hero;
-pub use hero::Hero;
+use dioxus::prelude::*;
 
-mod navbar;
-pub use navbar::Navbar;
+pub mod components;
+pub mod routes;
+pub mod standard;
+pub mod views;
 
-mod echo;
-pub use echo::Echo;
+pub use routes::Route;
+
+const FAVICON: Asset = asset!("/assets/icons/favicon.ico");
+
+#[component]
+pub fn App() -> Element {
+	rsx! {
+		// Global app resources
+		document::Link { rel: "icon", href: FAVICON }
+		document::Link { rel: "stylesheet", href: asset!("./main.css") }
+
+		Router::<Route> {}
+	}
+}
