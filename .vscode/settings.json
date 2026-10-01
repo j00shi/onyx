@@ -2,7 +2,9 @@
 	"editor.formatOnSave": true,
 	"liveSassCompile.settings.formats": [
 		{
-			"format": "compressed"
+			"format": "compressed",
+			"extensionName": ".css",
+			"savePath": "~/"
 		}
 	],
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -10,5 +12,7 @@
 		"editor.defaultFormatter": "rust-lang.rust-analyzer",
 		"editor.insertSpaces": false,
 		"editor.detectIndentation": false
-	}
+	},
+	"rust-analyzer.cargo.features": "all",
+	"rust-analyzer.check.features": "all"
 }

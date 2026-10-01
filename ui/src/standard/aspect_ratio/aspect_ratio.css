@@ -1,12 +1,1 @@
-.dx-aspect-ratio-container {
-	overflow: hidden;
-	box-sizing: border-box;
-	padding: 1rem;
-	border-radius: 0.5rem;
-}
-.dx-aspect-ratio-image {
-	width: 100%;
-	height: 100%;
-	-o-object-fit: cover;
-	object-fit: cover;
-} /*# sourceMappingURL=aspect_ratio.css.map */
+.dx-aspect-ratio-container{overflow:hidden;box-sizing:border-box;padding:1rem;border-radius:.5rem}.dx-aspect-ratio-image{width:100%;height:100%;-o-object-fit:cover;object-fit:cover}/*# sourceMappingURL=aspect_ratio.css.map */
