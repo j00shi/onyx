@@ -78,7 +78,7 @@
 // Centers element absolutely
 @mixin absolute-center($position: absolute) {
 	position: $position;
-	inset: 50% 50%;
+	inset: 50%;
 	translate: -50% -50%;
 }
 
@@ -136,10 +136,9 @@
 @mixin flex-parent($flow, $main, $cross, $gap: null, $content: null) {
 	display: flex;
 	flex-flow: $flow; // Controls the main axis direction (row/column) and whether items wrap
-	justify-content: $main; // Aligns items along the MAIN axis (horizontal for row, vertical for column)
+	place-content: $content $main; // Aligns items along the MAIN axis (horizontal for row, vertical for column)
 	align-items: $cross; // Aligns items along the CROSS axis (vertical for row, horizontal for column)
-	gap: $gap;
-	align-content: $content; // Aligns MULTIPLE LINES of items along the cross axis (only works with wrap)
+	gap: $gap; // Aligns MULTIPLE LINES of items along the cross axis (only works with wrap)
 }
 
 // Configures flexbox item properties with flex, order, and alignment
@@ -152,6 +151,7 @@
 // Configures CSS Grid container with template, gap, and content alignment
 @mixin grid-parent($grid, $gap, $horizontal: null, $vertical: null) {
 	display: grid;
+
 	// Can define rows, columns, and areas all at once
 	// E.g. grid: 'header header header header'
 	//            'menu main main right right'

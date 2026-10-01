@@ -15,3 +15,42 @@ dioxus = { version = "0.7.1" }
 # workspace
 ui = { path = "ui" }
 api = { path = "api" }
+
+[workspace.lints.rust]
+# Promote common correctness/hygiene lints to warnings across the workspace.
+unused_import_braces = "warn"
+unreachable_pub = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
+# `unused_qualifications` is intentionally omitted: it misfires inside the `rsx!` macro.
+
+[workspace.lints.clippy]
+# Opt into the stricter lint groups as warnings. In CI, `-D warnings` turns these
+# into hard errors, so the gate stays strict without blocking local builds.
+# `priority = -1` lets the individual `deny`/`allow` entries below override the group.
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+
+# Curated deny set: lints we consider non-negotiable.
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+mem_forget = "deny"
+await_holding_lock = "deny"
+await_holding_refcell_ref = "deny"
+
+# Opinionated pedantic/nursery lints that fight the Dioxus component style more than
+# they help. Allowed so the warn-by-default groups stay usable.
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+option_if_let_else = "allow"
+# `foo/foo.rs` is this project's intentional module layout.
+module_inception = "allow"
+# Fires inside the generated code of the `asset!()` macro; not actionable.
+volatile_composites = "allow"

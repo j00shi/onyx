@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 
 use crate::components::Navbar;
-use crate::views::*;
+use crate::views::{Blog, Home};
 
-#[derive(Debug, Clone, Routable, PartialEq)]
+#[derive(Debug, Clone, Routable, PartialEq, Eq)]
 #[rustfmt::skip]
 pub enum Route {
     #[layout(AppNavbar)]

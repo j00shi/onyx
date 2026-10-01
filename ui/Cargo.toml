@@ -10,3 +10,6 @@ dioxus-primitives = { git = "https://github.com/DioxusLabs/components", rev = "f
 
 [features]
 server = ["api/server"]
+
+[lints]
+workspace = true

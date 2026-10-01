@@ -2,18 +2,24 @@
 max_width = 120
 tab_spaces = 4
 hard_tabs = true
-# indent_style = "Visual"
+newline_style = "Unix"
+use_small_heuristics = "Max"
 
-# Imports
+# Imports (stable)
+reorder_imports = true
+reorder_modules = true
+
+# The following require nightly rustfmt; left disabled since we stay on stable.
 # imports_granularity = "Crate"
 # group_imports = "StdExternalCrate"
-reorder_imports = true
-
-# Wrapping
-use_small_heuristics = "Max"
-# fn_single_line = true  # uncomment if using nightly: allows `fn Foo() -> T { ... }` on one line
+# fn_single_line = true
 # trailing_comma = "Always"
-
-# Cleanup
 # blank_lines_upper_bound = 1
+
+# Wrapping / cleanup (stable)
 remove_nested_parens = true
+match_block_trailing_comma = true
+use_field_init_shorthand = true
+use_try_shorthand = true
+force_explicit_abi = true
+edition = "2021"

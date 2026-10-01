@@ -1,0 +1,17 @@
+{
+	"name": "onyx-styles",
+	"private": true,
+	"description": "Tooling for linting and formatting the project's SCSS/CSS.",
+	"scripts": {
+		"format": "prettier --write \"ui/src/**/*.scss\" \"!ui/src/standard/**\"",
+		"format:check": "prettier --check \"ui/src/**/*.scss\" \"!ui/src/standard/**\"",
+		"lint:style": "stylelint \"ui/src/**/*.scss\" --ignore-pattern \"ui/src/standard/**\"",
+		"lint:style:fix": "stylelint --fix \"ui/src/**/*.scss\" --ignore-pattern \"ui/src/standard/**\""
+	},
+	"devDependencies": {
+		"prettier": "^3.4.2",
+		"stylelint": "^16.12.0",
+		"stylelint-config-standard-scss": "^14.0.0",
+		"stylelint-prettier": "^5.0.2"
+	}
+}

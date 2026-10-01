@@ -8,18 +8,18 @@
 	border-radius: 10px;
 
 	& > h4 {
-		margin: 0px 0px 15px 0px;
+		margin: 0 0 15px;
 	}
 
 	& > input {
 		border: none;
 		border-bottom: 1px white solid;
 		background-color: transparent;
-		color: #ffffff;
+		color: #fff;
 		transition: border-bottom-color 0.2s ease;
 		outline: none;
 		display: block;
-		padding: 0px 0px 5px 0px;
+		padding: 0 0 5px;
 		width: 100%;
 	}
 
@@ -28,6 +28,6 @@
 	}
 
 	& > p {
-		margin: 20px 0px 0px auto;
+		margin: 20px 0 0 auto;
 	}
 }

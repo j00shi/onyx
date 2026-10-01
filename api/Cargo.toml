@@ -8,3 +8,6 @@ dioxus = { workspace = true, features = ["fullstack"] }
 
 [features]
 server = ["dioxus/server"]
+
+[lints]
+workspace = true

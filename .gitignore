@@ -35,8 +35,8 @@ Thumbs.db
 
 # Node (if using npm/yarn for assets)
 node_modules/
-package-lock.json
 yarn.lock
+# package-lock.json is committed so CI `npm ci` is reproducible.
 
 # Backup files
 *.bak

@@ -1,0 +1,11 @@
+# Vendored Dioxus components (overwritten by updates) must not be reformatted.
+ui/src/standard/
+
+# Compiled stylesheets.
+*.css
+*.css.map
+
+# Rust build output.
+target/
+dist/
+.dioxus/

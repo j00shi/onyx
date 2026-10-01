@@ -8,5 +8,16 @@
 	"bracketSpacing": true,
 	"arrowParens": "always",
 	"vueIndentScriptAndStyle": true,
-	"endOfLine": "lf"
+	"endOfLine": "lf",
+	"overrides": [
+		{
+			"files": "*.scss",
+			"options": {
+				"singleQuote": false,
+				"tabWidth": 4,
+				"useTabs": true,
+				"printWidth": 120
+			}
+		}
+	]
 }
