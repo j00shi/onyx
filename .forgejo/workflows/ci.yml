@@ -12,7 +12,7 @@ env:
 jobs:
   rust:
     name: Rust (fmt + clippy)
-    runs-on: docker
+    runs-on: codeberg-medium
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +30,7 @@ jobs:
 
   styles:
     name: Styles (prettier + stylelint)
-    runs-on: docker
+    runs-on: codeberg-small
     steps:
       - uses: actions/checkout@v4
 
