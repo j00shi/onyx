@@ -1,0 +1,14 @@
+{
+	"editor.formatOnSave": true,
+	"liveSassCompile.settings.formats": [
+		{
+			"format": "compressed"
+		}
+	],
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[rust]": {
+		"editor.defaultFormatter": "rust-lang.rust-analyzer",
+		"editor.insertSpaces": false,
+		"editor.detectIndentation": false
+	}
+}
