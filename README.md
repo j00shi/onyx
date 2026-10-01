@@ -63,6 +63,7 @@ api/
 ### Serving Your App
 
 Navigate to the platform crate of your choice:
+
 ```bash
 cd web
 ```
@@ -86,18 +87,18 @@ This workspace enforces strict linting and formatting. The same checks run in CI
   `print_stdout`, etc.). CI runs clippy with `-D warnings`, so any warning fails
   the build.
 
-  ```bash
-  cargo clippy --workspace --all-targets -- -D warnings
-  ```
+    ```bash
+    cargo clippy --workspace --all-targets -- -D warnings
+    ```
 
 - **Formatting** rules live in `rustfmt.toml` (stable-only options). Because the
   vendored components in `ui/src/standard/` must never be reformatted, use the
   helper script instead of `cargo fmt`:
 
-  ```bash
-  ./scripts/fmt.sh          # format our files in place
-  ./scripts/fmt.sh --check  # verify formatting (used by CI)
-  ```
+    ```bash
+    ./scripts/fmt.sh          # format our files in place
+    ./scripts/fmt.sh --check  # verify formatting (used by CI)
+    ```
 
 ### SCSS
 
@@ -119,5 +120,3 @@ upstream updates. All tooling is configured to leave this directory untouched:
 `scripts/fmt.sh` filters it out, the `standard` module is annotated with
 `#[allow(...)]` in `ui/src/lib.rs`, and the Prettier/Stylelint globs ignore it.
 Do not edit files in this directory by hand.
-
-
