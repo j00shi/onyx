@@ -19,7 +19,7 @@ if [[ "${1:-}" == "--check" ]]; then
 fi
 
 # All tracked Rust files except the vendored standard components.
-mapfile -t files < <(git ls-files '*.rs' ':!:ui/src/standard/**')
+mapfile -t files < <(git ls-files '*.rs' ':!:ui/src/components/**')
 
 if [[ ${#files[@]} -eq 0 ]]; then
 	echo "No Rust files to format."

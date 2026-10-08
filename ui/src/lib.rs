@@ -2,13 +2,13 @@
 
 use dioxus::prelude::*;
 
-pub mod components;
+pub mod custom;
 pub mod routes;
 // Vendored Dioxus components, overwritten by updates. Excluded from our lints.
 #[rustfmt::skip]
 #[allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::restriction)]
 #[allow(unused_qualifications, unused_import_braces, unreachable_pub)]
-pub mod standard;
+pub mod components;
 pub mod views;
 
 pub use routes::Route;

@@ -1,2 +1,2 @@
-mod navbar;
-pub use navbar::Navbar;
+mod component;
+pub use component::*;

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::Navbar;
+use crate::custom::Navbar;
 use crate::views::{Blog, Home};
 
 #[derive(Debug, Clone, Routable, PartialEq, Eq)]
@@ -17,11 +17,11 @@ pub enum Route {
 #[component]
 fn AppNavbar() -> Element {
 	rsx! {
-		Navbar {
-			Link { to: Route::Home {}, "Home" }
-			Link { to: Route::Blog { id: 1 }, "Blog" }
-		}
+        Navbar {
+            Link { to: Route::Home {}, "Home" }
+            Link { to: Route::Blog { id: 1 }, "Blog" }
+        }
 
-		Outlet::<Route> {}
-	}
+        Outlet::<Route> {}
+    }
 }
