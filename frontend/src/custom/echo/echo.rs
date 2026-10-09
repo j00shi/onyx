@@ -14,7 +14,7 @@ pub fn Echo() -> Element {
 			input {
 				placeholder: "Type here to echo...",
 				oninput: move |event| async move {
-					if let Ok(data) = api::echo(event.value()).await {
+					if let Ok(data) = backend::echo(event.value()).await {
 						response.set(data);
 					}
 				},

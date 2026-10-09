@@ -57,10 +57,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
-name = "api"
-version = "0.1.0"
+name = "approx"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cab112f0a86d568ea0e627cc1d6be74a1e9cd55214684db5561995f6dad897c6"
 dependencies = [
- "dioxus",
+ "num-traits",
 ]
 
 [[package]]
@@ -320,6 +322,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "backend"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+]
+
+[[package]]
 name = "base16"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -402,6 +411,12 @@ name = "bumpalo"
 version = "3.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649"
+
+[[package]]
+name = "by_address"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "64fa3c856b712db6612c019f14756e64e4bcea13337a6b33b696333a9eaa2d06"
 
 [[package]]
 name = "bytemuck"
@@ -1017,7 +1032,7 @@ name = "desktop"
 version = "0.1.0"
 dependencies = [
  "dioxus",
- "ui",
+ "frontend",
 ]
 
 [[package]]
@@ -1089,6 +1104,17 @@ dependencies = [
 name = "dioxus-attributes"
 version = "0.1.0"
 source = "git+https://github.com/DioxusLabs/components?rev=ffbc750#ffbc750181ea2195e20736ae3ad0c24ad9684c41"
+dependencies = [
+ "dioxus-rsx",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "dioxus-attributes"
+version = "0.1.0"
+source = "git+https://github.com/DioxusLabs/components#9a758255ea26e2b20c8cecf4c1c946feb9e71da7"
 dependencies = [
  "dioxus-rsx",
  "proc-macro2",
@@ -1507,10 +1533,26 @@ version = "0.0.1"
 source = "git+https://github.com/DioxusLabs/components?rev=ffbc750#ffbc750181ea2195e20736ae3ad0c24ad9684c41"
 dependencies = [
  "dioxus",
- "dioxus-attributes",
+ "dioxus-attributes 0.1.0 (git+https://github.com/DioxusLabs/components?rev=ffbc750)",
  "dioxus-sdk-time",
  "lazy-js-bundle 0.6.2",
  "num-integer",
+ "serde",
+ "time",
+ "tracing",
+]
+
+[[package]]
+name = "dioxus-primitives"
+version = "0.0.1"
+source = "git+https://github.com/DioxusLabs/components#9a758255ea26e2b20c8cecf4c1c946feb9e71da7"
+dependencies = [
+ "dioxus",
+ "dioxus-attributes 0.1.0 (git+https://github.com/DioxusLabs/components)",
+ "dioxus-sdk-time",
+ "lazy-js-bundle 0.7.10",
+ "num-integer",
+ "palette",
  "serde",
  "time",
  "tracing",
@@ -2037,6 +2079,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb4cb245038516f5f85277875cdaa4f7d2c9a0fa0468de06ed190163b1581fcf"
 dependencies = [
  "percent-encoding",
+]
+
+[[package]]
+name = "frontend"
+version = "0.1.0"
+dependencies = [
+ "backend",
+ "dioxus",
+ "dioxus-primitives 0.0.1 (git+https://github.com/DioxusLabs/components?rev=ffbc750)",
 ]
 
 [[package]]
@@ -3525,7 +3576,7 @@ name = "mobile"
 version = "0.1.0"
 dependencies = [
  "dioxus",
- "ui",
+ "frontend",
 ]
 
 [[package]]
@@ -3933,6 +3984,36 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
+name = "palette"
+version = "0.7.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddeed8580d347d2abf3dcf06a5f0b3dc020258338526b277847cd4248a70fc64"
+dependencies = [
+ "approx",
+ "palette_derive",
+ "palette_math",
+ "phf 0.13.1",
+]
+
+[[package]]
+name = "palette_derive"
+version = "0.7.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "88537020289b719d81be994ccf1bbf4990f477e2f69ee52fe3e45f43a02e56be"
+dependencies = [
+ "by_address",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "palette_math"
+version = "0.7.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e6eb142958d64335fb0e345c5b9ead2ecd6fc438c307e9d7d3c4fd428dbaf12"
+
+[[package]]
 name = "pango"
 version = "0.18.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4028,6 +4109,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "phf"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c1562dc717473dbaa4c1f85a36410e03c047b2e7df7f45ee938fbef64ae7fadf"
+dependencies = [
+ "phf_shared 0.13.1",
+]
+
+[[package]]
 name = "phf_codegen"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4114,6 +4204,15 @@ name = "phf_shared"
 version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67eabc2ef2a60eb7faa00097bd1ffdb5bd28e62bf39990626a582201b7a754e5"
+dependencies = [
+ "siphasher 1.0.4",
+]
+
+[[package]]
+name = "phf_shared"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e57fef6bc5981e38c2ce2d63bfa546861309f875b8a75f092d1d54ae2d64f266"
 dependencies = [
  "siphasher 1.0.4",
 ]
@@ -5992,15 +6091,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
 
 [[package]]
-name = "ui"
-version = "0.1.0"
-dependencies = [
- "api",
- "dioxus",
- "dioxus-primitives",
-]
-
-[[package]]
 name = "unicase"
 version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6229,7 +6319,8 @@ name = "web"
 version = "0.1.0"
 dependencies = [
  "dioxus",
- "ui",
+ "dioxus-primitives 0.0.1 (git+https://github.com/DioxusLabs/components)",
+ "frontend",
 ]
 
 [[package]]

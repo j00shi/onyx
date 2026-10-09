@@ -17,11 +17,11 @@ pub enum Route {
 #[component]
 fn AppNavbar() -> Element {
 	rsx! {
-        Navbar {
-            Link { to: Route::Home {}, "Home" }
-            Link { to: Route::Blog { id: 1 }, "Blog" }
-        }
+		Navbar {
+			Link { to: Route::Home {}, "Home" }
+			Link { to: Route::Blog { id: 1 }, "Blog" }
+		}
 
-        Outlet::<Route> {}
-    }
+		Outlet::<Route> {}
+	}
 }

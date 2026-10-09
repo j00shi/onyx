@@ -1,11 +1,11 @@
 [workspace]
 resolver = "2"
 members = [
-    "ui",
+    "frontend",
+    "backend",
     "packages/web",
     "packages/desktop",
     "packages/mobile",
-    "api",
 ]
 default-members = ["packages/web"]
 
@@ -14,8 +14,8 @@ dioxus = { version = "0.7.10" }
 dioxus-primitives = { git = "https://github.com/DioxusLabs/components", version = "0.0.1", default-features = false, features = ["router"] }
 
 # workspace
-ui = { path = "ui" }
-api = { path = "api" }
+frontend = { path = "frontend" }
+backend = { path = "backend" }
 
 [workspace.lints.rust]
 # Promote common correctness/hygiene lints to warnings across the workspace.

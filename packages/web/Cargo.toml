@@ -5,12 +5,13 @@ edition = "2021"
 
 [dependencies]
 dioxus = { workspace = true, features = ["router", "fullstack"] }
-ui = { workspace = true }
+dioxus-primitives = { git = "https://github.com/DioxusLabs/components", version = "0.0.1", default-features = false }
+frontend = { workspace = true }
 
 [features]
 default = []
 web = ["dioxus/web"]
-server = ["dioxus/server", "ui/server"]
+server = ["dioxus/server", "frontend/server"]
 
 [lints]
 workspace = true

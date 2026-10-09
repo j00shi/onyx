@@ -1,15 +1,15 @@
 [package]
-name = "ui"
+name = "frontend"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 dioxus = { workspace = true }
-api = { workspace = true }
+backend = { workspace = true }
 dioxus-primitives = { git = "https://github.com/DioxusLabs/components", rev = "ffbc750" }
 
 [features]
-server = ["api/server"]
+server = ["backend/server"]
 
 [lints]
 workspace = true
