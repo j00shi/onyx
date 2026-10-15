@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Quick clean up script
-#   scripts/clean.sh           # format + lint everything
-#   scripts/clean.sh --rust    # Rust only
-#   scripts/clean.sh --style   # styles only
+# scripts/clean.sh           # format + lint everything
+# scripts/clean.sh --rust    # Rust only
+# scripts/clean.sh --style   # styles only
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
