@@ -2,7 +2,7 @@
 export default {
 	extends: ["stylelint-config-standard-scss"],
 	plugins: ["stylelint-prettier"],
-	ignoreFiles: ["frontend/src/standard/**/*", "**/*.css"],
+	ignoreFiles: ["frontend/src/components/**/*", "**/*.css"],
 	rules: {
 		// Prettier owns formatting; surface any disagreement as a lint error.
 		"prettier/prettier": true,

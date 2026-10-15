@@ -3,10 +3,10 @@
 	"private": true,
 	"description": "Tooling for linting and formatting the project's SCSS/CSS.",
 	"scripts": {
-		"format": "prettier --write \"frontend/src/**/*.scss\" \"!frontend/src/standard/**\"",
-		"format:check": "prettier --check \"frontend/src/**/*.scss\" \"!frontend/src/standard/**\"",
-		"lint:style": "stylelint \"frontend/src/**/*.scss\" --ignore-pattern \"frontend/src/standard/**\"",
-		"lint:style:fix": "stylelint --fix \"frontend/src/**/*.scss\" --ignore-pattern \"frontend/src/standard/**\""
+		"format": "prettier --write \"frontend/src/**/*.scss\" \"!frontend/src/components/**\"",
+		"format:check": "prettier --check \"frontend/src/**/*.scss\" \"!frontend/src/components/**\"",
+		"lint:style": "stylelint \"frontend/src/**/*.scss\" --ignore-pattern \"frontend/src/components/**\"",
+		"lint:style:fix": "stylelint --fix \"frontend/src/**/*.scss\" --ignore-pattern \"frontend/src/components/**\""
 	},
 	"devDependencies": {
 		"prettier": "^3.4.2",

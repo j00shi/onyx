@@ -1,5 +1,5 @@
 # Vendored Dioxus components (overwritten by updates) must not be reformatted.
-ui/src/standard/
+frontend/src/components/
 
 # Compiled stylesheets.
 *.css

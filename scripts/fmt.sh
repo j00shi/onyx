@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
-#
-# Formatting helpers that respect the vendored `frontend/src/standard` directory.
-#
-# `frontend/src/standard` contains Dioxus components that are overwritten by upstream
-# updates, so they must never be reformatted. `cargo fmt` has no stable way to
-# ignore a path, so we format the files we own explicitly via `git ls-files`.
-#
-# Usage:
-#   scripts/fmt.sh          # format in place
-#   scripts/fmt.sh --check  # check only, non-zero exit on diff (used in CI)
+# Formatting helpers that respect the vendored `frontend/src/components` directory.
+# scripts/fmt.sh          # format in place
+# scripts/fmt.sh --check  # check only, non-zero exit on diff (used in CI)
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

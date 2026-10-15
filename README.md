@@ -18,7 +18,7 @@ This workspace enforces strict linting and formatting. The same checks run in CI
     ```
 
 - **Formatting** rules live in `rustfmt.toml` (stable-only options). Because the
-  vendored components in `frontend/src/standard/` must never be reformatted, use the
+  vendored components in `frontend/src/components/` must never be reformatted, use the
   helper script instead of `cargo fmt`:
 
     ```bash
@@ -41,8 +41,8 @@ npm run format:check      # verify formatting (used by CI)
 
 ### Vendored components
 
-`frontend/src/standard/` contains default Dioxus components that are overwritten by
+`frontend/src/components/` contains default Dioxus components that are overwritten by
 upstream updates. All tooling is configured to leave this directory untouched:
-`scripts/fmt.sh` filters it out, the `standard` module is annotated with
+`scripts/fmt.sh` filters it out, the `components` module is annotated with
 `#[allow(...)]` in `frontend/src/lib.rs`, and the Prettier/Stylelint globs ignore it.
 Do not edit files in this directory by hand.
