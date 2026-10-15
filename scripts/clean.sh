@@ -1,27 +1,43 @@
 #!/usr/bin/env bash
 # Quick clean up script
+#   scripts/clean.sh           # format + lint everything
+#   scripts/clean.sh --rust    # Rust only
+#   scripts/clean.sh --style   # styles only
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+do_rust=true
+do_style=true
+case "${1:-}" in
+	--rust) do_style=false ;;
+	--style) do_rust=false ;;
+	"") ;;
+	*) echo "Unknown option: $1" >&2; echo "Usage: scripts/clean.sh [--rust|--style]" >&2; exit 1 ;;
+esac
+
 step() { printf '\n\033[1;34m==> %s\033[0m\n' "$1"; }
 
-step "Formatting Rust (rustfmt)"
-./scripts/fmt.sh
+if [[ "$do_rust" == true ]]; then
+	step "Formatting Rust (rustfmt)"
+	./scripts/fmt.sh
 
-step "Fixing Rust lints (clippy --fix)"
-# --allow-dirty/--allow-staged so it works with uncommitted changes.
-# Non-fatal: surface what clippy can't auto-fix without aborting the styles pass.
-cargo clippy --fix --workspace --all-targets --allow-dirty --allow-staged || true
+	step "Fixing Rust lints (clippy --fix)"
+	# --allow-dirty/--allow-staged so it works with uncommitted changes.
+	# Non-fatal: surface what clippy can't auto-fix without aborting the styles pass.
+	cargo clippy --fix --workspace --all-targets --allow-dirty --allow-staged || true
+fi
 
-if command -v npm >/dev/null 2>&1; then
-	step "Formatting styles (prettier)"
-	npm run format
+if [[ "$do_style" == true ]]; then
+	if command -v npm >/dev/null 2>&1; then
+		step "Formatting styles (prettier)"
+		npm run format
 
-	step "Fixing styles (stylelint --fix)"
-	npm run lint:style:fix
-else
-	step "Skipping styles (npm not found)"
+		step "Fixing styles (stylelint --fix)"
+		npm run lint:style:fix
+	else
+		step "Skipping styles (npm not found)"
+	fi
 fi
 
 printf '\n\033[1;32mDone.\033[0m Review the changes with `git diff` before committing.\n'
