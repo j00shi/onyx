@@ -1,0 +1,22 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dioxus = { workspace = true }
+backend = { workspace = true }
+dioxus-primitives = { git = "https://github.com/DioxusLabs/components", rev = "9a758255" }
+dioxus-icons = "0.1"
+dioxus-code = { version = "0.1", default-features = false, features = ["macro", "lang-css"] }
+palette = "0.7"
+time = { version = "0.3", features = ["std", "macros"] }
+
+[dev-dependencies]
+dioxus-ssr = "0.7"
+
+[features]
+server = ["backend/server"]
+
+[lints]
+workspace = true

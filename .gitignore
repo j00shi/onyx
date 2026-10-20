@@ -1,0 +1,47 @@
+# Rust
+target/
+**/*.rs.bk
+*.pdb
+
+# Dioxus
+dist/
+.dioxus/
+dx.log
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Debug
+*.log
+debug/
+*.dSYM
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build artifacts
+*.wasm
+*.wasm.map
+
+# Node (if using npm/yarn for assets)
+node_modules/
+yarn.lock
+# package-lock.json is committed so CI `npm ci` is reproducible.
+
+# Backup files
+*.bak
+*.tmp
+*.temp
+
+# SASS
+*.css.map

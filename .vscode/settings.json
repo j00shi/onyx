@@ -1,0 +1,26 @@
+{
+	"editor.formatOnSave": true,
+	"liveSassCompile.settings.formats": [
+		{
+			"format": "compressed",
+			"extensionName": ".css",
+			"savePath": "~/"
+		}
+	],
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[rust]": {
+		"editor.defaultFormatter": "rust-lang.rust-analyzer",
+		"editor.insertSpaces": false,
+		"editor.detectIndentation": false
+	},
+	"[scss]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.codeActionsOnSave": {
+			"source.fixAll.stylelint": "explicit"
+		}
+	},
+	"stylelint.validate": ["scss"],
+	"rust-analyzer.cargo.features": "all",
+	"rust-analyzer.check.features": "all",
+	"rust-analyzer.check.command": "clippy"
+}
