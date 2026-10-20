@@ -1,5 +1,9 @@
+mod frame;
 mod home;
-pub use home::Home;
+mod newtab;
+mod settings;
 
-mod blog;
-pub use blog::Blog;
+pub use frame::Frame;
+pub use home::Home;
+pub use newtab::NewTab;
+pub use settings::Settings;
