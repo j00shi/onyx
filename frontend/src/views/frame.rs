@@ -1,72 +1,122 @@
 use dioxus::prelude::*;
+use dioxus_icons::lucide::{Bell, Bookmark, Calendar, Folder, House, ListTodo, Mail, Search, Settings};
 
-use dioxus_icons::lucide::Wrench;
-use dioxus_primitives::ContentSide;
-
-use crate::components::{
-	separator::Separator,
-	sidebar::{
-		Sidebar, SidebarCollapsible, SidebarContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuItem,
-		SidebarProvider, SidebarRail, SidebarSide, SidebarTrigger, SidebarVariant,
-	},
-	tooltip::{Tooltip, TooltipContent, TooltipTrigger},
+use crate::components::button::{Button, ButtonSize, ButtonVariant};
+use crate::components::sidebar::{
+	Sidebar, SidebarCollapsible, SidebarContent, SidebarGroup, SidebarHeader, SidebarInset, SidebarProvider,
+	SidebarRail, SidebarSide, SidebarTrigger, SidebarVariant,
 };
-
-#[derive(Clone, PartialEq)]
-struct Extension {
-	name: &'static str,
-	url: &'static str,
-}
-
-const EXTENSIONS: &[Extension] = &[
-	Extension { name: "Files", url: "#" },
-	Extension { name: "Search", url: "#" },
-	Extension { name: "Marketplace", url: "#" },
-];
+use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
 
 #[component]
 pub fn Frame(children: Element) -> Element {
 	rsx! {
-		// document::Link { rel: "stylesheet", href: asset!("./frame.css") }
-		div { id: "Frame",
+		document::Link { rel: "stylesheet", href: asset!("./frame.css") }
+
+		SidebarProvider {
+			Sidebar {
+				id: "sidebar-right",
+				side: SidebarSide::Right,
+				variant: SidebarVariant::Floating,
+				collapsible: SidebarCollapsible::Icon,
+				SidebarHeader { class: "header", SidebarTrigger {} }
+				SidebarRail {}
+			}
 			SidebarProvider {
 				Sidebar {
+					id: "sidebar-left",
 					side: SidebarSide::Left,
 					variant: SidebarVariant::Floating,
 					collapsible: SidebarCollapsible::Icon,
-					div { class: "primary-sidebar",
-						SidebarHeader { SidebarTrigger {} }
-						SidebarContent {
-							NavExtensions { extensions: EXTENSIONS }
+					Tabs { class: "tabs", default_value: "home".to_string(),
+						SidebarHeader { class: "header",
+							TabList { class: "tablist",
+								TabTrigger {
+									class: "tab",
+									value: "home".to_string(),
+									index: 0usize,
+									House { size: "1rem" }
+								}
+								TabTrigger {
+									class: "tab",
+									value: "files".to_string(),
+									index: 1usize,
+									Folder { size: "1rem" }
+								}
+								TabTrigger {
+									class: "tab",
+									value: "search".to_string(),
+									index: 2usize,
+									Search { size: "1rem" }
+								}
+								TabTrigger {
+									class: "tab",
+									value: "bookmarks".to_string(),
+									index: 3usize,
+									Bookmark { size: "1rem" }
+								}
+							}
 						}
-						SidebarRail {}
-					}
-				}
-				SidebarInset {
-					div { class: "sidebar-header",
-						div { class: "tab-bar" }
-						Separator {}
-					}
-					div { class: "sidebar-content", {children} }
-				}
-			}
-		}
-	}
-}
-
-#[component]
-fn NavExtensions(extensions: &'static [Extension]) -> Element {
-	rsx! {
-		SidebarMenu {
-			for extension in extensions.iter() {
-				SidebarMenuItem { key: "{extension.name}",
-					Tooltip {
-						TooltipTrigger { Wrench {} }
-						TooltipContent { side: ContentSide::Right,
-							span { {extension.name} }
+						SidebarContent { class: "content",
+							SidebarGroup { class: "ribbon",
+								SidebarTrigger { class: "sidebar-trigger" }
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									ListTodo { size: "1.25rem" }
+								}
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									Calendar { size: "1.25rem" }
+								}
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									Mail { size: "1.25rem" }
+								}
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									Bell { size: "1.25rem" }
+								}
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									Settings { size: "1.25rem" }
+								}
+							}
+							SidebarGroup { class: "panel",
+								TabContent {
+									class: "tab-content",
+									value: "home".to_string(),
+									index: 0usize,
+									"Home tab content"
+								}
+								TabContent {
+									class: "tab-content",
+									value: "files".to_string(),
+									index: 1usize,
+									"Files tab content"
+								}
+								TabContent {
+									class: "tab-content",
+									value: "search".to_string(),
+									index: 2usize,
+									"Search tab content"
+								}
+								TabContent {
+									class: "tab-content",
+									value: "bookmarks".to_string(),
+									index: 3usize,
+									"Bookmarks tab content"
+								}
+							}
 						}
 					}
+					SidebarRail {}
 				}
+				SidebarInset { id: "Frame", {children} }
 			}
 		}
 	}

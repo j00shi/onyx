@@ -1,0 +1,62 @@
+@use "../mixins" as *;
+
+#sidebar-left {
+	.tabs {
+		flex: 1;
+		padding: 0.25rem;
+		gap: 0.25rem;
+
+		.header,
+		.content {
+			flex-direction: row;
+			padding: 0rem;
+		}
+
+		.header {
+			.tablist,
+			.tab {
+				flex: 1;
+			}
+		}
+
+		.content {
+			gap: 0;
+
+			.ribbon {
+				padding: 0 0.25rem 0 0;
+				overflow-y: auto;
+
+				.sidebar-trigger {
+					width: 2.25rem;
+				}
+			}
+
+			.panel {
+				padding: 0;
+				flex: 1;
+				overflow: hidden;
+				opacity: 1;
+				transition: opacity 0.2s linear;
+
+				.tab-content {
+					flex: 1;
+				}
+			}
+		}
+
+		.footer {
+			align-items: flex-start;
+		}
+	}
+}
+
+[data-collapsible="icon"] {
+	#sidebar-left {
+		width: calc(
+			var(--dx-sidebar-width-icon) + 1rem - 2px
+		); // The default width uses +2px instead of -2px. Not sure if it's a bug but it was off by 4px
+		.tabs .content .panel {
+			opacity: 0;
+		}
+	}
+}
