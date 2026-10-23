@@ -11,6 +11,8 @@ use crate::components::sidebar::{
 	SidebarProvider, SidebarSide, SidebarTrigger, SidebarVariant,
 };
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
+use crate::views::{SIDEBAR_SWAPPED, SIDEBAR_VARIANT};
+use crate::Route;
 
 /// Minimal and maximal width for the sidebar
 const MIN_WIDTH: f64 = 200.0;
@@ -19,11 +21,13 @@ const MAX_WIDTH: f64 = 500.0;
 /// collapsed sidebar wider than `EXPAND_ABOVE` re-expands it (gap needed to prevent flickering)
 const COLLAPSE_BELOW: f64 = 120.0;
 const EXPAND_ABOVE: f64 = 160.0;
-/// Visible width of the collapsed edge: `3rem + 1rem - 2px` (see frame.scss).
-const ICON_WIDTH: f64 = 62.0;
+/// Visible width of the collapsed edge. Floating adds 1rem of container
+/// padding (`3rem + 1rem - 2px`); the docked sidebar is just the icon width (`3rem`).
+const ICON_WIDTH_FLOATING: f64 = 62.0;
+const ICON_WIDTH_SIDEBAR: f64 = 48.0;
 
 #[component]
-pub fn Frame(children: Element) -> Element {
+pub fn Frame() -> Element {
 	let mut width = use_signal(|| 256.0_f64); // Primary sidebar width (px)
 	let mut open = use_signal(|| true); // True when sidebar is open
 	let mut dragging = use_signal(|| false); // True when handle is being dragged
@@ -33,61 +37,70 @@ pub fn Frame(children: Element) -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./frame.css") }
 
-		SidebarProvider {
-			Sidebar {
-				id: "secondary-sidebar",
-				side: SidebarSide::Right,
-				variant: SidebarVariant::Floating,
-				collapsible: SidebarCollapsible::Icon,
-				SidebarHeader { class: "header", SidebarTrigger {} }
-			}
+		div { id: "Frame", "data-swapped": SIDEBAR_SWAPPED(),
 			SidebarProvider {
-				class: if dragging() { "resizing" } else { "" }, // See reason for this in frame.scss
-				style: format!(
-					"--dx-sidebar-width: {}px; --dx-sidebar-width-mobile: 18rem; --dx-sidebar-width-icon: 3rem",
-					width(),
-				), // TODO: There a better way?
-				// Control the open/close of the sidebar
-				open: Some(open()),
-				on_open_change: move |v| open.set(v),
 				Sidebar {
-					id: "primary-sidebar",
-					side: SidebarSide::Left,
-					variant: SidebarVariant::Floating,
+					id: "secondary-sidebar",
+					side: if SIDEBAR_SWAPPED() { SidebarSide::Left } else { SidebarSide::Right },
+					variant: SIDEBAR_VARIANT(),
 					collapsible: SidebarCollapsible::Icon,
-					FrameTabs {}
-					div {
-						class: "resize-handle",
-						onpointerdown: move |e| {
-							dragging.set(true);
-							start_x.set(e.client_coordinates().x);
-							// Anchor to the visible width
-							start_width.set(if open() { width() } else { ICON_WIDTH });
-						},
-					}
+					SidebarHeader { class: "header", SidebarTrigger {} }
 				}
-				SidebarInset { id: "Frame", {children} }
-			}
-			if dragging() {
-				div {
-					class: "resize-overlay",
-					onpointermove: move |e| {
-						let desired = start_width() + (e.client_coordinates().x - start_x());
-						if open() {
-							// Drag past the minimum and keep going → collapse.
-							if desired < COLLAPSE_BELOW {
-								open.set(false);
-							} else {
+				SidebarProvider {
+					class: if dragging() { "resizing" } else { "" }, // See reason for this in frame.scss
+					style: format!(
+						"--dx-sidebar-width: {}px; --dx-sidebar-width-mobile: 18rem; --dx-sidebar-width-icon: 3rem",
+						width(),
+					), // TODO: There a better way?
+					// Control the open/close of the sidebar
+					open: Some(open()),
+					on_open_change: move |v| open.set(v),
+					Sidebar {
+						id: "primary-sidebar",
+						side: if SIDEBAR_SWAPPED() { SidebarSide::Right } else { SidebarSide::Left },
+						variant: SIDEBAR_VARIANT(),
+						collapsible: SidebarCollapsible::Icon,
+						FrameTabs {}
+						div {
+							class: "resize-handle",
+							onpointerdown: move |e| {
+								dragging.set(true);
+								start_x.set(e.client_coordinates().x);
+								// Anchor to the visible collapsed width (differs per variant)
+								let icon_width = if SIDEBAR_VARIANT() == SidebarVariant::Floating {
+									ICON_WIDTH_FLOATING
+								} else {
+									ICON_WIDTH_SIDEBAR
+								};
+								start_width.set(if open() { width() } else { icon_width });
+							},
+						}
+					}
+					SidebarInset { id: "Frame", Outlet::<Route> {} }
+				}
+				if dragging() {
+					div {
+						class: "resize-overlay",
+						onpointermove: move |e| {
+							// When swapped the primary sidebar sits on the right, so dragging left widens it
+							let direction = if SIDEBAR_SWAPPED() { -1.0 } else { 1.0 };
+							let desired = start_width() + direction * (e.client_coordinates().x - start_x());
+							if open() {
+								// Drag past the minimum and keep going → collapse.
+								if desired < COLLAPSE_BELOW {
+									open.set(false);
+								} else {
+									width.set(desired.clamp(MIN_WIDTH, MAX_WIDTH));
+								}
+							} else if desired > EXPAND_ABOVE {
+								// Drag the collapsed edge back out → expand.
+								open.set(true);
 								width.set(desired.clamp(MIN_WIDTH, MAX_WIDTH));
 							}
-						} else if desired > EXPAND_ABOVE {
-							// Drag the collapsed edge back out → expand.
-							open.set(true);
-							width.set(desired.clamp(MIN_WIDTH, MAX_WIDTH));
-						}
-					},
-					onpointerup: move |_| dragging.set(false),
-					onpointercancel: move |_| dragging.set(false),
+						},
+						onpointerup: move |_| dragging.set(false),
+						onpointercancel: move |_| dragging.set(false),
+					}
 				}
 			}
 		}
@@ -172,7 +185,7 @@ fn FrameTabs() -> Element {
 							Bell { size: "1.25rem" }
 						}
 						// Example filler buttons
-						for i in 0..20 {
+						for i in 0..10 {
 							Button {
 								variant: ButtonVariant::Ghost,
 								size: ButtonSize::Icon,
@@ -218,6 +231,9 @@ fn FrameTabs() -> Element {
 							variant: ButtonVariant::Ghost,
 							size: ButtonSize::Icon,
 							title: "Settings",
+							onclick: move |_| {
+								navigator().push(Route::Settings {});
+							},
 							Settings { size: "1.25rem" }
 						}
 					}

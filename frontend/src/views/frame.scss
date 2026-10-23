@@ -2,6 +2,11 @@
 
 $header-height: 2rem; // Needed for the transition
 
+// When the primary sidebar is on the right
+#Frame[data-swapped="true"] > [data-slot="sidebar-wrapper"] {
+	flex-direction: row; // Secondary docked left
+}
+
 #primary-sidebar {
 	// Hides the default border etc. for the wrapper
 	[data-slot="sidebar-inner"] {
@@ -35,7 +40,7 @@ $header-height: 2rem; // Needed for the transition
 			position: relative;
 			z-index: 1;
 			flex-direction: row;
-			padding: 0rem;
+			padding: 0;
 			width: calc(var(--dx-sidebar-width) - 1.5rem); // Container padding 0.5rem*2 + tabs padding 0.25rem*2
 		}
 
@@ -204,12 +209,36 @@ $header-height: 2rem; // Needed for the transition
 	}
 }
 
+// When docked on the right (swapped), mirror the sidebar so the ribbon sits on the outer edge
+// and the panel faces the content. The tab list keeps its order.
+[data-side="right"] #primary-sidebar {
+	.tabs {
+		align-items: flex-end;
+	}
+
+	.tabs .content {
+		flex-direction: row-reverse;
+
+		.ribbon {
+			padding: 0 0 0 0.25rem; // Gap now sits on the ribbon's inner (left) edge
+
+			// Open toward the content instead of off the screen edge
+			.dropdown-content {
+				right: calc(100% + 0.5rem);
+				left: auto;
+			}
+		}
+	}
+
+	// Drag strip moves to the inner (left) edge
+	.resize-handle {
+		right: auto;
+		left: 0;
+	}
+}
+
 [data-collapsible="icon"] {
 	#primary-sidebar {
-		width: calc(
-			var(--dx-sidebar-width-icon) + 1rem - 2px
-		); // The default width uses +2px instead of -2px. Not sure if it's a bug but it was off by 4px
-
 		// Slide the card's top edge down past the header (height + 0.25rem flex gap)
 		.tabs::before {
 			top: calc(#{$header-height} + 0.25rem);
@@ -225,4 +254,51 @@ $header-height: 2rem; // Needed for the transition
 			top: calc(#{$header-height} + 0.25rem);
 		}
 	}
+}
+
+// Floating adds 1rem of container padding, so its collapsed width must include it.
+// The default uses +2px instead of -2px; it was off by 4px.
+[data-variant="floating"][data-collapsible="icon"] #primary-sidebar {
+	width: calc(var(--dx-sidebar-width-icon) + 1rem - 2px);
+}
+
+// The docked "sidebar" variant has no container padding and sits flush against the window
+// edge, so widen the rows to match.
+[data-variant="sidebar"] #primary-sidebar .tabs {
+	.header,
+	.content {
+		width: calc(var(--dx-sidebar-width) - 0.5rem); // Only the tabs' own 0.25rem*2 padding
+	}
+}
+
+// Expanded: flat panel flush to the edge, separated by the container's edge border.
+[data-variant="sidebar"][data-state="expanded"] #primary-sidebar .tabs::before {
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+// Collapsed: drop the straight edge border and reduce the card outline to an L that runs up
+// the inner edge then bends across the top, between the header and content.
+[data-variant="sidebar"][data-collapsible="icon"] #primary-sidebar {
+	border: none;
+
+	.tabs::before {
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+	}
+}
+
+// Inner edge is the right for a left-docked sidebar, the left when swapped to the right.
+[data-variant="sidebar"][data-collapsible="icon"][data-side="left"] #primary-sidebar .tabs::before {
+	border-top: 1px solid var(--dx-sidebar-border);
+	border-right: 1px solid var(--dx-sidebar-border);
+	border-top-right-radius: 0.5rem;
+}
+
+[data-variant="sidebar"][data-collapsible="icon"][data-side="right"] #primary-sidebar .tabs::before {
+	border-top: 1px solid var(--dx-sidebar-border);
+	border-left: 1px solid var(--dx-sidebar-border);
+	border-top-left-radius: 0.5rem;
 }

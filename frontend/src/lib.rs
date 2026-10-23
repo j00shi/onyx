@@ -16,6 +16,7 @@ pub mod views;
 
 #[derive(Debug, Clone, Routable, PartialEq, Eq)]
 pub enum Route {
+	#[layout(Frame)]
 	#[route("/")]
 	Home {},
 	#[route("/newtab")]
@@ -30,6 +31,6 @@ pub fn App() -> Element {
 		document::Link { rel: "icon", href: asset!("/assets/icons/favicon.ico") }
 		document::Link { rel: "stylesheet", href: asset!("./main.css") }
 
-		Frame { Router::<Route> {} }
+		Router::<Route> {}
 	}
 }
