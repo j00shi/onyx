@@ -1,7 +1,6 @@
 use dioxus::prelude::*;
 
 const HERO_CSS: Asset = asset!("./hero.css");
-const HEADER_SVG: Asset = asset!("/assets/media/header.svg");
 
 #[component]
 pub fn Hero() -> Element {
@@ -9,7 +8,6 @@ pub fn Hero() -> Element {
 		document::Link { rel: "stylesheet", href: HERO_CSS }
 
 		div { id: "hero",
-			img { src: HEADER_SVG, id: "header" }
 			div { id: "links",
 				a { href: "https://dioxuslabs.com/learn/0.7/", "📚 Learn Dioxus" }
 				a { href: "https://dioxuslabs.com/awesome", "🚀 Awesome Dioxus" }
