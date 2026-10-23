@@ -4,6 +4,8 @@ use dioxus_icons::lucide::{
 };
 
 use crate::components::button::{Button, ButtonSize, ButtonVariant};
+use crate::components::dropdown_menu::{DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger};
+use crate::components::separator::Separator;
 use crate::components::sidebar::{
 	use_sidebar, Sidebar, SidebarCollapsible, SidebarContent, SidebarGroup, SidebarHeader, SidebarInset,
 	SidebarProvider, SidebarSide, SidebarTrigger, SidebarVariant,
@@ -17,7 +19,7 @@ const MAX_WIDTH: f64 = 500.0;
 /// collapsed sidebar wider than `EXPAND_ABOVE` re-expands it (gap needed to prevent flickering)
 const COLLAPSE_BELOW: f64 = 120.0;
 const EXPAND_ABOVE: f64 = 160.0;
-/// Visible width of the collapsed edge: `3rem + 1rem - 2px` (see frame.scss). TODO: What?
+/// Visible width of the collapsed edge: `3rem + 1rem - 2px` (see frame.scss).
 const ICON_WIDTH: f64 = 62.0;
 
 #[component]
@@ -33,7 +35,7 @@ pub fn Frame(children: Element) -> Element {
 
 		SidebarProvider {
 			Sidebar {
-				id: "sidebar-right",
+				id: "secondary-sidebar",
 				side: SidebarSide::Right,
 				variant: SidebarVariant::Floating,
 				collapsible: SidebarCollapsible::Icon,
@@ -49,7 +51,7 @@ pub fn Frame(children: Element) -> Element {
 				open: Some(open()),
 				on_open_change: move |v| open.set(v),
 				Sidebar {
-					id: "sidebar-left",
+					id: "primary-sidebar",
 					side: SidebarSide::Left,
 					variant: SidebarVariant::Floating,
 					collapsible: SidebarCollapsible::Icon,
@@ -179,19 +181,38 @@ fn FrameTabs() -> Element {
 							}
 						}
 					}
+					Separator { class: "ribbon-divider", decorative: true }
 					div { class: "ribbon-bottom",
 						SidebarTrigger { class: "sidebar-trigger" }
+						DropdownMenu {
+							DropdownMenuTrigger { class: "dropdown-trigger", title: "Vault",
+								Vault { size: "1.25rem" }
+							}
+							DropdownMenuContent { class: "dropdown-content",
+								DropdownMenuItem::<String> {
+									value: "personal".to_string(),
+									index: 0usize,
+									"Personal"
+								}
+								DropdownMenuItem::<String> { value: "work".to_string(), index: 1usize, "Work" }
+								DropdownMenuItem::<String> {
+									value: "university".to_string(),
+									index: 2usize,
+									"University"
+								}
+								Separator { decorative: true }
+								DropdownMenuItem::<String> {
+									value: "manage".to_string(),
+									index: 3usize,
+									"Manage Vaults"
+								}
+							}
+						}
 						Button {
 							variant: ButtonVariant::Ghost,
 							size: ButtonSize::Icon,
 							title: "Account",
 							User { size: "1.25rem" }
-						}
-						Button {
-							variant: ButtonVariant::Ghost,
-							size: ButtonSize::Icon,
-							title: "Vault",
-							Vault { size: "1.25rem" }
 						}
 						Button {
 							variant: ButtonVariant::Ghost,

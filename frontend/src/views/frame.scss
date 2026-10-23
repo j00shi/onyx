@@ -2,7 +2,7 @@
 
 $header-height: 2rem; // Needed for the transition
 
-#sidebar-left {
+#primary-sidebar {
 	// Hides the default border etc. for the wrapper
 	[data-slot="sidebar-inner"] {
 		border: none;
@@ -103,12 +103,22 @@ $header-height: 2rem; // Needed for the transition
 					flex-direction: column;
 					gap: 0.25rem;
 					min-height: 0;
-					overflow-y: auto;
+					scrollbar-width: none;
+
+					&::-webkit-scrollbar {
+						display: none;
+					}
 				}
 
 				// Grows depening on how much space it needs
 				.ribbon-top {
 					flex: 1;
+					overflow-y: auto;
+				}
+
+				// Divider between the two groups
+				.ribbon-divider {
+					margin: 0.25rem 0;
 				}
 
 				// Has the priority, only starts scrolling in the middle
@@ -121,6 +131,30 @@ $header-height: 2rem; // Needed for the transition
 				// Sidebar trigger is thinner than a button by default for some reason
 				.sidebar-trigger {
 					width: 2.25rem;
+				}
+
+				// Trigger should look like a button
+				// TODO Maybe there is a better way
+				.dropdown-trigger {
+					width: 2.25rem;
+					height: 2.25rem;
+					padding: 0;
+					background: transparent;
+					box-shadow: none;
+					cursor: default;
+
+					&:hover {
+						background-color: var(--light, var(--primary-color-5))
+							var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent));
+					}
+				}
+
+				// Menu on the right, not the bottom
+				.dropdown-content {
+					top: auto;
+					bottom: 0;
+					left: calc(100% + 0.5rem);
+					min-width: 11.5rem;
 				}
 			}
 
@@ -138,7 +172,7 @@ $header-height: 2rem; // Needed for the transition
 		}
 	}
 
-	// Drag strip on the sidebar's inner edge TODO: check again
+	// Drag strip on the sidebar's inner edge
 	.resize-handle {
 		position: absolute;
 		top: 0;
@@ -171,7 +205,7 @@ $header-height: 2rem; // Needed for the transition
 }
 
 [data-collapsible="icon"] {
-	#sidebar-left {
+	#primary-sidebar {
 		width: calc(
 			var(--dx-sidebar-width-icon) + 1rem - 2px
 		); // The default width uses +2px instead of -2px. Not sure if it's a bug but it was off by 4px

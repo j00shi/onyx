@@ -1,0 +1,10 @@
+[bundle]
+name = "onyx"
+version = "0.1.0"
+
+[application]
+name = "Onyx"
+
+
+[web.app]
+title = "Onyx"
