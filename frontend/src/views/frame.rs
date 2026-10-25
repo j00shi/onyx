@@ -83,8 +83,8 @@ pub fn Frame() -> Element {
 						class: "resize-overlay",
 						onpointermove: move |e| {
 							// When swapped the primary sidebar sits on the right, so dragging left widens it
-							let direction = if SIDEBAR_SWAPPED() { -1.0 } else { 1.0 };
-							let desired = start_width() + direction * (e.client_coordinates().x - start_x());
+							let direction = if SIDEBAR_SWAPPED() { -1.0_f64 } else { 1.0 };
+							let desired = direction.mul_add(e.client_coordinates().x - start_x(), start_width());
 							if open() {
 								// Drag past the minimum and keep going → collapse.
 								if desired < COLLAPSE_BELOW {
