@@ -129,7 +129,7 @@
 	$clip: null,
 	$attachment: null
 ) {
-	background: url($url) $position/$size $repeat $origin $clip $attachment;
+	background: url($url) $position / $size $repeat $origin $clip $attachment;
 }
 
 // Configures flexbox container with flow, alignment, and gap

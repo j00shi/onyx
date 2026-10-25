@@ -37,7 +37,7 @@ pub fn Frame() -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./frame.css") }
 
-		div { id: "Frame", "data-swapped": SIDEBAR_SWAPPED(),
+		div { id: "frame", "data-swapped": SIDEBAR_SWAPPED(),
 			SidebarProvider {
 				Sidebar {
 					id: "secondary-sidebar",
@@ -76,7 +76,7 @@ pub fn Frame() -> Element {
 							},
 						}
 					}
-					SidebarInset { id: "Frame", Outlet::<Route> {} }
+					SidebarInset { id: "frame", Outlet::<Route> {} }
 				}
 				if dragging() {
 					div {

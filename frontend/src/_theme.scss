@@ -19,23 +19,23 @@ html[data-theme="light"] {
 
 :root {
 	/* Primary colors */
-	--primary-color: var(--dark, hsl(200 100% 1%)) var(--light, hsl(200 25% 99%));
-	--primary-color-1: var(--dark, hsl(200 25% 3%)) var(--light, hsl(200 25% 97%));
-	--primary-color-2: var(--dark, hsl(200 25% 5%)) var(--light, hsl(200 25% 95%));
-	--primary-color-3: var(--dark, hsl(200 25% 7%)) var(--light, hsl(200 25% 93%));
-	--primary-color-4: var(--dark, hsl(200 25% 10%)) var(--light, hsl(200 25% 90%));
-	--primary-color-5: var(--dark, hsl(200 25% 15%)) var(--light, hsl(200 25% 85%));
-	--primary-color-6: var(--dark, hsl(200 25% 20%)) var(--light, hsl(200 25% 80%));
-	--primary-color-7: var(--dark, hsl(200 25% 25%)) var(--light, hsl(200 25% 75%));
+	--primary-color: var(--dark, hsl(200deg 100% 1%)) var(--light, hsl(200deg 25% 99%));
+	--primary-color-1: var(--dark, hsl(200deg 25% 3%)) var(--light, hsl(200deg 25% 97%));
+	--primary-color-2: var(--dark, hsl(200deg 25% 5%)) var(--light, hsl(200deg 25% 95%));
+	--primary-color-3: var(--dark, hsl(200deg 25% 7%)) var(--light, hsl(200deg 25% 93%));
+	--primary-color-4: var(--dark, hsl(200deg 25% 10%)) var(--light, hsl(200deg 25% 90%));
+	--primary-color-5: var(--dark, hsl(200deg 25% 15%)) var(--light, hsl(200deg 25% 85%));
+	--primary-color-6: var(--dark, hsl(200deg 25% 20%)) var(--light, hsl(200deg 25% 80%));
+	--primary-color-7: var(--dark, hsl(200deg 25% 25%)) var(--light, hsl(200deg 25% 75%));
 
 	/* Secondary colors */
-	--secondary-color: var(--dark, hsl(200 25% 100%)) var(--light, hsl(200 25% 0%));
-	--secondary-color-1: var(--dark, hsl(200 25% 95%)) var(--light, hsl(200 25% 5%));
-	--secondary-color-2: var(--dark, hsl(200 25% 90%)) var(--light, hsl(200 25% 10%));
-	--secondary-color-3: var(--dark, hsl(200 25% 85%)) var(--light, hsl(200 25% 15%));
-	--secondary-color-4: var(--dark, hsl(200 25% 75%)) var(--light, hsl(200 25% 25%));
-	--secondary-color-5: var(--dark, hsl(200 25% 50%)) var(--light, hsl(200 25% 50%));
-	--secondary-color-6: var(--dark, hsl(200 25% 25%)) var(--light, hsl(200 25% 75%));
+	--secondary-color: var(--dark, hsl(200deg 25% 100%)) var(--light, hsl(200deg 25% 0%));
+	--secondary-color-1: var(--dark, hsl(200deg 25% 95%)) var(--light, hsl(200deg 25% 5%));
+	--secondary-color-2: var(--dark, hsl(200deg 25% 90%)) var(--light, hsl(200deg 25% 10%));
+	--secondary-color-3: var(--dark, hsl(200deg 25% 85%)) var(--light, hsl(200deg 25% 15%));
+	--secondary-color-4: var(--dark, hsl(200deg 25% 75%)) var(--light, hsl(200deg 25% 25%));
+	--secondary-color-5: var(--dark, hsl(200deg 25% 50%)) var(--light, hsl(200deg 25% 50%));
+	--secondary-color-6: var(--dark, hsl(200deg 25% 25%)) var(--light, hsl(200deg 25% 75%));
 
 	/* Highlight colors */
 	--focused-border-color: var(--dark, hsl(216deg 100% 58%)) var(--light, hsl(216deg 100% 58%));

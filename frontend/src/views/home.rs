@@ -6,6 +6,6 @@ use crate::elements::Hero;
 pub fn Home() -> Element {
 	rsx! {
 		// document::Link { rel: "stylesheet", href: asset!("./home.css") }
-		div { id: "Home", Hero {} }
+		div { id: "home", Hero {} }
 	}
 }

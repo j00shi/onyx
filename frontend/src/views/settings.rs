@@ -12,7 +12,7 @@ pub static SIDEBAR_SWAPPED: GlobalSignal<bool> = Signal::global(|| false);
 pub fn Settings() -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./settings.css") }
-		div { id: "Settings", class: "settings",
+		div { id: "settings",
 			h1 { class: "title", "Settings" }
 			section { class: "setting",
 				div { class: "label",

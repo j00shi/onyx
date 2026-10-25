@@ -3,7 +3,7 @@
 $header-height: 2rem; // Needed for the transition
 
 // When the primary sidebar is on the right
-#Frame[data-swapped="true"] > [data-slot="sidebar-wrapper"] {
+#frame[data-swapped="true"] > [data-slot="sidebar-wrapper"] {
 	flex-direction: row; // Secondary docked left
 }
 
@@ -20,7 +20,7 @@ $header-height: 2rem; // Needed for the transition
 		flex: 1;
 		min-height: 0;
 		padding: 0.25rem;
-		gap: 0.25rem;
+		gap: 0.5rem;
 
 		// Wrapper used for the expand/collapse transition
 		&::before {
@@ -241,7 +241,7 @@ $header-height: 2rem; // Needed for the transition
 	#primary-sidebar {
 		// Slide the card's top edge down past the header (height + 0.25rem flex gap)
 		.tabs::before {
-			top: calc(#{$header-height} + 0.25rem);
+			top: calc(#{$header-height} + 0.5rem);
 		}
 
 		.tabs .content .panel {
@@ -259,7 +259,7 @@ $header-height: 2rem; // Needed for the transition
 // Floating adds 1rem of container padding, so its collapsed width must include it.
 // The default uses +2px instead of -2px; it was off by 4px.
 [data-variant="floating"][data-collapsible="icon"] #primary-sidebar {
-	width: calc(var(--dx-sidebar-width-icon) + 1rem - 2px);
+	width: calc(var(--dx-sidebar-width-icon) + 0.75rem);
 }
 
 // The docked "sidebar" variant has no container padding and sits flush against the window
