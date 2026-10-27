@@ -25,6 +25,8 @@ const EXPAND_ABOVE: f64 = 160.0;
 /// padding (`3rem + 1rem - 2px`); the docked sidebar is just the icon width (`3rem`).
 const ICON_WIDTH_FLOATING: f64 = 62.0;
 const ICON_WIDTH_SIDEBAR: f64 = 48.0;
+/// Pointer travel (px) below which a press on the handle counts as a click, not a drag
+const CLICK_THRESHOLD: f64 = 4.0;
 
 /// The primary sidebar. Docks on the left by default, or the right when the layout is swapped
 #[component]
@@ -32,6 +34,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 	let mut width = use_signal(|| 256.0_f64); // Primary sidebar width (px)
 	let mut open = use_signal(|| true); // True when sidebar is open
 	let mut dragging = use_signal(|| false); // True when handle is being dragged
+	let mut moved = use_signal(|| false); // True once a press has travelled past `CLICK_THRESHOLD`
 	let mut start_x = use_signal(|| 0.0_f64); // Pointer x at drag start (px)
 	let mut start_width = use_signal(|| 0.0_f64); // Sidebar width at drag start (px)
 
@@ -57,6 +60,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 						class: "resize-handle",
 						onpointerdown: move |e| {
 							dragging.set(true);
+							moved.set(false);
 							start_x.set(e.client_coordinates().x);
 							// Anchor to the visible collapsed width (differs per variant)
 							let icon_width = if SIDEBAR_VARIANT() == SidebarVariant::Floating {
@@ -76,8 +80,11 @@ pub fn PrimarySidebar(children: Element) -> Element {
 					onpointermove: move |e| {
 						// When swapped the primary sidebar sits on the right, so dragging left widens it
 						let direction = if SIDEBAR_SWAPPED() { -1.0_f64 } else { 1.0 };
-						let desired = direction
-							.mul_add(e.client_coordinates().x - start_x(), start_width()); // Drag past the minimum and keep going → collapse.
+						let travel = e.client_coordinates().x - start_x();
+						if travel.abs() > CLICK_THRESHOLD {
+							moved.set(true);
+						}
+						let desired = direction.mul_add(travel, start_width()); // Drag past the minimum and keep going → collapse.
 						if open() {
 							if desired < COLLAPSE_BELOW {
 								open.set(false);
@@ -89,7 +96,13 @@ pub fn PrimarySidebar(children: Element) -> Element {
 							width.set(desired.clamp(MIN_WIDTH, MAX_WIDTH));
 						}
 					},
-					onpointerup: move |_| dragging.set(false),
+					onpointerup: move |_| {
+						// A press that never travelled past the threshold is a click → toggle
+						if !moved() {
+							open.set(!open());
+						}
+						dragging.set(false);
+					},
 					onpointercancel: move |_| dragging.set(false),
 				}
 			}

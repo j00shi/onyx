@@ -58,11 +58,16 @@ $header-height: 2rem; // Needed for the transition
 		}
 	}
 
-	// No transition during resizing, although it looks kind of funny
 	.resizing {
+		// No transition during resizing, although it looks kind of funny
 		[data-slot="sidebar-gap"],
 		[data-slot="sidebar-container"] {
 			transition: none;
+		}
+
+		// Highlight the handle during resizing
+		.sidebar .resize-handle {
+			opacity: 1;
 		}
 	}
 
@@ -245,6 +250,14 @@ $header-height: 2rem; // Needed for the transition
 			cursor: ew-resize;
 			touch-action: none;
 			user-select: none;
+			background: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
+			opacity: 0;
+			transition: opacity 0.15s ease;
+
+			// Highlight the handle when hovered
+			&:hover {
+				opacity: 1;
+			}
 		}
 	}
 
