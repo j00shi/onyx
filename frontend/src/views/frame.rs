@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+use crate::components::sidebar::SidebarTrigger;
 use crate::elements::PrimarySidebar;
 use crate::elements::SecondarySidebar;
 use crate::elements::TitleBar;
@@ -14,7 +15,11 @@ pub fn Frame() -> Element {
 		div { id: "frame", "data-swapped": SIDEBAR_SWAPPED(),
 			TitleBar {}
 			PrimarySidebar {
-				SecondarySidebar { Outlet::<Route> {} }
+				SidebarTrigger { title: "Toggle primary" }
+				SecondarySidebar {
+					SidebarTrigger { title: "Toggle secondary" }
+					Outlet::<Route> {}
+				}
 			}
 		}
 	}
