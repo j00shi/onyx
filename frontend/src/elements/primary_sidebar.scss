@@ -58,6 +58,53 @@ $header-height: 2rem; // Needed for the transition
 		}
 	}
 
+	[data-collapsible="icon"] {
+		.primary-sidebar {
+			.tabs {
+				&::before {
+					// Slide the card's top edge down past the header
+					top: calc(#{$header-height} + 0.5rem);
+				}
+
+				.content .panel {
+					opacity: 0;
+				}
+			}
+
+			.resize-handle {
+				top: calc(#{$header-height} + 1rem);
+			}
+		}
+	}
+
+	// When docked on the right (swapped)
+	[data-side="right"] .primary-sidebar {
+		// Handle moves to the inner (left) edge
+		.resize-handle {
+			right: auto;
+			left: 0;
+		}
+
+		// Mirror the sidebar so the ribbon sits on the outer edge and the panel faces the content
+		.tabs {
+			align-items: flex-end;
+
+			.content {
+				flex-direction: row-reverse;
+
+				.ribbon {
+					padding: 0 0 0 0.25rem; // Gap now sits on the ribbon's inner (left) edge
+
+					// Open toward the content instead of off the screen edge
+					.dropdown-content {
+						right: calc(100% + 0.5rem);
+						left: auto;
+					}
+				}
+			}
+		}
+	}
+
 	.resizing {
 		// No transition during resizing, although it looks kind of funny
 		[data-slot="sidebar-gap"],
@@ -239,7 +286,7 @@ $header-height: 2rem; // Needed for the transition
 			}
 		}
 
-		// Drag strip on the sidebar's inner edge
+		// Handle on the sidebar's inner edge
 		.resize-handle {
 			position: absolute;
 			top: 0;
@@ -269,52 +316,5 @@ $header-height: 2rem; // Needed for the transition
 		cursor: ew-resize;
 		touch-action: none;
 		user-select: none;
-	}
-}
-
-[data-collapsible="icon"] {
-	.primary-sidebar {
-		// Slide the card's top edge down past the header (height + 0.25rem flex gap)
-		.tabs::before {
-			top: calc(#{$header-height} + 0.5rem);
-		}
-
-		.tabs .content .panel {
-			opacity: 0;
-		}
-
-		// Keep the edge draggable while collapsed, but start it below the floating header so it
-		// doesn't sit over the tabs
-		.resize-handle {
-			top: calc(#{$header-height} + 0.25rem);
-		}
-	}
-}
-
-// When docked on the right (swapped), mirror the sidebar so the ribbon sits on the outer edge
-// and the panel faces the content. The tab list keeps its order.
-[data-side="right"] .primary-sidebar {
-	// Drag strip moves to the inner (left) edge
-	.resize-handle {
-		right: auto;
-		left: 0;
-	}
-
-	.tabs {
-		align-items: flex-end;
-
-		.content {
-			flex-direction: row-reverse;
-
-			.ribbon {
-				padding: 0 0 0 0.25rem; // Gap now sits on the ribbon's inner (left) edge
-
-				// Open toward the content instead of off the screen edge
-				.dropdown-content {
-					right: calc(100% + 0.5rem);
-					left: auto;
-				}
-			}
-		}
 	}
 }
