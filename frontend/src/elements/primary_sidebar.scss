@@ -2,18 +2,18 @@
 
 $header-height: 2rem; // Needed for the transition
 
-.primary-sidebar {
+.primary-sidebar-wrapper {
 	// Floating is when the sidebar is surrounded by a border. This is the default
 	[data-variant="floating"] {
 		// Fixes the collapsed width
-		&[data-collapsible="icon"] .sidebar {
+		&[data-collapsible="icon"] .primary-sidebar {
 			width: calc(var(--dx-sidebar-width-icon) + 0.75rem);
 		}
 	}
 
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
 	[data-variant="sidebar"] {
-		.sidebar .tabs {
+		.primary-sidebar .tabs {
 			.header,
 			.content {
 				width: calc(var(--dx-sidebar-width) - 0.5rem); // Only the tabs' own 0.25rem*2 padding
@@ -21,7 +21,7 @@ $header-height: 2rem; // Needed for the transition
 		}
 
 		// Hides the default sidebar border
-		.sidebar {
+		.primary-sidebar {
 			border: none !important;
 
 			.tabs::before {
@@ -32,27 +32,27 @@ $header-height: 2rem; // Needed for the transition
 		}
 
 		// Hide left border when left...
-		&[data-side="left"] .sidebar .tabs::before {
+		&[data-side="left"] .primary-sidebar .tabs::before {
 			border-left: none;
 		}
 
 		// and right when right
-		&[data-side="right"] .sidebar .tabs::before {
+		&[data-side="right"] .primary-sidebar .tabs::before {
 			border-right: none;
 		}
 
 		// When collapsed show a top border and add radius
 		&[data-collapsible="icon"] {
-			.sidebar .tabs::before {
+			.primary-sidebar .tabs::before {
 				border-top: 1px solid var(--dx-sidebar-border);
 			}
 
 			// Inner edge is the right for a left-docked sidebar, the left when swapped to the right.
-			&[data-side="left"] .sidebar .tabs::before {
+			&[data-side="left"] .primary-sidebar .tabs::before {
 				border-top-right-radius: 0.5rem;
 			}
 
-			&[data-side="right"] .sidebar .tabs::before {
+			&[data-side="right"] .primary-sidebar .tabs::before {
 				border-top-left-radius: 0.5rem;
 			}
 		}
@@ -66,12 +66,12 @@ $header-height: 2rem; // Needed for the transition
 		}
 
 		// Highlight the handle during resizing
-		.sidebar .resize-handle {
+		.primary-sidebar .resize-handle {
 			opacity: 1;
 		}
 	}
 
-	.sidebar {
+	.primary-sidebar {
 		// Hides the default floating sidebar border
 		[data-slot="sidebar-inner"] {
 			border: none;
@@ -196,7 +196,7 @@ $header-height: 2rem; // Needed for the transition
 					}
 
 					// Sidebar trigger is thinner than a button by default for some reason
-					.sidebar-trigger {
+					.primary-sidebar-trigger {
 						width: 2.25rem;
 					}
 
@@ -273,7 +273,7 @@ $header-height: 2rem; // Needed for the transition
 }
 
 [data-collapsible="icon"] {
-	.sidebar {
+	.primary-sidebar {
 		// Slide the card's top edge down past the header (height + 0.25rem flex gap)
 		.tabs::before {
 			top: calc(#{$header-height} + 0.5rem);
@@ -293,7 +293,7 @@ $header-height: 2rem; // Needed for the transition
 
 // When docked on the right (swapped), mirror the sidebar so the ribbon sits on the outer edge
 // and the panel faces the content. The tab list keeps its order.
-[data-side="right"] .sidebar {
+[data-side="right"] .primary-sidebar {
 	// Drag strip moves to the inner (left) edge
 	.resize-handle {
 		right: auto;

@@ -41,7 +41,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./primary_sidebar.css") }
 
-		div { class: "primary-sidebar",
+		div { class: "primary-sidebar-wrapper",
 			SidebarProvider {
 				class: if dragging() { "resizing" } else { "" }, // See reason for this in primary_sidebar.scss
 				style: format!(
@@ -51,7 +51,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 				open: Some(open()),
 				on_open_change: move |v| open.set(v),
 				Sidebar {
-					class: "sidebar",
+					class: "primary-sidebar",
 					side: if SIDEBAR_SWAPPED() { SidebarSide::Right } else { SidebarSide::Left },
 					variant: SIDEBAR_VARIANT(),
 					collapsible: SidebarCollapsible::Icon,

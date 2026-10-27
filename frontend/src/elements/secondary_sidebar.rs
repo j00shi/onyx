@@ -11,10 +11,10 @@ pub fn SecondarySidebar(children: Element) -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./secondary_sidebar.css") }
 
-		div { class: "secondary-sidebar",
+		div { class: "secondary-sidebar-wrapper",
 			SidebarProvider {
 				Sidebar {
-					class: "sidebar",
+					class: "secondary-sidebar",
 					side: if SIDEBAR_SWAPPED() { SidebarSide::Left } else { SidebarSide::Right },
 					variant: SIDEBAR_VARIANT(),
 					collapsible: SidebarCollapsible::Icon,

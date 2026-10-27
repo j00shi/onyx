@@ -1,6 +1,6 @@
 @use "../mixins" as *;
 
 // When not swapped the primary belongs on the left, so force the row back
-#frame[data-swapped="false"] .primary-sidebar > [data-slot="sidebar-wrapper"] {
+#frame[data-swapped="false"] .primary-sidebar-wrapper > [data-slot="sidebar-wrapper"] {
 	flex-direction: row;
 }
