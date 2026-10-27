@@ -11,6 +11,7 @@ use crate::components::sidebar::{
 	SidebarProvider, SidebarSide, SidebarTrigger, SidebarVariant,
 };
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
+use crate::elements::TitleBar;
 use crate::views::{SIDEBAR_SWAPPED, SIDEBAR_VARIANT};
 use crate::Route;
 
@@ -38,6 +39,7 @@ pub fn Frame() -> Element {
 		document::Link { rel: "stylesheet", href: asset!("./frame.css") }
 
 		div { id: "frame", "data-swapped": SIDEBAR_SWAPPED(),
+			TitleBar {}
 			SidebarProvider {
 				Sidebar {
 					id: "secondary-sidebar",

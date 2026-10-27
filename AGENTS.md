@@ -67,7 +67,6 @@ variables live in `frontend/assets/dx-components-theme.css`, loaded once as a st
 `frontend/src/lib.rs`. Do not hand-edit either; they are regenerated (see
 [Vendored components](#vendored-components--do-not-edit)).
 
-
 ## Code quality — strict, enforced in CI
 
 CI (`.forgejo/workflows/ci.yml`) runs on every push and PR with `RUSTFLAGS="-D warnings"`, so
@@ -84,12 +83,14 @@ any warning fails the build. Match it locally before considering work done.
 - **Format with the helper, never bare `cargo fmt`** (bare fmt would touch the vendored
   components):
 
-  ```bash
-  ./scripts/fmt.sh          # format our files in place
-  ./scripts/fmt.sh --check  # verify (used by CI)
-  ```
+    ```bash
+    ./scripts/fmt.sh          # format our files in place
+    ./scripts/fmt.sh --check  # verify (used by CI)
+    ```
 
 ### SCSS
+
+You can compile SASS with `sass frontend/src:frontend/src --style=compressed`.
 
 Linted with Stylelint, formatted with Prettier. Run `npm install` once, then:
 

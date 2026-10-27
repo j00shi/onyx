@@ -2,6 +2,23 @@
 
 $header-height: 2rem; // Needed for the transition
 
+// Root frame stacks the custom title bar (if any) above the sidebar/content row. Scoped to
+// `[data-swapped]` (always present on the root) so it doesn't also match the inner
+// `SidebarInset` that unfortunately reuses `id="frame"`.
+#frame[data-swapped] {
+	display: flex;
+	flex-direction: column;
+	height: 100svh;
+
+	// The sidebar wrapper is `height: 100svh` by default; let it fill whatever the title bar
+	// leaves instead.
+	> [data-slot="sidebar-wrapper"] {
+		flex: 1 1 auto;
+		height: auto;
+		min-height: 0;
+	}
+}
+
 // When the primary sidebar is on the right
 #frame[data-swapped="true"] > [data-slot="sidebar-wrapper"] {
 	flex-direction: row; // Secondary docked left

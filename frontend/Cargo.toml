@@ -17,6 +17,7 @@ dioxus-ssr = "0.7"
 
 [features]
 server = ["backend/server"]
+desktop = ["dioxus/desktop"]
 
 [lints]
 workspace = true

@@ -1,0 +1,58 @@
+// Custom window chrome. Authored in SCSS; the committed `titlebar.css` is the shipped artifact
+// (recompile with `sass frontend/src:frontend/src --style=compressed`).
+
+#titlebar {
+	--titlebar-height: 2.5rem;
+
+	display: flex;
+	flex: 0 0 auto;
+	align-items: stretch;
+	height: var(--titlebar-height);
+	user-select: none;
+
+	// Fills the space left of the controls and stays draggable.
+	.drag-spacer {
+		flex: 1;
+		align-self: stretch;
+	}
+
+	.zone {
+		display: flex;
+		align-items: center;
+	}
+
+	// Windows 11-style caption buttons.
+	.zone .ctl {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.875rem; // 46px, matches the native caption button hit target
+		height: 100%;
+		padding: 0;
+		border: none;
+		background: transparent;
+		color: inherit;
+		cursor: default;
+		transition: background-color 0.1s linear;
+
+		.glyph {
+			stroke: currentcolor;
+			stroke-width: 1;
+			fill: none;
+		}
+
+		&:hover {
+			background-color: color-mix(in oklab, currentcolor 12%, transparent);
+		}
+
+		&:active {
+			background-color: color-mix(in oklab, currentcolor 6%, transparent);
+		}
+
+		// Close goes red on hover, like the native button.
+		&[data-ctl="close"]:hover {
+			background-color: #c42b1c;
+			color: #fff;
+		}
+	}
+}
