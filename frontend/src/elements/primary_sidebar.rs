@@ -11,7 +11,7 @@ use crate::components::sidebar::{
 	SidebarProvider, SidebarSide, SidebarTrigger, SidebarVariant,
 };
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
-use crate::views::{SIDEBAR_SWAPPED, SIDEBAR_VARIANT};
+use crate::views::{MOBILE_REACH_LAYOUT, SIDEBAR_SWAPPED, SIDEBAR_VARIANT};
 use crate::Route;
 
 /// Minimal and maximal width for the sidebar
@@ -41,7 +41,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./primary_sidebar.css") }
 
-		div { class: "primary-sidebar-wrapper",
+		div { class: "primary-sidebar-wrapper", "data-reach": MOBILE_REACH_LAYOUT(),
 			SidebarProvider {
 				class: if dragging() { "resizing" } else { "" }, // See reason for this in primary_sidebar.scss
 				style: format!(

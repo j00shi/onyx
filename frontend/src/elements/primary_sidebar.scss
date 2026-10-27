@@ -118,12 +118,9 @@ $header-height: 2rem; // Needed for the transition
 		}
 	}
 
-	.primary-sidebar {
-		// Hides the default floating sidebar border
-		[data-slot="sidebar-inner"] {
-			border: none;
-		}
-
+	// Dioxus drops class name at 768px breakpoint for mobile, so [data-mobile="true"] is needed
+	.primary-sidebar,
+	[data-mobile="true"] {
 		.tabs {
 			position: relative;
 			flex: 1;
@@ -131,26 +128,12 @@ $header-height: 2rem; // Needed for the transition
 			padding: 0.25rem;
 			gap: 0.5rem;
 
-			// Wrapper used for the expand/collapse transition
-			&::before {
-				content: "";
-				position: absolute;
-				z-index: 0;
-				inset: 0;
-				border: 1px solid var(--dx-sidebar-border);
-				border-radius: 0.5rem;
-				background: var(--dx-sidebar-background);
-				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-				transition: top 0.2s linear;
-			}
-
 			.header,
 			.content {
 				position: relative;
 				z-index: 1;
 				flex-direction: row;
 				padding: 0;
-				width: calc(var(--dx-sidebar-width) - 1.5rem); // Container padding 0.5rem*2 + tabs padding 0.25rem*2
 			}
 
 			.header {
@@ -285,6 +268,35 @@ $header-height: 2rem; // Needed for the transition
 				}
 			}
 		}
+	}
+
+	// These are styles that shouldn't be applied to mobile
+	.primary-sidebar {
+		// Hides the default floating sidebar border
+		[data-slot="sidebar-inner"] {
+			border: none;
+		}
+
+		.tabs {
+			// Wrapper used for the expand/collapse transition
+			&::before {
+				content: "";
+				position: absolute;
+				z-index: 0;
+				inset: 0;
+				border: 1px solid var(--dx-sidebar-border);
+				border-radius: 0.5rem;
+				background: var(--dx-sidebar-background);
+				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+				transition: top 0.2s linear;
+			}
+
+			// Fixed width gives the collapse/expand animation a stable target to transition
+			.header,
+			.content {
+				width: calc(var(--dx-sidebar-width) - 1.5rem); // Container padding 0.5rem*2 + tabs padding 0.25rem*2
+			}
+		}
 
 		// Handle on the sidebar's inner edge
 		.resize-handle {
@@ -305,6 +317,21 @@ $header-height: 2rem; // Needed for the transition
 			&:hover {
 				opacity: 1;
 			}
+		}
+	}
+
+	// Mobile only styling
+	[data-mobile="true"] .resize-handle {
+		// Resize handle not needed on mobile
+		display: none;
+	}
+
+	// Opt-in "reach" layout. Tab bar moves below the content and larger tab buttons
+	&[data-reach="true"] [data-mobile="true"] .tabs {
+		flex-direction: column-reverse; // Tab bar moves below the content
+
+		.header {
+			height: 3rem;
 		}
 	}
 

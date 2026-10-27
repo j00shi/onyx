@@ -10,6 +10,9 @@ pub static SIDEBAR_SWAPPED: GlobalSignal<bool> = Signal::global(|| false);
 /// When true, the app draws its own window chrome (see [`crate::elements::TitleBar`]) instead of
 /// the native OS title bar. Only meaningful on desktop; ignored on web/mobile.
 pub static CUSTOM_TITLEBAR: GlobalSignal<bool> = Signal::global(|| true);
+/// When true, the mobile sidebar drawer moves its tab bar below the content and enlarges its
+/// ribbon buttons for easier one-handed reach. Only affects the sub-768px mobile sidebar.
+pub static MOBILE_REACH_LAYOUT: GlobalSignal<bool> = Signal::global(|| false);
 
 #[component]
 pub fn Settings() -> Element {
@@ -57,6 +60,18 @@ pub fn Settings() -> Element {
 				Switch {
 					checked: Some(CUSTOM_TITLEBAR()),
 					on_checked_change: move |v: bool| *CUSTOM_TITLEBAR.write() = v,
+				}
+			}
+			section { class: "setting",
+				div { class: "label",
+					span { class: "name", "Mobile reach layout" }
+					span { class: "description",
+						"On small screens, move the sidebar tabs below the content and enlarge its buttons for easier one-handed use. Mobile only."
+					}
+				}
+				Switch {
+					checked: Some(MOBILE_REACH_LAYOUT()),
+					on_checked_change: move |v: bool| *MOBILE_REACH_LAYOUT.write() = v,
 				}
 			}
 		}
