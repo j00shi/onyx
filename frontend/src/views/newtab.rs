@@ -4,6 +4,8 @@ use dioxus::prelude::*;
 pub fn NewTab() -> Element {
 	rsx! {
 		// document::Link { rel: "stylesheet", href: asset!("./newtab.css") }
-		div { id: "new-tab" }
+		div { id: "new-tab",
+			h1 { "New Tab" }
+		}
 	}
 }
