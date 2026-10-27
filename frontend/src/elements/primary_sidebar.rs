@@ -26,9 +26,7 @@ const EXPAND_ABOVE: f64 = 160.0;
 const ICON_WIDTH_FLOATING: f64 = 62.0;
 const ICON_WIDTH_SIDEBAR: f64 = 48.0;
 
-/// The primary (left) sidebar: its own `SidebarProvider`, the resizable primary sidebar, and
-/// the main content inset. `children` are rendered inside the inset so the surrounding frame
-/// keeps ownership of its route `Outlet`.
+/// The primary sidebar. Docks on the left by default, or the right when the layout is swapped
 #[component]
 pub fn PrimarySidebar(children: Element) -> Element {
 	let mut width = use_signal(|| 256.0_f64); // Primary sidebar width (px)
@@ -99,8 +97,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 	}
 }
 
-/// Tab list, ribbon, and panels. Split out so it renders inside `SidebarProvider` and can read
-/// the sidebar context via `use_sidebar`.
+/// Tab list, ribbon, and panels
 #[component]
 fn SidebarTabs() -> Element {
 	let ctx = use_sidebar();
