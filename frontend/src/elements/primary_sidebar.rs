@@ -11,8 +11,10 @@ use crate::components::sidebar::{
 	SidebarProvider, SidebarSide, SidebarTrigger, SidebarVariant,
 };
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
+use crate::components::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
 use crate::views::{MOBILE_REACH_LAYOUT, SIDEBAR_SWAPPED, SIDEBAR_VARIANT};
 use crate::Route;
+use dioxus_primitives::ContentSide;
 
 /// Minimal and maximal width for the sidebar
 const MIN_WIDTH: f64 = 200.0;
@@ -41,7 +43,9 @@ pub fn PrimarySidebar(children: Element) -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./primary_sidebar.css") }
 
-		div { class: "primary-sidebar-wrapper", "data-reach": MOBILE_REACH_LAYOUT(),
+		div {
+			class: "primary-sidebar-wrapper",
+			"data-reach": MOBILE_REACH_LAYOUT(),
 			SidebarProvider {
 				class: if dragging() { "resizing" } else { "" }, // See reason for this in primary_sidebar.scss
 				style: format!(
@@ -115,6 +119,10 @@ pub fn PrimarySidebar(children: Element) -> Element {
 fn SidebarTabs() -> Element {
 	let ctx = use_sidebar();
 
+	// Tabs sit at the top of the sidebar, so tooltips normally drop below them. In the mobile
+	// reach layout the tab bar moves to the bottom, so they flip up to stay on screen.
+	let tooltip_side = if MOBILE_REACH_LAYOUT() && (ctx.is_mobile)() { ContentSide::Top } else { ContentSide::Bottom };
+
 	rsx! {
 		Tabs { class: "tabs", default_value: "home".to_string(),
 			SidebarHeader { class: "header",
@@ -130,33 +138,65 @@ fn SidebarTabs() -> Element {
 						}
 					},
 					TabList { class: "tablist",
-						TabTrigger {
-							class: "tab",
-							value: "home".to_string(),
-							index: 0usize,
-							title: "Home",
-							House { size: "1rem" }
+						Tooltip { class: "tab-tooltip",
+							TooltipTrigger { class: "tab-slot",
+								TabTrigger {
+									class: "tab",
+									value: "home".to_string(),
+									index: 0usize,
+									House { size: "1rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: tooltip_side,
+								"Home"
+							}
 						}
-						TabTrigger {
-							class: "tab",
-							value: "files".to_string(),
-							index: 1usize,
-							title: "Files",
-							Folder { size: "1rem" }
+						Tooltip { class: "tab-tooltip",
+							TooltipTrigger { class: "tab-slot",
+								TabTrigger {
+									class: "tab",
+									value: "files".to_string(),
+									index: 1usize,
+									Folder { size: "1rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: tooltip_side,
+								"Files"
+							}
 						}
-						TabTrigger {
-							class: "tab",
-							value: "search".to_string(),
-							index: 2usize,
-							title: "Search",
-							Search { size: "1rem" }
+						Tooltip { class: "tab-tooltip",
+							TooltipTrigger { class: "tab-slot",
+								TabTrigger {
+									class: "tab",
+									value: "search".to_string(),
+									index: 2usize,
+									Search { size: "1rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: tooltip_side,
+								"Search"
+							}
 						}
-						TabTrigger {
-							class: "tab",
-							value: "bookmarks".to_string(),
-							index: 3usize,
-							title: "Bookmarks",
-							Bookmark { size: "1rem" }
+						Tooltip { class: "tab-tooltip",
+							TooltipTrigger { class: "tab-slot",
+								TabTrigger {
+									class: "tab",
+									value: "bookmarks".to_string(),
+									index: 3usize,
+									Bookmark { size: "1rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: tooltip_side,
+								"Bookmarks"
+							}
 						}
 					}
 				}

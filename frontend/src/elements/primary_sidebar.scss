@@ -68,6 +68,7 @@ $header-height: 2rem; // Needed for the transition
 
 				.content .panel {
 					opacity: 0;
+					pointer-events: none;
 				}
 			}
 
@@ -131,7 +132,6 @@ $header-height: 2rem; // Needed for the transition
 			.header,
 			.content {
 				position: relative;
-				z-index: 1;
 				flex-direction: row;
 				padding: 0;
 			}
@@ -142,6 +142,13 @@ $header-height: 2rem; // Needed for the transition
 				.tablist {
 					position: relative;
 					flex: 1;
+
+					// Each tab is wrapped in a tooltip
+					.tab-tooltip,
+					.tab-slot {
+						display: flex;
+						flex: 1;
+					}
 
 					// Slides to the active tab
 					&::before {
@@ -159,15 +166,15 @@ $header-height: 2rem; // Needed for the transition
 						transition: transform 0.2s ease;
 					}
 
-					&:has(.tab:nth-child(2)[data-state="active"])::before {
+					&:has(.tab-tooltip:nth-child(2) .tab[data-state="active"])::before {
 						transform: translateX(calc(100% + 0.25rem));
 					}
 
-					&:has(.tab:nth-child(3)[data-state="active"])::before {
+					&:has(.tab-tooltip:nth-child(3) .tab[data-state="active"])::before {
 						transform: translateX(calc(200% + 0.5rem));
 					}
 
-					&:has(.tab:nth-child(4)[data-state="active"])::before {
+					&:has(.tab-tooltip:nth-child(4) .tab[data-state="active"])::before {
 						transform: translateX(calc(300% + 0.75rem));
 					}
 				}
