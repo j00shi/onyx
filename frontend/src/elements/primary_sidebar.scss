@@ -383,6 +383,10 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 		}
 	}
 
+	[data-slot="sidebar-inset"] {
+		background-color: transparent;
+	}
+
 	// Monitors full viewport for the cursor position. Used for the resize handle
 	.resize-overlay {
 		position: fixed;
