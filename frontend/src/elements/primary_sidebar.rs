@@ -13,7 +13,7 @@ use crate::components::sidebar::{
 };
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
 use crate::components::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
-use crate::views::{MOBILE_REACH_LAYOUT, SIDEBAR_SWAPPED, SIDEBAR_VARIANT};
+use crate::views::{CUSTOM_TITLEBAR, MOBILE_REACH_LAYOUT, SIDEBAR_SWAPPED, SIDEBAR_VARIANT};
 use crate::Route;
 use dioxus_primitives::ContentSide;
 
@@ -127,18 +127,21 @@ fn SidebarTabs() -> Element {
 	rsx! {
 		Tabs { class: "tabs", default_value: "home".to_string(),
 			SidebarHeader { class: "header",
-				div { class: "controls-wrapper",
-					Button {
-						variant: ButtonVariant::Ghost,
-						size: ButtonSize::IconSm,
-						title: "Go back",
-						ArrowLeft { size: "1rem" }
-					}
-					Button {
-						variant: ButtonVariant::Ghost,
-						size: ButtonSize::IconSm,
-						title: "Go forward",
-						ArrowRight { size: "1rem" }
+				// Traffic lights on macOS overlay this corner
+				if cfg!(all(feature = "desktop", target_os = "macos")) && CUSTOM_TITLEBAR() {
+					div { class: "controls-wrapper",
+						Button {
+							variant: ButtonVariant::Ghost,
+							size: ButtonSize::IconSm,
+							title: "Go back",
+							ArrowLeft { size: "1rem" }
+						}
+						Button {
+							variant: ButtonVariant::Ghost,
+							size: ButtonSize::IconSm,
+							title: "Go forward",
+							ArrowRight { size: "1rem" }
+						}
 					}
 				}
 				// `SidebarHeader` only forwards global attributes, and a forwarded `onclick` on a

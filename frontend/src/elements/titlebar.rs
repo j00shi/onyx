@@ -32,7 +32,8 @@ mod desktop {
 	use dioxus::desktop::{use_window, DesktopContext};
 	use dioxus::prelude::*;
 
-	use crate::views::CUSTOM_TITLEBAR;
+	use crate::components::sidebar::SidebarVariant;
+	use crate::views::{CUSTOM_TITLEBAR, SIDEBAR_VARIANT};
 
 	const TITLEBAR_CSS: Asset = asset!("./titlebar.css");
 
@@ -53,10 +54,21 @@ mod desktop {
 	pub(super) fn title_bar() -> Element {
 		let window = use_window();
 
-		// Apply the chosen chrome mode to the live window whenever the setting changes.
+		// Apply the chosen chrome mode to the live window whenever the setting changes. Reads the
+		// sidebar variant too: the traffic-light inset depends on how far the sidebar is from the
+		// window edge (see `apply_chrome`).
 		use_effect({
 			let window = window.clone();
-			move || apply_chrome(&window, CUSTOM_TITLEBAR())
+			move || {
+				let custom = CUSTOM_TITLEBAR();
+				let variant = SIDEBAR_VARIANT();
+				apply_chrome(&window, custom, variant);
+				// Toggling the custom title bar makes macOS relayout the title bar asynchronously,
+				// which clobbers the inset we just set; re-apply it once that settles so the lights
+				// land in the right spot without needing another toggle.
+				#[cfg(target_os = "macos")]
+				reapply_inset_after_relayout(window.clone(), custom, variant);
+			}
 		});
 
 		let right = use_hook(controls);
@@ -160,10 +172,12 @@ mod desktop {
 	}
 
 	/// Switch the live window between native decorations and custom chrome.
-	fn apply_chrome(window: &DesktopContext, custom: bool) {
+	fn apply_chrome(window: &DesktopContext, custom: bool, variant: SidebarVariant) {
 		#[cfg(target_os = "windows")]
 		{
-			// Borderless when custom; the native frame/title bar otherwise.
+			// Borderless when custom; the native frame/title bar otherwise. The sidebar variant
+			// only affects the macOS traffic-light inset, so it goes unused here.
+			let _ = variant;
 			window.set_decorations(!custom);
 		}
 		#[cfg(target_os = "macos")]
@@ -171,14 +185,44 @@ mod desktop {
 			// Keep the native traffic lights either way; just (un)hide the titlebar chrome.
 			use dioxus::desktop::tao::platform::macos::WindowExtMacOS;
 			use dioxus::desktop::wry::WebViewExtMacOS;
-			use dioxus::desktop::LogicalPosition;
 			window.set_titlebar_transparent(custom);
 			window.set_fullsize_content_view(custom);
-			if custom {
-				// Reposition the traffic lights to fit into the header. Default is 20,20
-				let _ = window.webview.set_traffic_light_inset(LogicalPosition::new(20.0, 30.0));
-			}
+			// Reposition the traffic lights for the current chrome (see `traffic_light_inset`).
+			let _ = window.webview.set_traffic_light_inset(traffic_light_inset(custom, variant));
 		}
+	}
+
+	/// The traffic-light inset for the current chrome. The macOS default is 20,20, which we restore
+	/// for the native title bar. The custom titlebar drops them into the header; a docked sidebar is
+	/// flush to the window edge while the floating card is inset by 0.5rem (8px) of padding, so the
+	/// lights shift that far outward to stay aligned with it.
+	#[cfg(target_os = "macos")]
+	fn traffic_light_inset(custom: bool, variant: SidebarVariant) -> dioxus::desktop::LogicalPosition<f64> {
+		use dioxus::desktop::LogicalPosition;
+
+		if custom {
+			let (x, y) = if variant == SidebarVariant::Floating { (20.0, 30.0) } else { (12.0, 22.0) };
+			LogicalPosition::new(x, y)
+		} else {
+			LogicalPosition::new(20.0, 20.0)
+		}
+	}
+
+	/// Re-apply the traffic-light inset after `AppKit` finishes relaying out the window. Toggling the
+	/// full-size content view (switching to/from the custom title bar) kicks off an asynchronous
+	/// relayout that resets the inset set synchronously in [`apply_chrome`], leaving the lights in
+	/// the wrong place until the next change. Bouncing through an eval round-trip over a couple of
+	/// animation frames yields the main run loop so the layout settles first.
+	#[cfg(target_os = "macos")]
+	fn reapply_inset_after_relayout(window: DesktopContext, custom: bool, variant: SidebarVariant) {
+		use dioxus::desktop::wry::WebViewExtMacOS;
+
+		spawn(async move {
+			let mut eval =
+				document::eval("requestAnimationFrame(() => requestAnimationFrame(() => dioxus.send(true)));");
+			let _ = eval.recv::<bool>().await;
+			let _ = window.webview.set_traffic_light_inset(traffic_light_inset(custom, variant));
+		});
 	}
 
 	/// Right-hand window-control buttons for the current platform.
