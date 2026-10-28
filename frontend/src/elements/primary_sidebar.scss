@@ -1,6 +1,9 @@
 @use "../mixins" as *;
 
-$header-height: 2rem; // Needed for the transition
+// The header stacks a window-controls row above the tab bar.
+$controls-height: 2rem;
+$tablist-height: 2rem;
+$header-height: $controls-height + $tablist-height; // Needed for the transition
 
 .primary-sidebar-wrapper {
 	// Floating is when the sidebar is surrounded by a border. This is the default
@@ -132,22 +135,48 @@ $header-height: 2rem; // Needed for the transition
 			.header,
 			.content {
 				position: relative;
-				flex-direction: row;
 				padding: 0;
 			}
 
 			.header {
+				flex-direction: column;
 				height: $header-height;
+				gap: 0;
+				background-color: var(--light, var(--primary-color-3)) var(--dark, var(--primary-color-5));
+				border-radius: 0.5rem;
+
+				// Wrapper for the back/forward nav and window controls
+				.controls-wrapper {
+					display: flex;
+					align-items: center;
+					justify-content: flex-end;
+					gap: 0.25rem;
+					height: $controls-height;
+				}
 
 				.tablist {
 					position: relative;
-					flex: 1;
+					width: 100%; // Header is a column now, so grow across (flex: 1 only grows down)
+					height: #{$tablist-height};
 
 					// Each tab is wrapped in a tooltip
 					.tab-tooltip,
 					.tab-slot {
 						display: flex;
 						flex: 1;
+					}
+
+					.tab {
+						position: relative;
+						z-index: 1;
+						flex: 1;
+						transition: color 0.2s linear;
+
+						// Hides the old active tab indicator
+						&[data-state="active"] {
+							background-color: transparent;
+							box-shadow: none;
+						}
 					}
 
 					// Slides to the active tab
@@ -178,23 +207,11 @@ $header-height: 2rem; // Needed for the transition
 						transform: translateX(calc(300% + 0.75rem));
 					}
 				}
-
-				.tab {
-					position: relative;
-					z-index: 1;
-					flex: 1;
-					transition: color 0.2s linear;
-
-					// Hides the old active tab indicator
-					&[data-state="active"] {
-						background-color: transparent;
-						box-shadow: none;
-					}
-				}
 			}
 
 			.content {
 				gap: 0;
+				flex-direction: row;
 
 				.ribbon {
 					padding: 0 0.25rem 0 0;
@@ -333,12 +350,14 @@ $header-height: 2rem; // Needed for the transition
 		display: none;
 	}
 
-	// Opt-in "reach" layout. Tab bar moves below the content and larger tab buttons
+	// Opt-in "reach" layout for mobile
 	&[data-reach="true"] [data-mobile="true"] .tabs {
-		flex-direction: column-reverse; // Tab bar moves below the content
+		// Tab bar moves below the content
+		flex-direction: column-reverse;
 
+		// Larger touch target for the tab bar
 		.header {
-			height: 3rem;
+			height: $controls-height + 3rem;
 		}
 	}
 

@@ -21,16 +21,8 @@ fn launch_desktop() {
 	#[cfg(target_os = "macos")]
 	let builder = {
 		use dioxus::desktop::tao::platform::macos::WindowBuilderExtMacOS;
-		use dioxus::desktop::LogicalPosition;
 
-		builder
-			.with_titlebar_transparent(true)
-			.with_fullsize_content_view(true)
-			.with_title_hidden(true)
-			// Traffic-light position (x right, y down from the top-left corner; macOS default
-			// is ~20,20, so go above that to move inward). Keep in sync with the runtime value
-			// in `frontend`'s `titlebar::apply_chrome`.
-			.with_traffic_light_inset(LogicalPosition::new(44.0, 20.0))
+		builder.with_titlebar_transparent(true).with_fullsize_content_view(true).with_title_hidden(true)
 	};
 
 	#[cfg(target_os = "windows")]

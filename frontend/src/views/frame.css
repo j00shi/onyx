@@ -1,1 +1,1 @@
-#frame[data-swapped=false] .primary-sidebar-wrapper>[data-slot=sidebar-wrapper]{flex-direction:row}/*# sourceMappingURL=frame.css.map */
+#frame[data-swapped=false] .primary-sidebar-wrapper>[data-slot=sidebar-wrapper]{flex-direction:row}#frame:has(>#titlebar[data-os=windows]) .primary-sidebar-wrapper>[data-slot=sidebar-wrapper]{height:calc(100svh - 2.5rem);min-height:calc(100svh - 2.5rem)}#frame:has(>#titlebar[data-os=windows]) .primary-sidebar-wrapper [data-slot=sidebar-container]{top:2.5rem;height:calc(100svh - 2.5rem)}/*# sourceMappingURL=frame.css.map */

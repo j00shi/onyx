@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_icons::lucide::{
-	Bell, Bookmark, Calendar, Folder, House, ListTodo, Mail, Search, Settings, Square, User, Vault,
+	ArrowLeft, ArrowRight, Bell, Bookmark, Calendar, Folder, House, ListTodo, Mail, Search, Settings, Square, User,
+	Vault,
 };
 
 use crate::components::button::{Button, ButtonSize, ButtonVariant};
@@ -126,6 +127,20 @@ fn SidebarTabs() -> Element {
 	rsx! {
 		Tabs { class: "tabs", default_value: "home".to_string(),
 			SidebarHeader { class: "header",
+				div { class: "controls-wrapper",
+					Button {
+						variant: ButtonVariant::Ghost,
+						size: ButtonSize::IconSm,
+						title: "Go back",
+						ArrowLeft { size: "1rem" }
+					}
+					Button {
+						variant: ButtonVariant::Ghost,
+						size: ButtonSize::IconSm,
+						title: "Go forward",
+						ArrowRight { size: "1rem" }
+					}
+				}
 				// `SidebarHeader` only forwards global attributes, and a forwarded `onclick` on a
 				// `TabTrigger` would be swallowed by the standard click handler. Instead the click
 				// is caught via the (`display: contents`) wrapper, which fires for every tab,

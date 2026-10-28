@@ -125,15 +125,35 @@ mod desktop {
 				height: "10",
 				match control {
 					Control::Minimize => rsx! {
-						line { x1: "0", y1: "5", x2: "10", y2: "5" }
-					},
+					line {
+						x1: "0",
+						y1: "5",
+						x2: "10",
+						y2: "5",
+					}
+				},
 					Control::Maximize => rsx! {
-						rect { x: "0.5", y: "0.5", width: "9", height: "9" }
-					},
+					rect {
+						x: "0.5",
+						y: "0.5",
+						width: "9",
+						height: "9",
+					}
+				},
 					Control::Close => rsx! {
-						line { x1: "0", y1: "0", x2: "10", y2: "10" }
-						line { x1: "10", y1: "0", x2: "0", y2: "10" }
-					},
+					line {
+						x1: "0",
+						y1: "0",
+						x2: "10",
+						y2: "10",
+					}
+					line {
+						x1: "10",
+						y1: "0",
+						x2: "0",
+						y2: "10",
+					}
+				},
 				}
 			}
 		}
@@ -150,14 +170,13 @@ mod desktop {
 		{
 			// Keep the native traffic lights either way; just (un)hide the titlebar chrome.
 			use dioxus::desktop::tao::platform::macos::WindowExtMacOS;
+			use dioxus::desktop::wry::WebViewExtMacOS;
 			use dioxus::desktop::LogicalPosition;
 			window.set_titlebar_transparent(custom);
 			window.set_fullsize_content_view(custom);
 			if custom {
-				// x = inward from the left, y = down from the top (macOS default is ~20,20, so
-				// go above that to move inward). Keep in sync with the build-time inset in
-				// `packages/desktop/src/main.rs`.
-				window.set_traffic_light_inset(LogicalPosition::new(44.0, 20.0));
+				// Reposition the traffic lights to fit into the header. Default is 20,20
+				let _ = window.webview.set_traffic_light_inset(LogicalPosition::new(20.0, 30.0));
 			}
 		}
 	}
