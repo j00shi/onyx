@@ -321,6 +321,7 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 	.primary-sidebar {
 		// Hides the default floating sidebar border
 		[data-slot="sidebar-inner"] {
+			background: transparent;
 			border: none;
 		}
 
@@ -331,6 +332,8 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 				position: absolute;
 				z-index: 0;
 				inset: 0;
+				background: var(--dx-sidebar-background);
+				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 				border: var(--border);
 				border-radius: var(--border-radius-sm);
 				transition: top var(--duration-medium) linear;
