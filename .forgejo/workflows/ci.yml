@@ -47,3 +47,6 @@ jobs:
 
             - name: Lint SCSS
               run: npm run lint:style
+
+            - name: Check compiled CSS is up to date
+              run: npm run build:css:check

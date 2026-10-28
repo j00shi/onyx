@@ -46,16 +46,23 @@ re-check `git diff` on every `Cargo.toml` afterward.
 Stylesheets are authored in `.scss`, but Dioxus loads **`.css`** via the `asset!` macro
 (e.g. `asset!("./main.css")` in `lib.rs`, `asset!("./hero.css")` in `elements/hero.rs`). The
 compiled, minified `.css` files are **committed next to their `.scss` source** and are what
-actually ships — the `.css.map` sourcemaps are gitignored.
+actually ships.
 
 Consequences for agents:
 
 - **Editing a `.scss` is not enough — you must recompile the matching `.css`,** or the change
-  will not reach the app. The repo's VS Code config (`.vscode/settings.json`) drives the
-  _Live Sass Compiler_ extension to emit `compressed` CSS beside each source file; reproduce
-  that output if you compile another way (e.g. `sass --style=compressed in.scss out.css`).
+  will not reach the app. Compile with **`npm run build:css`** (`npm install` once first). This
+  is the single source of truth: it is exactly what the VS Code _Live Sass Compiler_ extension
+  reproduces on save (`.vscode/settings.json` pins it to match). `npm run build:css:check`
+  verifies the committed `.css` is up to date (used by CI).
+- **Do not compile with a bare `sass` CLI.** The output must come from the pinned toolchain in
+  `package.json` (Dart Sass + Autoprefixer) — a different Dart Sass version changes the
+  compressed output (e.g. `calc()` folding) and a bare `sass` skips the vendor prefixes
+  (`-webkit-`/`-moz-user-select`) the WebKit desktop WebView needs. See `scripts/build-css.mjs`
+  for the pipeline.
 - Prettier and Stylelint only touch `.scss` — `.css` is ignored by both (and by
-  `.prettierignore`), so the style gates will not catch a stale or hand-edited `.css`.
+  `.prettierignore`), so the style gates will not catch a stale or hand-edited `.css`;
+  `npm run build:css:check` is what guards that.
 - Shared SCSS lives in `frontend/src/_theme.scss` and `frontend/src/_mixins.scss`, pulled in
   with `@use` from `main.scss`.
 
@@ -90,7 +97,9 @@ any warning fails the build. Match it locally before considering work done.
 
 ### SCSS
 
-You can compile SASS with `sass frontend/src:frontend/src --style=compressed`.
+Compile to the committed `.css` with `npm run build:css` (see
+[Styles](#styles--scss-is-the-source-css-is-a-committed-artifact) for why a bare `sass` CLI
+won't do). `npm run build:css:check` verifies the `.css` is up to date (used by CI).
 
 Linted with Stylelint, formatted with Prettier. Run `npm install` once, then:
 

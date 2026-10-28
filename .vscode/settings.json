@@ -7,6 +7,8 @@
 			"savePath": "~/"
 		}
 	],
+	"liveSassCompile.settings.autoprefix": true,
+	"liveSassCompile.settings.generateMap": false,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"[rust]": {
 		"editor.defaultFormatter": "rust-lang.rust-analyzer",
