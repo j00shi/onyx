@@ -183,6 +183,11 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 						flex: 1;
 					}
 
+					.tab-tooltip-content {
+						animation-delay: 0.5s;
+						animation-fill-mode: backwards;
+					}
+
 					.tab {
 						position: relative;
 						z-index: 1;
@@ -357,6 +362,7 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 			// Highlight the handle when hovered
 			&:hover {
 				opacity: 1;
+				transition-delay: 0.5s;
 			}
 		}
 	}
