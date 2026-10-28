@@ -38,4 +38,56 @@ npm run format:check      # verify formatting (used by CI)
 
 To test the application on other platforms, use a virtual machine such as UTM. Then, in the VM settings under "Sharing", select your `onyx/` directory as path.
 
-In the VM
+## Linux
+
+### Install Dependencies
+
+Use the respective package manager of your operating system.
+
+1. Install Rust: `sudo dnf install rustup`
+2. Install binstall (recommended): `cargo install cargo-binstall`
+3. Install Dioxus: `cargo binstall dioxus-cli --force` or without binstall `cargo install dioxus-cli`
+
+### Run and Develop Program
+
+1. Mount shared directory (if it's not): `sudo mount -t virtiofs share /mnt/share`
+2. Run `rsync -a --no-owner --no-group --delete --exclude='target/' --exclude='node_modules/' /mnt/share/ ~/Code/onyx/`
+3. Check if directory exists and `cd` into it.
+4. To watch for changes, run `./scripts/sync-linux-macos.sh`
+5. To start Dioxus, run `dx serve --package desktop`
+
+## Windows 11
+
+### Install Dependencies
+
+1. Open Powershell as administrator
+2. Install Rust: `winget install -e --id Rustlang.Rustup`
+3. Install Visual Studio Build Tools `winget install -e --id Microsoft.VisualStudio.BuildTools`
+4. Add the C++ and ARM64 toolchain workloads
+    - Find the actual install path first: `& "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -products * -property installationPath`
+    - Then add the workloads (replace the path if different):
+
+```powershell
+& "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" `
+  modify `
+  --installPath "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools" `
+  --add Microsoft.VisualStudio.Workload.VCTools `
+  --add Microsoft.VisualStudio.Component.VC.Tools.ARM64 `
+  --includeRecommended `
+  --passive --norestart
+```
+
+5. Install LLVM/clang (required by crates like `ring` on ARM64)
+    - Install LLVM: `winget install -e --id LLVM.LLV`
+    - Then add it to PATH: `[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\LLVM\bin", [System.EnvironmentVariableTarget]::Machine)`
+6. Install binstall (recommended): `cargo install cargo-binstall`
+7. Install Dioxus: `cargo binstall dioxus-cli --force` or without binstall `cargo install dioxus-cli`
+
+### Run and Develop Program
+
+1. Important: Don't use administrator
+2. Run once: `robocopy Z:\ %USERPROFILE%\Code\onyx /E /PURGE /XD target node_modules /R:3 /W:1`
+    - If the `onyx/` directory does not appear in this location, make sure you're not using administrator
+3. Check if the `onyx/` directory exists and enter it
+4. To watch for changes, run `./scripts/sync-windows.bat`
+5. To start Dioxus, run `dx serve --package desktop`
