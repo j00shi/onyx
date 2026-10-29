@@ -19,6 +19,13 @@ body {
 	}
 }
 
+// When the native window backdrop is on, the page itself must be see-through for the blur to show
+// through; otherwise the opaque body color would hide it. Driven by `data-window-effect` on <html>,
+// set in `views/frame.rs`.
+html[data-window-effect="true"] body {
+	background: transparent;
+}
+
 [data-button-disabled="true"] {
 	pointer-events: none;
 }

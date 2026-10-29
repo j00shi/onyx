@@ -11,13 +11,14 @@ dioxus-icons = "0.1"
 dioxus-code = { version = "0.1", default-features = false, features = ["macro", "lang-css"] }
 palette = "0.7"
 time = { version = "0.3", features = ["std", "macros"] }
+window-vibrancy = { version = "0.8", optional = true }
 
 [dev-dependencies]
 dioxus-ssr = "0.7"
 
 [features]
 server = ["backend/server"]
-desktop = ["dioxus/desktop"]
+desktop = ["dioxus/desktop", "dep:window-vibrancy"]
 
 [lints]
 workspace = true

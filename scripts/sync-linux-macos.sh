@@ -7,5 +7,5 @@ while true; do
     --exclude='target/' \
     --exclude='node_modules/' \
     /mnt/share/ ~/Code/onyx/
-  sleep 2
+  sleep 10
 done

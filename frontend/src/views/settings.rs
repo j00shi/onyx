@@ -23,6 +23,12 @@ pub static DARK_MODE: GlobalSignal<bool> = Signal::global(|| true);
 pub static ACCENT_HUE: GlobalSignal<f64> = Signal::global(|| 200.0);
 /// When true, [`crate::views::Frame`] paints the wallpaper behind the app chrome.
 pub static SHOW_WALLPAPER: GlobalSignal<bool> = Signal::global(|| true);
+/// When true, the window is translucent with a native backdrop blur.
+///
+/// macOS vibrancy, Windows 11 Mica/Acrylic; plain transparency on Linux. Applied as the
+/// `data-window-effect` attribute on `<html>` by [`crate::views::Frame`] and acted on by
+/// [`crate::elements::WindowEffect`]. Only meaningful on desktop; ignored on web/mobile.
+pub static WINDOW_EFFECT: GlobalSignal<bool> = Signal::global(|| false);
 /// Multiplier applied to the `--border-radius-*` custom properties in `_theme.scss`.
 /// `1.0` keeps the designed radii; `0.0` squares every corner.
 pub static BORDER_RADIUS_SCALE: GlobalSignal<f64> = Signal::global(|| 1.0);
@@ -77,6 +83,18 @@ pub fn Settings() -> Element {
 				Switch {
 					checked: Some(SHOW_WALLPAPER()),
 					on_checked_change: move |v: bool| *SHOW_WALLPAPER.write() = v,
+				}
+			}
+			section { class: "setting",
+				div { class: "label",
+					span { class: "name", "Window blur" }
+					span { class: "description",
+						"Make the window translucent with a native backdrop blur. Desktop only."
+					}
+				}
+				Switch {
+					checked: Some(WINDOW_EFFECT()),
+					on_checked_change: move |v: bool| *WINDOW_EFFECT.write() = v,
 				}
 			}
 			section { class: "setting",

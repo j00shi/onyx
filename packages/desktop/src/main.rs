@@ -16,7 +16,8 @@ fn main() {
 fn launch_desktop() {
 	use dioxus::desktop::{Config, WindowBuilder};
 
-	let builder = WindowBuilder::new().with_title("Onyx");
+	// Launch transparent on every platform an stay that way. Opaque background simply paints over
+	let builder = WindowBuilder::new().with_title("Onyx").with_transparent(true);
 
 	#[cfg(target_os = "macos")]
 	let builder = {
@@ -28,6 +29,7 @@ fn launch_desktop() {
 	#[cfg(target_os = "windows")]
 	let builder = builder.with_decorations(false).with_resizable(true);
 
-	let config = Config::new().with_window(builder);
+	// Transparent initial webview background to avoid a flash before the page renders
+	let config = Config::new().with_window(builder).with_background_color((0, 0, 0, 0));
 	dioxus::LaunchBuilder::new().with_cfg(config).launch(frontend::App);
 }
