@@ -82,6 +82,10 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					top: calc(#{$tablist-height} + 0.5rem);
 				}
 
+				.header {
+					backdrop-filter: blur(var(--blur));
+				}
+
 				.content .panel {
 					opacity: 0;
 					pointer-events: none;
@@ -156,8 +160,9 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 				flex-direction: column;
 				height: $tablist-height;
 				gap: 0;
-				background-color: var(--light, var(--primary-color-3)) var(--dark, var(--primary-color-5));
+				background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
 				border-radius: var(--border-radius-sm);
+				transition: backdrop-filter var(--duration-medium) linear;
 
 				// macOS stacks a window-controls row above the tab bar (rendered on macOS only)
 				&:has(.controls-wrapper) {
@@ -177,6 +182,7 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					position: relative;
 					width: 100%; // Header is a column now, so grow across (flex: 1 only grows down)
 					height: #{$tablist-height};
+					background-color: transparent;
 
 					// Each tab is wrapped in a tooltip
 					.tab-tooltip,
@@ -211,7 +217,12 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 						inset: 0.25rem;
 						width: calc((100% - 1.25rem) / 4);
 						border-radius: var(--border-radius-sm);
-						background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
+						// background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
+						background-color: color-mix(
+							in oklab,
+							var(--primary-color-6),
+							transparent var(--transparency-light)
+						);
 						box-shadow: var(--dark, inset 0 0 0 1px var(--primary-color-7))
 							var(--light, 0 1px 2px rgb(0 0 0 / 18%));
 						transition: transform var(--duration-medium) ease;
@@ -283,13 +294,13 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 						width: 2.25rem;
 						height: 2.25rem;
 						padding: 0;
-						background: transparent;
+						background-color: transparent;
 						box-shadow: none;
 						cursor: default;
 
 						&:hover {
 							background-color: var(--light, var(--primary-color-5))
-								var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent));
+								var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%));
 						}
 					}
 
@@ -310,6 +321,8 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					transition: opacity var(--duration-medium) linear;
 
 					.tab-content {
+						background-color: transparent;
+						border: none;
 						flex: 1;
 					}
 				}
@@ -321,7 +334,7 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 	.primary-sidebar {
 		// Hides the default floating sidebar border
 		[data-slot="sidebar-inner"] {
-			background: transparent;
+			background-color: transparent;
 			border: none;
 		}
 
@@ -332,8 +345,13 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 				position: absolute;
 				z-index: 0;
 				inset: 0;
-				background: var(--dx-sidebar-background);
+				background-color: color-mix(
+					in oklab,
+					var(--dx-sidebar-background),
+					transparent var(--transparency-strong)
+				);
 				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+				backdrop-filter: blur(var(--blur));
 				border: var(--border);
 				border-radius: var(--border-radius-sm);
 				transition: top var(--duration-medium) linear;
@@ -357,7 +375,7 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 			cursor: ew-resize;
 			touch-action: none;
 			user-select: none;
-			background: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
+			background-image: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
 			opacity: 0;
 			transition: opacity var(--duration-medium) ease;
 			transition-delay: var(--delay);
