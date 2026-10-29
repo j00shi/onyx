@@ -1,0 +1,152 @@
+@use "../mixins" as *;
+
+// Shared sidebar scaffolding: the resizable, collapsible panel, its drag handle and the
+// expand/collapse transitions.
+.base-sidebar-wrapper {
+	// Floating is when the sidebar is surrounded by a border. This is the default
+	[data-variant="floating"] {
+		// Fixes the collapsed width
+		&[data-collapsible="icon"] .base-sidebar {
+			width: calc(var(--dx-sidebar-width-icon) + 0.75rem);
+		}
+	}
+
+	// Sidebar is when the sidebar is connected to the frame and only has an inner border
+	[data-variant="sidebar"] {
+		// Hides the default sidebar border
+		.base-sidebar {
+			border: none !important;
+
+			.sidebar-body::before {
+				border-top: none;
+				border-bottom: none;
+				border-radius: 0;
+			}
+		}
+
+		// Hide left border when left...
+		&[data-side="left"] .base-sidebar .sidebar-body::before {
+			border-left: none;
+		}
+
+		// and right when right
+		&[data-side="right"] .base-sidebar .sidebar-body::before {
+			border-right: none;
+		}
+
+		// When collapsed show a top border and add radius
+		&[data-collapsible="icon"] {
+			.base-sidebar .sidebar-body::before {
+				border-top: var(--border);
+			}
+
+			// Inner edge is the right for a left-docked sidebar, the left when swapped to the right.
+			&[data-side="left"] .base-sidebar .sidebar-body::before {
+				border-top-right-radius: var(--border-radius-sm);
+			}
+
+			&[data-side="right"] .base-sidebar .sidebar-body::before {
+				border-top-left-radius: var(--border-radius-sm);
+			}
+		}
+	}
+
+	// When docked on the right (swapped) the handle moves to the inner (left) edge
+	[data-side="right"] .base-sidebar .resize-handle {
+		right: auto;
+		left: 0;
+	}
+
+	.resizing {
+		// Scope to this provider's own sidebar via child combinators: the nested sidebar lives
+		// under SidebarInset (a sibling of this `[data-slot="sidebar"]`), so dragging one sidebar
+		// leaves the other's handle and transitions untouched.
+		> [data-slot="sidebar"] {
+			// No transition during resizing, although it looks kind of funny
+			> [data-slot="sidebar-gap"],
+			> [data-slot="sidebar-container"] {
+				transition: none;
+			}
+
+			// Highlight the handle during resizing
+			.resize-handle {
+				opacity: 1;
+			}
+		}
+	}
+
+	// These are styles that shouldn't be applied to mobile
+	.base-sidebar {
+		// Hides the default floating sidebar border
+		[data-slot="sidebar-inner"] {
+			background-color: transparent;
+			border: none;
+		}
+
+		.sidebar-body {
+			position: relative;
+			flex: 1;
+			min-height: 0;
+
+			// Wrapper used for the expand/collapse transition
+			&::before {
+				content: "";
+				position: absolute;
+				z-index: 0;
+				inset: 0;
+				background-color: color-mix(
+					in oklab,
+					var(--dx-sidebar-background),
+					transparent var(--transparency-strong)
+				);
+				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+				backdrop-filter: blur(var(--blur));
+				border: var(--border);
+				border-radius: var(--border-radius-sm);
+				transition: top var(--duration-medium) linear;
+			}
+		}
+
+		// Handle on the sidebar's inner edge
+		.resize-handle {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 1;
+			width: 0.75rem;
+			cursor: ew-resize;
+			touch-action: none;
+			user-select: none;
+			background-image: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
+			opacity: 0;
+			transition: opacity var(--duration-medium) ease;
+			transition-delay: var(--delay);
+
+			// Highlight the handle when hovered
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
+
+	// Mobile only styling
+	[data-mobile="true"] .resize-handle {
+		// Resize handle not needed on mobile
+		display: none;
+	}
+
+	[data-slot="sidebar-inset"] {
+		background-color: transparent;
+	}
+
+	// Monitors full viewport for the cursor position. Used for the resize handle
+	.resize-overlay {
+		position: fixed;
+		z-index: 9999;
+		inset: 0;
+		cursor: ew-resize;
+		touch-action: none;
+		user-select: none;
+	}
+}

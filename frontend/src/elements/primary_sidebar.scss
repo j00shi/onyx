@@ -5,15 +5,9 @@ $controls-height: 2rem;
 $tablist-height: 2rem;
 $header-height: $controls-height + $tablist-height; // Needed for the transition
 
+// Primary-specific styling: the tab bar, ribbon and panels. The resizable panel, drag handle and
+// collapse/expand transitions are shared and live in `base_sidebar.scss`.
 .primary-sidebar-wrapper {
-	// Floating is when the sidebar is surrounded by a border. This is the default
-	[data-variant="floating"] {
-		// Fixes the collapsed width
-		&[data-collapsible="icon"] .primary-sidebar {
-			width: calc(var(--dx-sidebar-width-icon) + 0.75rem);
-		}
-	}
-
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
 	[data-variant="sidebar"] {
 		.primary-sidebar .tabs {
@@ -21,43 +15,6 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 			.content {
 				// TODO: Is a calc really needed?
 				width: calc(var(--dx-sidebar-width) - var(--padding-sm) * 2); // Only the tabs' own 0.25rem*2 padding
-			}
-		}
-
-		// Hides the default sidebar border
-		.primary-sidebar {
-			border: none !important;
-
-			.tabs::before {
-				border-top: none;
-				border-bottom: none;
-				border-radius: 0;
-			}
-		}
-
-		// Hide left border when left...
-		&[data-side="left"] .primary-sidebar .tabs::before {
-			border-left: none;
-		}
-
-		// and right when right
-		&[data-side="right"] .primary-sidebar .tabs::before {
-			border-right: none;
-		}
-
-		// When collapsed show a top border and add radius
-		&[data-collapsible="icon"] {
-			.primary-sidebar .tabs::before {
-				border-top: var(--border);
-			}
-
-			// Inner edge is the right for a left-docked sidebar, the left when swapped to the right.
-			&[data-side="left"] .primary-sidebar .tabs::before {
-				border-top-right-radius: var(--border-radius-sm);
-			}
-
-			&[data-side="right"] .primary-sidebar .tabs::before {
-				border-top-left-radius: var(--border-radius-sm);
 			}
 		}
 	}
@@ -100,12 +57,6 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 
 	// When docked on the right (swapped)
 	[data-side="right"] .primary-sidebar {
-		// Handle moves to the inner (left) edge
-		.resize-handle {
-			right: auto;
-			left: 0;
-		}
-
 		// Mirror the sidebar so the ribbon sits on the outer edge and the panel faces the content
 		.tabs {
 			align-items: flex-end;
@@ -124,19 +75,6 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					}
 				}
 			}
-		}
-	}
-
-	.resizing {
-		// No transition during resizing, although it looks kind of funny
-		[data-slot="sidebar-gap"],
-		[data-slot="sidebar-container"] {
-			transition: none;
-		}
-
-		// Highlight the handle during resizing
-		.primary-sidebar .resize-handle {
-			opacity: 1;
 		}
 	}
 
@@ -217,6 +155,7 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 						inset: 0.25rem;
 						width: calc((100% - 1.25rem) / 4);
 						border-radius: var(--border-radius-sm);
+
 						// background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
 						background-color: color-mix(
 							in oklab,
@@ -330,67 +269,13 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 		}
 	}
 
-	// These are styles that shouldn't be applied to mobile
-	.primary-sidebar {
-		// Hides the default floating sidebar border
-		[data-slot="sidebar-inner"] {
-			background-color: transparent;
-			border: none;
+	// These styles shouldn't be applied to mobile
+	.primary-sidebar .tabs {
+		// Fixed width gives the collapse/expand animation a stable target to transition
+		.header,
+		.content {
+			width: calc(var(--dx-sidebar-width) - 1.5rem); // Container padding 0.5rem*2 + tabs padding 0.25rem*2
 		}
-
-		.tabs {
-			// Wrapper used for the expand/collapse transition
-			&::before {
-				content: "";
-				position: absolute;
-				z-index: 0;
-				inset: 0;
-				background-color: color-mix(
-					in oklab,
-					var(--dx-sidebar-background),
-					transparent var(--transparency-strong)
-				);
-				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-				backdrop-filter: blur(var(--blur));
-				border: var(--border);
-				border-radius: var(--border-radius-sm);
-				transition: top var(--duration-medium) linear;
-			}
-
-			// Fixed width gives the collapse/expand animation a stable target to transition
-			.header,
-			.content {
-				width: calc(var(--dx-sidebar-width) - 1.5rem); // Container padding 0.5rem*2 + tabs padding 0.25rem*2
-			}
-		}
-
-		// Handle on the sidebar's inner edge
-		.resize-handle {
-			position: absolute;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			z-index: 1;
-			width: 0.75rem;
-			cursor: ew-resize;
-			touch-action: none;
-			user-select: none;
-			background-image: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
-			opacity: 0;
-			transition: opacity var(--duration-medium) ease;
-			transition-delay: var(--delay);
-
-			// Highlight the handle when hovered
-			&:hover {
-				opacity: 1;
-			}
-		}
-	}
-
-	// Mobile only styling
-	[data-mobile="true"] .resize-handle {
-		// Resize handle not needed on mobile
-		display: none;
 	}
 
 	// Opt-in "reach" layout for mobile
@@ -402,19 +287,5 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 		.header {
 			height: 3rem;
 		}
-	}
-
-	[data-slot="sidebar-inset"] {
-		background-color: transparent;
-	}
-
-	// Monitors full viewport for the cursor position. Used for the resize handle
-	.resize-overlay {
-		position: fixed;
-		z-index: 9999;
-		inset: 0;
-		cursor: ew-resize;
-		touch-action: none;
-		user-select: none;
 	}
 }
