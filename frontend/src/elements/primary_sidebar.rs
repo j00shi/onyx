@@ -43,7 +43,9 @@ fn SidebarTabs() -> Element {
 
 	// Tabs sit at the top of the sidebar, so tooltips normally drop below them. In the mobile
 	// reach layout the tab bar moves to the bottom, so they flip up to stay on screen.
-	let tooltip_side = if MOBILE_REACH_LAYOUT() && (ctx.is_mobile)() { ContentSide::Top } else { ContentSide::Bottom };
+	let tab_tooltip_side =
+		if MOBILE_REACH_LAYOUT() && (ctx.is_mobile)() { ContentSide::Top } else { ContentSide::Bottom };
+	let ribbon_tooltip_side = if SIDEBAR_SWAPPED() { ContentSide::Left } else { ContentSide::Right };
 
 	rsx! {
 		Tabs { class: "sidebar-body tabs", default_value: "home".to_string(),
@@ -88,7 +90,7 @@ fn SidebarTabs() -> Element {
 							}
 							TooltipContent {
 								class: "tab-tooltip-content",
-								side: tooltip_side,
+								side: tab_tooltip_side,
 								"Home"
 							}
 						}
@@ -103,7 +105,7 @@ fn SidebarTabs() -> Element {
 							}
 							TooltipContent {
 								class: "tab-tooltip-content",
-								side: tooltip_side,
+								side: tab_tooltip_side,
 								"Files"
 							}
 						}
@@ -118,7 +120,7 @@ fn SidebarTabs() -> Element {
 							}
 							TooltipContent {
 								class: "tab-tooltip-content",
-								side: tooltip_side,
+								side: tab_tooltip_side,
 								"Search"
 							}
 						}
@@ -133,7 +135,7 @@ fn SidebarTabs() -> Element {
 							}
 							TooltipContent {
 								class: "tab-tooltip-content",
-								side: tooltip_side,
+								side: tab_tooltip_side,
 								"Bookmarks"
 							}
 						}
@@ -143,46 +145,104 @@ fn SidebarTabs() -> Element {
 			SidebarContent { class: "content",
 				SidebarGroup { class: "ribbon",
 					div { class: "ribbon-top",
-						Button {
-							variant: ButtonVariant::Ghost,
-							size: ButtonSize::Icon,
-							title: "Tasks",
-							ListTodo { size: "1.25rem" }
+						Tooltip {
+							TooltipTrigger {
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									ListTodo { size: "1.25rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: ribbon_tooltip_side,
+								"Tasks"
+							}
 						}
-						Button {
-							variant: ButtonVariant::Ghost,
-							size: ButtonSize::Icon,
-							title: "Calendar",
-							Calendar { size: "1.25rem" }
+						Tooltip {
+							TooltipTrigger {
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									Calendar { size: "1.25rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: ribbon_tooltip_side,
+								"Calendar"
+							}
 						}
-						Button {
-							variant: ButtonVariant::Ghost,
-							size: ButtonSize::Icon,
-							title: "Mail",
-							Mail { size: "1.25rem" }
+						Tooltip {
+							TooltipTrigger {
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									Mail { size: "1.25rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: ribbon_tooltip_side,
+								"Mail"
+							}
 						}
-						Button {
-							variant: ButtonVariant::Ghost,
-							size: ButtonSize::Icon,
-							title: "Notifications",
-							Bell { size: "1.25rem" }
+						Tooltip {
+							TooltipTrigger {
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									Bell { size: "1.25rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: ribbon_tooltip_side,
+								"Notifications"
+							}
 						}
 						// Example filler buttons
 						for i in 0..10 {
-							Button {
-								variant: ButtonVariant::Ghost,
-								size: ButtonSize::Icon,
-								title: "Example {i + 1}",
-								Square { size: "1.25rem" }
+							Tooltip {
+								TooltipTrigger {
+									Button {
+										variant: ButtonVariant::Ghost,
+										size: ButtonSize::Icon,
+										Square { size: "1.25rem" }
+									}
+								}
+								TooltipContent {
+									class: "tab-tooltip-content",
+									side: ribbon_tooltip_side,
+									"Example {i + 1}"
+								}
 							}
 						}
 					}
 					Separator { class: "ribbon-divider", decorative: true }
 					div { class: "ribbon-bottom",
-						SidebarTrigger { class: "sidebar-trigger" }
+						Tooltip {
+							TooltipTrigger {
+								SidebarTrigger { class: "sidebar-trigger" }
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: ribbon_tooltip_side,
+								"Toggle sidebar"
+							}
+						}
 						DropdownMenu {
-							DropdownMenuTrigger { class: "dropdown-trigger", title: "Vault",
-								Vault { size: "1.25rem" }
+							Tooltip {
+								TooltipTrigger {
+									DropdownMenuTrigger { class: "dropdown-trigger",
+										Vault { size: "1.25rem" }
+									}
+								}
+								TooltipContent {
+									class: "tab-tooltip-content",
+									side: ribbon_tooltip_side,
+									"Vault"
+								}
 							}
 							DropdownMenuContent { class: "dropdown-content",
 								DropdownMenuItem::<String> {
@@ -204,20 +264,36 @@ fn SidebarTabs() -> Element {
 								}
 							}
 						}
-						Button {
-							variant: ButtonVariant::Ghost,
-							size: ButtonSize::Icon,
-							title: "Account",
-							User { size: "1.25rem" }
+						Tooltip {
+							TooltipTrigger {
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									User { size: "1.25rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: ribbon_tooltip_side,
+								"Account"
+							}
 						}
-						Button {
-							variant: ButtonVariant::Ghost,
-							size: ButtonSize::Icon,
-							title: "Settings",
-							onclick: move |_| {
-								navigator().push(Route::Settings {});
-							},
-							Settings { size: "1.25rem" }
+						Tooltip {
+							TooltipTrigger {
+								Button {
+									variant: ButtonVariant::Ghost,
+									size: ButtonSize::Icon,
+									onclick: move |_| {
+										navigator().push(Route::Settings {});
+									},
+									Settings { size: "1.25rem" }
+								}
+							}
+							TooltipContent {
+								class: "tab-tooltip-content",
+								side: ribbon_tooltip_side,
+								"Settings"
+							}
 						}
 					}
 				}

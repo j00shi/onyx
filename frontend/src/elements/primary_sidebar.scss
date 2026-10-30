@@ -5,6 +5,9 @@ $controls-height: 2rem;
 $tablist-height: 2rem;
 $header-height: $controls-height + $tablist-height; // Needed for the transition
 
+// Horizontal room added to the ribbon's scroll clip-box so a sideways tooltip isn't clipped
+$ribbon-tooltip-room: 17rem;
+
 // Primary-specific styling: the tab bar, ribbon and panels. The resizable panel, drag handle and
 // collapse/expand transitions are shared and live in `base_sidebar.scss`.
 .primary-sidebar-wrapper {
@@ -68,6 +71,15 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					padding-left: var(--padding-sm); // Gap now sits on the ribbon's inner (left) edge
 					padding-right: 0;
 
+					// Tooltip now opens left (toward the content), so move the clip-box room there
+					.ribbon-top,
+					.ribbon-bottom {
+						padding-right: 0;
+						margin-right: 0;
+						padding-left: $ribbon-tooltip-room;
+						margin-left: -$ribbon-tooltip-room;
+					}
+
 					// Open toward the content instead of off the screen edge
 					.dropdown-content {
 						right: calc(100% + 0.5rem);
@@ -87,6 +99,14 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 			min-height: 0;
 			padding: var(--padding-sm);
 			gap: var(--gap-md);
+
+			// Shared tooltip styling for the tab bar and ribbon
+			.tab-tooltip-content {
+				padding: var(--padding-sm) var(--padding-md);
+				font-size: 0.75rem;
+				animation-delay: var(--delay);
+				animation-fill-mode: backwards;
+			}
 
 			.header,
 			.content {
@@ -127,11 +147,6 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					.tab-slot {
 						display: flex;
 						flex: 1;
-					}
-
-					.tab-tooltip-content {
-						animation-delay: var(--delay);
-						animation-fill-mode: backwards;
 					}
 
 					.tab {
@@ -190,14 +205,29 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					padding: 0;
 					padding-right: var(--padding-sm);
 
-					// Two independent groups
+					// Two independent groups, both scroll so any number of buttons fits
 					.ribbon-top,
 					.ribbon-bottom {
 						display: flex;
 						flex-direction: column;
 						gap: var(--gap-sm);
 						min-height: 0;
+						overflow-y: auto;
 						scrollbar-width: none;
+
+						// `overflow-y` forces `overflow-x` to clip, which would cut off tooltips
+						// tooltips. Pad the clip-box toward to give them room, then cancel that
+						// width with a negative margin
+						padding-right: $ribbon-tooltip-room;
+						margin-right: -$ribbon-tooltip-room;
+
+						// That padding region overlaps the panel, so let clicks pass through it; the
+						// buttons and tooltip wrappers re-enable pointer events.
+						pointer-events: none;
+
+						> * {
+							pointer-events: auto;
+						}
 
 						&::-webkit-scrollbar {
 							display: none;
@@ -207,7 +237,6 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 					// Grows depening on how much space it needs
 					.ribbon-top {
 						flex: 1;
-						overflow-y: auto;
 					}
 
 					// Divider between the two groups
