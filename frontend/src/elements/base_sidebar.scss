@@ -40,6 +40,10 @@
 
 		// When collapsed show a top border and add radius
 		&[data-collapsible="icon"] {
+			.base-sidebar {
+				width: calc(var(--dx-sidebar-width-icon) - 0.25rem);
+			}
+
 			.base-sidebar .sidebar-body::before {
 				border-top: var(--border);
 			}
