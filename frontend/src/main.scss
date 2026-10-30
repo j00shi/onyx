@@ -9,10 +9,19 @@
 	box-sizing: border-box;
 }
 
+// Pin the app to the viewport. Without this the macOS WebView lets the whole window rubber-band and
+// drag around; the frame does its own internal scrolling (see `#content` in frame.scss).
+html,
+body {
+	height: 100%;
+	overflow: hidden;
+	overscroll-behavior: none;
+}
+
 body {
 	@include color(var(--primary-color-1), var(--secondary-color-1));
-
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	user-select: none;
 
 	::-webkit-scrollbar {
 		display: none;

@@ -50,7 +50,7 @@ pub fn Frame() -> Element {
 				SidebarTrigger { title: "Toggle primary" }
 				SecondarySidebar {
 					SidebarTrigger { title: "Toggle secondary" }
-					Outlet::<Route> {}
+					div { id: "content", Outlet::<Route> {} }
 				}
 			}
 		}

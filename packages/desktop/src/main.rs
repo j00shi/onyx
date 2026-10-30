@@ -14,10 +14,13 @@ fn main() {
 /// draws the controls. Linux keeps its native title bar for now.
 #[cfg(feature = "desktop")]
 fn launch_desktop() {
-	use dioxus::desktop::{Config, WindowBuilder};
+	use dioxus::desktop::{Config, LogicalSize, WindowBuilder};
 
 	// Launch transparent on every platform an stay that way. Opaque background simply paints over
-	let builder = WindowBuilder::new().with_title("Onyx").with_transparent(true);
+	let builder = WindowBuilder::new()
+		.with_title("Onyx")
+		.with_transparent(true)
+		.with_min_inner_size(LogicalSize::new(400.0, 30.0));
 
 	#[cfg(target_os = "macos")]
 	let builder = {

@@ -10,6 +10,16 @@
 	height: var(--titlebar-height);
 	user-select: none;
 
+	// macOS keeps the native traffic lights with a full-size content view, so the bar overlays the
+	// content (the lights sit over the sidebar's top corner) rather than taking a row of its own
+	&[data-os="macos"] {
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		z-index: 50;
+	}
+
 	// Fills the space left of the controls and stays draggable.
 	.drag-spacer {
 		flex: 1;

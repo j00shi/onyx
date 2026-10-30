@@ -1,6 +1,10 @@
 @use "../mixins" as *;
 
 #frame {
+	display: flex;
+	flex-direction: column;
+	height: 100svh;
+	overflow: hidden;
 	background: var(--frame-background) center / cover no-repeat fixed;
 }
 
@@ -15,20 +19,38 @@ html[data-window-effect="true"] #frame {
 	flex-direction: row;
 }
 
-// Windows draws its own caption buttons in a full-width title bar (there are no OS buttons for
-// a borderless window). Push the sidebar down by the bar's height instead of letting it sit on top
+// Both sidebar providers hardcode `height: 100svh`; nested (the secondary lives inside the primary's
+// inset) that double-counts and, together with the title bar, overflows the viewport. Let each
+// wrapper fill the space its flex parent gives it and have the provider fill the wrapper instead.
+.base-sidebar-wrapper {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+
+	> [data-slot="sidebar-wrapper"] {
+		flex: 1;
+		height: auto;
+		min-height: 0;
+	}
+}
+
+// The routed page. Fills the inset and scrolls on overflow; unlike the surrounding chrome its text
+// is selectable (see `user-select` in main.scss).
+#content {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	user-select: text;
+}
+
+// On Windows the custom title bar is a real full-width row above the sidebars (its caption buttons
+// live there), so it eats into the viewport height. The fixed sidebar containers are pinned to the
+// top of the viewport, so drop them below the bar and trim their height so they end at the bottom
+// edge instead of overflowing past it. macOS floats its bar as an overlay (see titlebar.scss), so
+// it needs none of this.
 #frame:has(> #titlebar[data-os="windows"]) {
 	$titlebar-height: 2.5rem; // Keep in sync with --titlebar-height in titlebar.scss TODO: Do better
 
-	// The wrapper fills the viewport. Trim the bar's height so it ends at the bottom edge instead
-	// of overflowing below it.
-	.primary-sidebar-wrapper > [data-slot="sidebar-wrapper"] {
-		height: calc(100svh - #{$titlebar-height});
-		min-height: calc(100svh - #{$titlebar-height});
-	}
-
-	// The fixed sidebar container is pinned to the top of the viewport. Drop it below the bar
-	// and trim its height to match so it lines up with the wrapper.
 	.primary-sidebar-wrapper [data-slot="sidebar-container"] {
 		top: $titlebar-height;
 		height: calc(100svh - #{$titlebar-height});
