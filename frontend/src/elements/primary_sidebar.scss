@@ -55,21 +55,12 @@ $tab-max-count: 10;
 					backdrop-filter: blur(var(--blur));
 				}
 
-				// When collapsed, the header and content keep their expanded width but it's
-				// click-through so clicks reach the content below
-				.header,
 				.content {
 					pointer-events: none;
-				}
 
-				// Keeps its expanded width, so fading it out leaves it spilling over the inset
-				// Collapse panel with the sidebar so it clips away the tab-content
-				.content .panel {
-					flex-grow: 0;
-					opacity: 0;
-
-					.tab-content {
-						width: max-content;
+					.panel {
+						flex-grow: 0;
+						opacity: 0;
 					}
 				}
 			}
@@ -311,6 +302,7 @@ $tab-max-count: 10;
 						flex-grow var(--duration-medium) ease-out;
 
 					.tab-content {
+						width: max-content;
 						background-color: transparent;
 						border: none;
 						flex: 1;
