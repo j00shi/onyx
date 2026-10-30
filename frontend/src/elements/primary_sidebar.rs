@@ -47,6 +47,16 @@ fn SidebarTabs() -> Element {
 		if MOBILE_REACH_LAYOUT() && (ctx.is_mobile)() { ContentSide::Top } else { ContentSide::Bottom };
 	let ribbon_tooltip_side = if SIDEBAR_SWAPPED() { ContentSide::Left } else { ContentSide::Right };
 
+	// The ribbon dropdowns float in a fixed, non-clipped layer anchored to their trigger (see
+	// `.dropdown-content` in the SCSS). Their open state is controlled here so a ribbon scroll can
+	// close whichever is open. TODO: This is a temporary placeholder, will implement better later
+	let mut calendar_open = use_signal(|| false);
+	let mut vault_open = use_signal(|| false);
+	let mut close_dropdowns = move || {
+		calendar_open.set(false);
+		vault_open.set(false);
+	};
+
 	rsx! {
 		Tabs { class: "sidebar-body tabs", default_value: "home".to_string(),
 			SidebarHeader { class: "header",
@@ -144,7 +154,9 @@ fn SidebarTabs() -> Element {
 			}
 			SidebarContent { class: "content",
 				SidebarGroup { class: "ribbon",
-					div { class: "ribbon-top",
+					div {
+						class: "ribbon-top",
+						onscroll: move |_| close_dropdowns(),
 						Tooltip {
 							TooltipTrigger {
 								Button {
@@ -160,9 +172,13 @@ fn SidebarTabs() -> Element {
 							}
 						}
 						DropdownMenu {
+							open: Some(calendar_open()),
+							on_open_change: move |v| calendar_open.set(v),
 							Tooltip {
 								TooltipTrigger {
-									DropdownMenuTrigger { class: "dropdown-trigger",
+									DropdownMenuTrigger {
+										class: "dropdown-trigger",
+										style: "anchor-name: --dd-calendar",
 										Calendar { size: "1.25rem" }
 									}
 								}
@@ -172,7 +188,9 @@ fn SidebarTabs() -> Element {
 									"Calendar"
 								}
 							}
-							DropdownMenuContent { class: "dropdown-content",
+							DropdownMenuContent {
+								class: "dropdown-content",
+								style: "position-anchor: --dd-calendar",
 								DropdownMenuItem::<String> { value: "day".to_string(), index: 0usize, "Day" }
 								DropdownMenuItem::<String> { value: "week".to_string(), index: 1usize, "Week" }
 								DropdownMenuItem::<String> { value: "month".to_string(), index: 2usize, "Month" }
@@ -247,7 +265,9 @@ fn SidebarTabs() -> Element {
 						}
 					}
 					Separator { class: "ribbon-divider", decorative: true }
-					div { class: "ribbon-bottom",
+					div {
+						class: "ribbon-bottom",
+						onscroll: move |_| close_dropdowns(),
 						Tooltip {
 							TooltipTrigger {
 								SidebarTrigger { class: "sidebar-trigger" }
@@ -259,9 +279,13 @@ fn SidebarTabs() -> Element {
 							}
 						}
 						DropdownMenu {
+							open: Some(vault_open()),
+							on_open_change: move |v| vault_open.set(v),
 							Tooltip {
 								TooltipTrigger {
-									DropdownMenuTrigger { class: "dropdown-trigger",
+									DropdownMenuTrigger {
+										class: "dropdown-trigger",
+										style: "anchor-name: --dd-vault",
 										Vault { size: "1.25rem" }
 									}
 								}
@@ -271,7 +295,9 @@ fn SidebarTabs() -> Element {
 									"Vault"
 								}
 							}
-							DropdownMenuContent { class: "dropdown-content",
+							DropdownMenuContent {
+								class: "dropdown-content",
+								style: "position-anchor: --dd-vault",
 								DropdownMenuItem::<String> {
 									value: "personal".to_string(),
 									index: 0usize,

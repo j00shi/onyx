@@ -80,9 +80,9 @@ $ribbon-tooltip-room: 17rem;
 						margin-left: -$ribbon-tooltip-room;
 					}
 
-					// Open toward the content instead of off the screen edge
+					// Open toward the content (left) instead of off the screen edge
 					.dropdown-content {
-						right: calc(100% + 0.5rem);
+						right: anchor(left);
 						left: auto;
 					}
 				}
@@ -275,12 +275,14 @@ $ribbon-tooltip-room: 17rem;
 						}
 					}
 
-					// Menu on the right, not the bottom
+					// Lift the menu into a floating, non-clipped layer tethered to its trigger
 					.dropdown-content {
-						top: auto;
-						bottom: 0;
-						left: calc(100% + 0.5rem);
+						position: fixed;
+						inset: anchor(top) auto auto anchor(right);
 						min-width: 11.5rem;
+
+						// Flip across the trigger if the default placement would spill off a viewport edge.
+						position-try-fallbacks: flip-block, flip-inline;
 					}
 				}
 
