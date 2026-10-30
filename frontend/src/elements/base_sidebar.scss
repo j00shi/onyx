@@ -138,10 +138,38 @@
 		}
 	}
 
+	// The sheet overlay fades via opacity, which makes it a backdrop root and caps what the
+	// sidebar's backdrop-filter can sample. Fade via its background alpha instead, so it never
+	// becomes a backdrop root and the blur reaches the page behind it the whole time.
+	// TODO: Not happy with this. Better solution possible??
+	[data-slot="sheet-root"] {
+		will-change: auto;
+		opacity: 1;
+
+		&[data-state="open"] {
+			animation: sidebar-sheet-scrim-in var(--duration-medium) ease-out forwards;
+		}
+
+		&[data-state="closed"] {
+			animation: sidebar-sheet-scrim-out var(--duration-fast) ease-in forwards;
+		}
+	}
+
 	// Mobile only styling
-	[data-mobile="true"] .resize-handle {
+	[data-mobile="true"] {
+		// Translucent, blurred panel to match the desktop sidebar instead of a solid fill
+		background-color: color-mix(in oklab, var(--dx-sidebar-background), transparent var(--transparency-strong));
+		backdrop-filter: blur(var(--blur));
+
 		// Resize handle not needed on mobile
-		display: none;
+		.resize-handle {
+			display: none;
+		}
+
+		// Hide the sheet's close button
+		> button {
+			display: none;
+		}
 	}
 
 	[data-slot="sidebar-inset"] {
@@ -156,5 +184,27 @@
 		cursor: ew-resize;
 		touch-action: none;
 		user-select: none;
+	}
+}
+
+// Scrim fade for the mobile sheet overlay — animates background alpha instead of opacity (see
+// `[data-slot="sheet-root"]` above) so the overlay never becomes a backdrop root.
+@keyframes sidebar-sheet-scrim-in {
+	from {
+		background-color: rgb(0 0 0 / 0%);
+	}
+
+	to {
+		background-color: rgb(0 0 0 / 50%);
+	}
+}
+
+@keyframes sidebar-sheet-scrim-out {
+	from {
+		background-color: rgb(0 0 0 / 50%);
+	}
+
+	to {
+		background-color: rgb(0 0 0 / 0%);
 	}
 }
