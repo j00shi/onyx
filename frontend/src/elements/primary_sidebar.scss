@@ -104,8 +104,11 @@ $ribbon-tooltip-room: 17rem;
 			.tab-tooltip-content {
 				padding: var(--padding-sm) var(--padding-md);
 				font-size: 0.75rem;
+				border-radius: var(--border-radius-sm);
 				animation-delay: var(--delay);
 				animation-fill-mode: backwards;
+				max-width: 11.5rem; // Same as dropdown. TODO: Add var or smt
+				width: max-content;
 			}
 
 			.header,

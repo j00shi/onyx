@@ -156,21 +156,48 @@ fn SidebarTabs() -> Element {
 							TooltipContent {
 								class: "tab-tooltip-content",
 								side: ribbon_tooltip_side,
-								"Tasks"
+								"I wonder how long I can type before this gets cut off"
 							}
 						}
-						Tooltip {
-							TooltipTrigger {
-								Button {
-									variant: ButtonVariant::Ghost,
-									size: ButtonSize::Icon,
-									Calendar { size: "1.25rem" }
+						DropdownMenu {
+							Tooltip {
+								TooltipTrigger {
+									DropdownMenuTrigger { class: "dropdown-trigger",
+										Calendar { size: "1.25rem" }
+									}
+								}
+								TooltipContent {
+									class: "tab-tooltip-content",
+									side: ribbon_tooltip_side,
+									"Calendar"
 								}
 							}
-							TooltipContent {
-								class: "tab-tooltip-content",
-								side: ribbon_tooltip_side,
-								"Calendar"
+							DropdownMenuContent { class: "dropdown-content",
+								DropdownMenuItem::<String> { value: "day".to_string(), index: 0usize, "Day" }
+								DropdownMenuItem::<String> { value: "week".to_string(), index: 1usize, "Week" }
+								DropdownMenuItem::<String> { value: "month".to_string(), index: 2usize, "Month" }
+								DropdownMenuItem::<String> { value: "year".to_string(), index: 3usize, "Year" }
+								DropdownMenuItem::<String> {
+									value: "decade".to_string(),
+									index: 4usize,
+									"Decade"
+								}
+								DropdownMenuItem::<String> {
+									value: "century".to_string(),
+									index: 5usize,
+									"Century"
+								}
+								DropdownMenuItem::<String> {
+									value: "millennium".to_string(),
+									index: 6usize,
+									"Millennium"
+								}
+								Separator { decorative: true }
+								DropdownMenuItem::<String> {
+									value: "new-event".to_string(),
+									index: 7usize,
+									"New event"
+								}
 							}
 						}
 						Tooltip {
@@ -256,11 +283,40 @@ fn SidebarTabs() -> Element {
 									index: 2usize,
 									"University"
 								}
+								DropdownMenuItem::<String> {
+									value: "monoversity".to_string(),
+									index: 3usize,
+									"Monoversity"
+								}
+								DropdownMenuItem::<String> { value: "idk".to_string(), index: 4usize, "IDK" }
+								DropdownMenuItem::<String> { value: "cool".to_string(), index: 5usize, "Cool vault" }
+								DropdownMenuItem::<String> {
+									value: "habmurger".to_string(),
+									index: 6usize,
+									"Habmurger"
+								}
 								Separator { decorative: true }
 								DropdownMenuItem::<String> {
 									value: "manage".to_string(),
-									index: 3usize,
+									index: 7usize,
 									"Manage Vaults"
+								}
+							}
+						}
+						// Example filler buttons
+						for i in 0..5 {
+							Tooltip {
+								TooltipTrigger {
+									Button {
+										variant: ButtonVariant::Ghost,
+										size: ButtonSize::Icon,
+										Square { size: "1.25rem" }
+									}
+								}
+								TooltipContent {
+									class: "tab-tooltip-content",
+									side: ribbon_tooltip_side,
+									"Example {i + 1}"
 								}
 							}
 						}
