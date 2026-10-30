@@ -8,6 +8,15 @@ $header-height: $controls-height + $tablist-height; // Needed for the transition
 // Horizontal room added to the ribbon's scroll clip-box so a sideways tooltip isn't clipped
 $ribbon-tooltip-room: 17rem;
 
+// Sliding tab pill: distance the pill is inset from the tablist edges, the flex gap between tabs
+// (matches `.dx-tabs-list`'s `gap` in `components/tabs/style.css`), and how many tab counts the
+// pill rules are generated for. The `:has()` selectors below match live against whatever is in the
+// DOM, so adding/removing tabs at runtime re-sizes and re-positions the pill automatically — only
+// counts beyond this cap go unstyled, so keep it comfortably above the real maximum.
+$tab-pill-inset: 0.25rem;
+$tab-gap: 0.25rem;
+$tab-max-count: 10;
+
 // Primary-specific styling: the tab bar, ribbon and panels. The resizable panel, drag handle and
 // collapse/expand transitions are shared and live in `base_sidebar.scss`.
 .primary-sidebar-wrapper {
@@ -154,13 +163,14 @@ $ribbon-tooltip-room: 17rem;
 						}
 					}
 
-					// Slides to the active tab
+					// Slides to the active tab. Width tracks the live tab count and the offset tracks the
+					// active tab's position — both via `:has()`, so this adapts to tabs added/removed at
+					// runtime (see `$tab-max-count` above).
 					&::before {
 						content: "";
 						position: absolute;
 						z-index: 0;
-						inset: 0.25rem;
-						width: calc((100% - 1.25rem) / 4);
+						inset: $tab-pill-inset;
 						border-radius: calc(var(--border-radius-md) - 0.5rem);
 
 						// background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
@@ -174,16 +184,19 @@ $ribbon-tooltip-room: 17rem;
 						transition: transform var(--duration-medium) ease;
 					}
 
-					&:has(.tab-tooltip:nth-child(2) .tab[data-state="active"])::before {
-						transform: translateX(calc(100% + 0.25rem));
+					// One tab width = (tablist − both insets − the gaps between tabs) / tab count.
+					// `:nth-child(n):last-child` matches only when there are exactly n tabs.
+					@for $n from 1 through $tab-max-count {
+						&:has(.tab-tooltip:nth-child(#{$n}):last-child)::before {
+							width: calc((100% - #{2 * $tab-pill-inset} - #{($n - 1) * $tab-gap}) / #{$n});
+						}
 					}
 
-					&:has(.tab-tooltip:nth-child(3) .tab[data-state="active"])::before {
-						transform: translateX(calc(200% + 0.5rem));
-					}
-
-					&:has(.tab-tooltip:nth-child(4) .tab[data-state="active"])::before {
-						transform: translateX(calc(300% + 0.75rem));
+					// Each step over is one tab width (100% of the pill) plus one inter-tab gap.
+					@for $p from 1 through $tab-max-count {
+						&:has(.tab-tooltip:nth-child(#{$p}) .tab[data-state="active"])::before {
+							transform: translateX(calc(#{$p - 1} * (100% + #{$tab-gap})));
+						}
 					}
 				}
 			}
