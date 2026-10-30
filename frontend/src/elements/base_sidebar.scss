@@ -14,24 +14,28 @@
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
 	[data-variant="sidebar"] {
 		// Hides the default sidebar border
-		.base-sidebar {
-			border: none !important;
+		.base-sidebar .sidebar-body::before {
+			border-top: none;
+			border-bottom: none;
+			border-radius: 0;
+		}
 
+		&[data-side="left"] .base-sidebar {
+			border-right: none;
+
+			// Hide left border when left...
 			.sidebar-body::before {
-				border-top: none;
-				border-bottom: none;
-				border-radius: 0;
+				border-left: none;
 			}
 		}
 
-		// Hide left border when left...
-		&[data-side="left"] .base-sidebar .sidebar-body::before {
+		&[data-side="right"] .base-sidebar {
 			border-left: none;
-		}
 
-		// and right when right
-		&[data-side="right"] .base-sidebar .sidebar-body::before {
-			border-right: none;
+			// and right when right
+			.sidebar-body::before {
+				border-right: none;
+			}
 		}
 
 		// When collapsed show a top border and add radius

@@ -129,4 +129,5 @@ dx serve --package web
 - Follow the surrounding Dioxus `rsx!` style when adding UI.
 - Before finishing: run `./scripts/fmt.sh --check`, clippy with `-D warnings`, and the style
   checks — these are exactly what CI gates on.
-- Don't rewrite my comments unless you actually changed something that would make the comment outdated!
+- IMPORTANT: DON'T YOU DARE REWRITE MY COMMENTS!!! Only change them when you changed something and the comment no longer applies/is out of date
+- When writing comments, keep them short and to the point. I don't need an in-depth explanation for simple code!
