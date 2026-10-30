@@ -99,7 +99,7 @@ fn SidebarTabs() -> Element {
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: tab_tooltip_side,
 								"Home"
 							}
@@ -114,7 +114,7 @@ fn SidebarTabs() -> Element {
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: tab_tooltip_side,
 								"Files"
 							}
@@ -129,7 +129,7 @@ fn SidebarTabs() -> Element {
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: tab_tooltip_side,
 								"Search"
 							}
@@ -144,7 +144,7 @@ fn SidebarTabs() -> Element {
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: tab_tooltip_side,
 								"Bookmarks"
 							}
@@ -162,11 +162,12 @@ fn SidebarTabs() -> Element {
 								Button {
 									variant: ButtonVariant::Ghost,
 									size: ButtonSize::Icon,
+									class: "ribbon-button",
 									ListTodo { size: "1.25rem" }
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: ribbon_tooltip_side,
 								"I wonder how long I can type before this gets cut off"
 							}
@@ -177,13 +178,13 @@ fn SidebarTabs() -> Element {
 							Tooltip {
 								TooltipTrigger {
 									DropdownMenuTrigger {
-										class: "dropdown-trigger",
+										class: "dropdown-trigger ribbon-button",
 										style: "anchor-name: --dd-calendar",
 										Calendar { size: "1.25rem" }
 									}
 								}
 								TooltipContent {
-									class: "tab-tooltip-content",
+									class: "tooltip-content",
 									side: ribbon_tooltip_side,
 									"Calendar"
 								}
@@ -191,29 +192,53 @@ fn SidebarTabs() -> Element {
 							DropdownMenuContent {
 								class: "dropdown-content",
 								style: "position-anchor: --dd-calendar",
-								DropdownMenuItem::<String> { value: "day".to_string(), index: 0usize, "Day" }
-								DropdownMenuItem::<String> { value: "week".to_string(), index: 1usize, "Week" }
-								DropdownMenuItem::<String> { value: "month".to_string(), index: 2usize, "Month" }
-								DropdownMenuItem::<String> { value: "year".to_string(), index: 3usize, "Year" }
+								DropdownMenuItem::<String> {
+									value: "day".to_string(),
+									index: 0usize,
+									class: "dropdown-item",
+									"Day"
+								}
+								DropdownMenuItem::<String> {
+									value: "week".to_string(),
+									index: 1usize,
+									class: "dropdown-item",
+									"Week"
+								}
+								DropdownMenuItem::<String> {
+									value: "month".to_string(),
+									index: 2usize,
+									class: "dropdown-item",
+									"Month"
+								}
+								DropdownMenuItem::<String> {
+									value: "year".to_string(),
+									index: 3usize,
+									class: "dropdown-item",
+									"Year"
+								}
 								DropdownMenuItem::<String> {
 									value: "decade".to_string(),
 									index: 4usize,
+									class: "dropdown-item",
 									"Decade"
 								}
 								DropdownMenuItem::<String> {
 									value: "century".to_string(),
 									index: 5usize,
+									class: "dropdown-item",
 									"Century"
 								}
 								DropdownMenuItem::<String> {
 									value: "millennium".to_string(),
 									index: 6usize,
+									class: "dropdown-item",
 									"Millennium"
 								}
 								Separator { decorative: true }
 								DropdownMenuItem::<String> {
 									value: "new-event".to_string(),
 									index: 7usize,
+									class: "dropdown-item",
 									"New event"
 								}
 							}
@@ -223,11 +248,12 @@ fn SidebarTabs() -> Element {
 								Button {
 									variant: ButtonVariant::Ghost,
 									size: ButtonSize::Icon,
+									class: "ribbon-button",
 									Mail { size: "1.25rem" }
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: ribbon_tooltip_side,
 								"Mail"
 							}
@@ -237,11 +263,12 @@ fn SidebarTabs() -> Element {
 								Button {
 									variant: ButtonVariant::Ghost,
 									size: ButtonSize::Icon,
+									class: "ribbon-button",
 									Bell { size: "1.25rem" }
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: ribbon_tooltip_side,
 								"Notifications"
 							}
@@ -253,11 +280,12 @@ fn SidebarTabs() -> Element {
 									Button {
 										variant: ButtonVariant::Ghost,
 										size: ButtonSize::Icon,
+										class: "ribbon-button",
 										Square { size: "1.25rem" }
 									}
 								}
 								TooltipContent {
-									class: "tab-tooltip-content",
+									class: "tooltip-content",
 									side: ribbon_tooltip_side,
 									"Example {i + 1}"
 								}
@@ -270,10 +298,10 @@ fn SidebarTabs() -> Element {
 						onscroll: move |_| close_dropdowns(),
 						Tooltip {
 							TooltipTrigger {
-								SidebarTrigger { class: "sidebar-trigger" }
+								SidebarTrigger { class: "ribbon-button" }
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: ribbon_tooltip_side,
 								"Toggle sidebar"
 							}
@@ -284,13 +312,13 @@ fn SidebarTabs() -> Element {
 							Tooltip {
 								TooltipTrigger {
 									DropdownMenuTrigger {
-										class: "dropdown-trigger",
+										class: "dropdown-trigger ribbon-button",
 										style: "anchor-name: --dd-vault",
 										Vault { size: "1.25rem" }
 									}
 								}
 								TooltipContent {
-									class: "tab-tooltip-content",
+									class: "tooltip-content",
 									side: ribbon_tooltip_side,
 									"Vault"
 								}
@@ -301,30 +329,50 @@ fn SidebarTabs() -> Element {
 								DropdownMenuItem::<String> {
 									value: "personal".to_string(),
 									index: 0usize,
+									class: "dropdown-item",
 									"Personal"
 								}
-								DropdownMenuItem::<String> { value: "work".to_string(), index: 1usize, "Work" }
+								DropdownMenuItem::<String> {
+									value: "work".to_string(),
+									index: 1usize,
+									class: "dropdown-item",
+									"Work"
+								}
 								DropdownMenuItem::<String> {
 									value: "university".to_string(),
 									index: 2usize,
+									class: "dropdown-item",
 									"University"
 								}
 								DropdownMenuItem::<String> {
 									value: "monoversity".to_string(),
 									index: 3usize,
+									class: "dropdown-item",
 									"Monoversity"
 								}
-								DropdownMenuItem::<String> { value: "idk".to_string(), index: 4usize, "IDK" }
-								DropdownMenuItem::<String> { value: "cool".to_string(), index: 5usize, "Cool vault" }
+								DropdownMenuItem::<String> {
+									value: "idk".to_string(),
+									index: 4usize,
+									class: "dropdown-item",
+									"IDK"
+								}
+								DropdownMenuItem::<String> {
+									value: "cool".to_string(),
+									index: 5usize,
+									class: "dropdown-item",
+									"Cool vault"
+								}
 								DropdownMenuItem::<String> {
 									value: "habmurger".to_string(),
 									index: 6usize,
+									class: "dropdown-item",
 									"Habmurger"
 								}
 								Separator { decorative: true }
 								DropdownMenuItem::<String> {
 									value: "manage".to_string(),
 									index: 7usize,
+									class: "dropdown-item",
 									"Manage Vaults"
 								}
 							}
@@ -336,11 +384,12 @@ fn SidebarTabs() -> Element {
 									Button {
 										variant: ButtonVariant::Ghost,
 										size: ButtonSize::Icon,
+										class: "ribbon-button",
 										Square { size: "1.25rem" }
 									}
 								}
 								TooltipContent {
-									class: "tab-tooltip-content",
+									class: "tooltip-content",
 									side: ribbon_tooltip_side,
 									"Example {i + 1}"
 								}
@@ -351,11 +400,12 @@ fn SidebarTabs() -> Element {
 								Button {
 									variant: ButtonVariant::Ghost,
 									size: ButtonSize::Icon,
+									class: "ribbon-button",
 									User { size: "1.25rem" }
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: ribbon_tooltip_side,
 								"Account"
 							}
@@ -365,6 +415,7 @@ fn SidebarTabs() -> Element {
 								Button {
 									variant: ButtonVariant::Ghost,
 									size: ButtonSize::Icon,
+									class: "ribbon-button",
 									onclick: move |_| {
 										navigator().push(Route::Settings {});
 									},
@@ -372,7 +423,7 @@ fn SidebarTabs() -> Element {
 								}
 							}
 							TooltipContent {
-								class: "tab-tooltip-content",
+								class: "tooltip-content",
 								side: ribbon_tooltip_side,
 								"Settings"
 							}

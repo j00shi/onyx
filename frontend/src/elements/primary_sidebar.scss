@@ -82,7 +82,7 @@ $ribbon-tooltip-room: 17rem;
 
 					// Open toward the content (left) instead of off the screen edge
 					.dropdown-content {
-						right: anchor(left);
+						right: calc(anchor(left) + var(--gap-md));
 						left: auto;
 					}
 				}
@@ -100,17 +100,6 @@ $ribbon-tooltip-room: 17rem;
 			padding: var(--padding-sm);
 			gap: var(--gap-md);
 
-			// Shared tooltip styling for the tab bar and ribbon
-			.tab-tooltip-content {
-				padding: var(--padding-sm) var(--padding-md);
-				font-size: 0.75rem;
-				border-radius: var(--border-radius-sm);
-				animation-delay: var(--delay);
-				animation-fill-mode: backwards;
-				max-width: 11.5rem; // Same as dropdown. TODO: Add var or smt
-				width: max-content;
-			}
-
 			.header,
 			.content {
 				position: relative;
@@ -122,7 +111,7 @@ $ribbon-tooltip-room: 17rem;
 				height: $tablist-height;
 				gap: 0;
 				background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
-				border-radius: var(--border-radius-sm);
+				border-radius: calc(var(--border-radius-md) - 0.25rem);
 				transition: backdrop-filter var(--duration-medium) linear;
 
 				// macOS stacks a window-controls row above the tab bar (rendered on macOS only)
@@ -172,7 +161,7 @@ $ribbon-tooltip-room: 17rem;
 						z-index: 0;
 						inset: 0.25rem;
 						width: calc((100% - 1.25rem) / 4);
-						border-radius: var(--border-radius-sm);
+						border-radius: calc(var(--border-radius-md) - 0.5rem);
 
 						// background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
 						background-color: color-mix(
@@ -237,6 +226,24 @@ $ribbon-tooltip-room: 17rem;
 						}
 					}
 
+					// Basically a normal sized ghost button. Needed because some ribbons buttons are not actually button
+					.ribbon-button {
+						width: 2.25rem;
+						height: 2.25rem;
+						padding: 0;
+						background-color: transparent;
+						border-radius: var(--border-radius-md);
+						box-shadow: none;
+						cursor: default;
+						color: var(--secondary-color-4);
+
+						&:hover {
+							background-color: var(--light, var(--primary-color-5))
+								var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%));
+							color: var(--secondary-color-1);
+						}
+					}
+
 					// Grows depening on how much space it needs
 					.ribbon-top {
 						flex: 1;
@@ -254,35 +261,17 @@ $ribbon-tooltip-room: 17rem;
 						flex-direction: column-reverse;
 					}
 
-					// Sidebar trigger is thinner than a button by default for some reason
-					.sidebar-trigger {
-						width: 2.25rem;
-					}
-
-					// Trigger should look like a button
-					// TODO Maybe there is a better way
-					.dropdown-trigger {
-						width: 2.25rem;
-						height: 2.25rem;
-						padding: 0;
-						background-color: transparent;
-						box-shadow: none;
-						cursor: default;
-
-						&:hover {
-							background-color: var(--light, var(--primary-color-5))
-								var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%));
-						}
-					}
-
 					// Lift the menu into a floating, non-clipped layer tethered to its trigger
 					.dropdown-content {
 						position: fixed;
-						inset: anchor(top) auto auto anchor(right);
+						inset: anchor(top) auto auto calc(anchor(right) + var(--gap-md));
 						min-width: 11.5rem;
-
-						// Flip across the trigger if the default placement would spill off a viewport edge.
-						position-try-fallbacks: flip-block, flip-inline;
+						border-radius: var(--border-radius-md);
+						position-try-fallbacks:
+							flip-block, flip-inline; // Flip across the trigger if the default placement would spill off a viewport edge.
+						.dropdown-item {
+							border-radius: calc(var(--border-radius-md) - 0.25rem);
+						}
 					}
 				}
 
@@ -299,6 +288,17 @@ $ribbon-tooltip-room: 17rem;
 						flex: 1;
 					}
 				}
+			}
+
+			// Shared tooltip styling for the tab bar and ribbon
+			.tooltip-content {
+				padding: var(--padding-sm) var(--padding-md);
+				font-size: 0.75rem;
+				border-radius: var(--border-radius-sm);
+				animation-delay: var(--delay);
+				animation-fill-mode: backwards;
+				max-width: 11.5rem; // Same as dropdown. TODO: Add var or smt
+				width: max-content;
 			}
 		}
 	}
