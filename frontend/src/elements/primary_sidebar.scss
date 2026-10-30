@@ -62,8 +62,15 @@ $tab-max-count: 10;
 					pointer-events: none;
 				}
 
+				// Keeps its expanded width, so fading it out leaves it spilling over the inset
+				// Collapse panel with the sidebar so it clips away the tab-content
 				.content .panel {
+					flex-grow: 0;
 					opacity: 0;
+
+					.tab-content {
+						width: max-content;
+					}
 				}
 			}
 
@@ -299,7 +306,9 @@ $tab-max-count: 10;
 					flex: 1;
 					overflow: hidden;
 					opacity: 1;
-					transition: opacity var(--duration-medium) linear;
+					transition:
+						opacity var(--duration-medium) ease-out,
+						flex-grow var(--duration-medium) ease-out;
 
 					.tab-content {
 						background-color: transparent;
