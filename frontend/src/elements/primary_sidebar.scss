@@ -55,9 +55,15 @@ $tab-max-count: 10;
 					backdrop-filter: blur(var(--blur));
 				}
 
+				// When collapsed, the header and content keep their expanded width but it's
+				// click-through so clicks reach the content below
+				.header,
+				.content {
+					pointer-events: none;
+				}
+
 				.content .panel {
 					opacity: 0;
-					pointer-events: none;
 				}
 			}
 
