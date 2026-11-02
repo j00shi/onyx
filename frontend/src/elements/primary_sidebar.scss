@@ -55,12 +55,17 @@ $tab-max-count: 10;
 					backdrop-filter: blur(var(--blur));
 				}
 
+				// When collapsed, the content keeps its expanded width but is click-through
 				.content {
 					pointer-events: none;
 
 					.panel {
 						flex-grow: 0;
 						opacity: 0;
+
+						.tab-content {
+							width: max-content;
+						}
 					}
 				}
 			}
@@ -302,7 +307,6 @@ $tab-max-count: 10;
 						flex-grow var(--duration-medium) ease-out;
 
 					.tab-content {
-						width: max-content;
 						background-color: transparent;
 						border: none;
 						flex: 1;
