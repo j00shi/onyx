@@ -27,6 +27,8 @@ pub fn WindowEffect() -> Element {
 
 #[cfg(all(feature = "desktop", any(target_os = "macos", target_os = "windows")))]
 mod desktop {
+	#[cfg(target_os = "windows")]
+	use dioxus::desktop::use_wry_event_handler;
 	use dioxus::desktop::{use_window, DesktopContext};
 	use dioxus::prelude::*;
 
@@ -37,10 +39,30 @@ mod desktop {
 
 		// Re-apply the backdrop whenever the toggle flips. Dark mode is read too: Windows Mica wants
 		// to know the theme, so the backdrop re-applies when the theme changes while it's on.
-		use_effect(move || {
-			let on = WINDOW_EFFECT();
-			let dark = DARK_MODE();
-			apply_effect(&window, on, dark);
+		use_effect({
+			// Clone only where the resize handler below also needs the window (Windows); elsewhere
+			// the effect is the sole owner and can take it by move.
+			#[cfg(target_os = "windows")]
+			let window = window.clone();
+			move || {
+				let on = WINDOW_EFFECT();
+				let dark = DARK_MODE();
+				apply_effect(&window, on, dark);
+			}
+		});
+
+		// Windows' DWM caches the extended-frame glass, so after a resize the newly exposed area can
+		// keep showing the window's default (white) surface until the backdrop is re-applied for the
+		// new size. Re-assert it on every resize while the effect is on. (macOS vibrancy tracks the
+		// window on its own, so this is Windows-only.)
+		#[cfg(target_os = "windows")]
+		use_wry_event_handler(move |event, _| {
+			use dioxus::desktop::tao::event::{Event, WindowEvent};
+			if let Event::WindowEvent { event: WindowEvent::Resized(_), .. } = event {
+				if WINDOW_EFFECT() {
+					apply_effect(&window, true, DARK_MODE());
+				}
+			}
 		});
 
 		rsx! {}
