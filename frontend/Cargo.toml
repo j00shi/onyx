@@ -13,6 +13,15 @@ palette = "0.7"
 time = { version = "0.3", features = ["std", "macros"] }
 window-vibrancy = { version = "0.8", optional = true }
 
+# Windows-only: `DwmExtendFrameIntoClientArea` for the Mica backdrop (see `elements/window_effect.rs`).
+# Same version `window-vibrancy` pins, so it reuses the one compiled crate.
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.61", features = [
+	"Win32_Foundation",
+	"Win32_Graphics_Dwm",
+	"Win32_UI_Controls",
+] }
+
 [dev-dependencies]
 dioxus-ssr = "0.7"
 
