@@ -100,7 +100,12 @@ mod desktop {
 			use dioxus::desktop::tao::platform::windows::WindowExtWindows;
 			use window_vibrancy::{apply_mica, clear_mica};
 			use windows_sys::Win32::{
-				Foundation::HWND, Graphics::Dwm::DwmExtendFrameIntoClientArea, UI::Controls::MARGINS,
+				Foundation::HWND,
+				Graphics::Dwm::DwmExtendFrameIntoClientArea,
+				UI::Controls::MARGINS,
+				UI::WindowsAndMessaging::{
+					SetWindowPos, SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER,
+				},
 			};
 
 			let hwnd = handle.hwnd() as HWND;
@@ -121,6 +126,23 @@ mod desktop {
 				unsafe {
 					let _ = DwmExtendFrameIntoClientArea(hwnd, &margins);
 				}
+			}
+
+			// DWM computes the backdrop lazily and leaves stale, uncovered regions — seen as the
+			// window's white default surface in empty (content-free) areas of the transparent page —
+			// until something forces a frame recompute. That's why the backdrop otherwise only
+			// "takes" after a manual resize. Nudge the frame (no move, no resize, no z-order change)
+			// so the recompute happens right away.
+			unsafe {
+				let _ = SetWindowPos(
+					hwnd,
+					std::ptr::null_mut(),
+					0,
+					0,
+					0,
+					0,
+					SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED,
+				);
 			}
 		}
 	}
