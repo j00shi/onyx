@@ -27,7 +27,7 @@ pub static SHOW_WALLPAPER: GlobalSignal<bool> = Signal::global(|| true);
 ///
 /// macOS vibrancy, Windows 11 Mica/Acrylic; plain transparency on Linux. Applied as the
 /// `data-window-effect` attribute on `<html>` by [`crate::views::Frame`] and acted on by
-/// [`crate::elements::WindowEffect`]. Only meaningful on desktop; ignored on web/mobile.
+/// [`crate::platform::WindowEffect`]. Only meaningful on desktop; ignored on web/mobile.
 pub static WINDOW_EFFECT: GlobalSignal<bool> = Signal::global(|| false);
 /// Multiplier applied to the `--border-radius-*` custom properties in `_theme.scss`.
 /// `1.0` keeps the designed radii; `0.0` squares every corner.

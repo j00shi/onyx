@@ -12,6 +12,7 @@ use crate::views::Settings;
 #[allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::restriction, clippy::cargo)]
 pub mod components;
 pub mod elements;
+pub mod platform;
 pub mod views;
 
 #[derive(Debug, Clone, Routable, PartialEq, Eq)]

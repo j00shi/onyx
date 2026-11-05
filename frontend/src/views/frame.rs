@@ -4,7 +4,7 @@ use crate::components::sidebar::SidebarTrigger;
 use crate::elements::PrimarySidebar;
 use crate::elements::SecondarySidebar;
 use crate::elements::TitleBar;
-use crate::elements::WindowEffect;
+use crate::platform::WindowEffect;
 use crate::views::ACCENT_HUE;
 use crate::views::BORDER_RADIUS_SCALE;
 use crate::views::DARK_MODE;
