@@ -4,9 +4,9 @@
 //! gets a real system backdrop (macOS vibrancy / Windows 11 Mica); when disabled it is cleared and
 //! the page paints its normal opaque background again (see `data-window-effect` in `main.scss`).
 //!
-//! On Linux, web, and mobile this compiles to nothing. Linux has no `window-vibrancy` support, so
-//! there the effect is plain window transparency (the window is always launched transparent, and
-//! the compositor draws any blur) toggled purely by the CSS background.
+//! On Linux, web, and mobile this compiles to nothing. Linux has no `window-vibrancy` support, and
+//! `WebKitGTK` transparent windows flicker badly, so the window stays opaque there and the effect is
+//! simply unavailable.
 //! TODO: Implement this better maybe?
 
 use dioxus::prelude::*;
