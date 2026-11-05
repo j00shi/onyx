@@ -43,13 +43,11 @@ pub fn Settings() -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./settings.css") }
 		div { id: "settings",
-			h1 { class: "title", "Settings" }
+			h1 { class: "title", "Settings (1)" }
 			section { class: "setting",
 				div { class: "label",
 					span { class: "name", "Dark mode" }
-					span { class: "description",
-						"Switch between the dark and light themes."
-					}
+					span { class: "description", "Switch between the dark and light themes." }
 				}
 				Switch {
 					checked: Some(DARK_MODE()),
@@ -68,17 +66,15 @@ pub fn Settings() -> Element {
 					open: Some(color_picker_open()),
 					on_open_change: move |v: bool| color_picker_open.set(v),
 					on_color_change: move |c: Hsv<encoding::Srgb, f64>| {
-						accent_color.set(c);
-						*ACCENT_HUE.write() = c.hue.into_positive_degrees();
+					    accent_color.set(c);
+					    *ACCENT_HUE.write() = c.hue.into_positive_degrees();
 					},
 				}
 			}
 			section { class: "setting",
 				div { class: "label",
 					span { class: "name", "Show wallpaper" }
-					span { class: "description",
-						"Paint the background wallpaper behind the app."
-					}
+					span { class: "description", "Paint the background wallpaper behind the app." }
 				}
 				Switch {
 					checked: Some(SHOW_WALLPAPER()),
@@ -124,11 +120,11 @@ pub fn Settings() -> Element {
 				Switch {
 					checked: Some(SIDEBAR_VARIANT() == SidebarVariant::Floating),
 					on_checked_change: move |v: bool| {
-						*SIDEBAR_VARIANT.write() = if v {
-							SidebarVariant::Floating
-						} else {
-							SidebarVariant::Sidebar
-						};
+					    *SIDEBAR_VARIANT.write() = if v {
+					        SidebarVariant::Floating
+					    } else {
+					        SidebarVariant::Sidebar
+					    };
 					},
 				}
 			}

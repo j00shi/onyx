@@ -75,12 +75,30 @@ mod desktop {
 
 		#[cfg(target_os = "windows")]
 		{
+			use dioxus::desktop::tao::platform::windows::WindowExtWindows;
 			use window_vibrancy::{apply_mica, clear_mica};
+			use windows_sys::Win32::{
+				Foundation::HWND, Graphics::Dwm::DwmExtendFrameIntoClientArea, UI::Controls::MARGINS,
+			};
 
+			let hwnd = handle.hwnd() as HWND;
 			if on {
 				let _ = apply_mica(handle, Some(dark));
+				// `apply_mica` only sets the DWM backdrop attribute. Our window is borderless and
+				// transparent, so the system backdrop has no frame to paint on and the client area
+				// composites to black. Extend the frame across the whole window (the -1 "sheet of
+				// glass" margins) so the Mica backdrop actually fills it.
+				let margins = MARGINS { cxLeftWidth: -1, cxRightWidth: -1, cyTopHeight: -1, cyBottomHeight: -1 };
+				unsafe {
+					let _ = DwmExtendFrameIntoClientArea(hwnd, &margins);
+				}
 			} else {
 				let _ = clear_mica(handle);
+				// Collapse the extended frame so the opaque page paints normally again.
+				let margins = MARGINS { cxLeftWidth: 0, cxRightWidth: 0, cyTopHeight: 0, cyBottomHeight: 0 };
+				unsafe {
+					let _ = DwmExtendFrameIntoClientArea(hwnd, &margins);
+				}
 			}
 		}
 	}
