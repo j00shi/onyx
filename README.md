@@ -38,9 +38,9 @@ npm run format:check      # verify formatting (used by CI)
 
 To test the application on other platforms, use a virtual machine such as UTM. Then, in the VM settings under "Sharing", select your `onyx/` directory as path.
 
-## Linux
+### Linux
 
-### Install Dependencies
+#### Install Dependencies
 
 Use the respective package manager of your operating system.
 
@@ -48,7 +48,7 @@ Use the respective package manager of your operating system.
 2. Install binstall (recommended): `cargo install cargo-binstall`
 3. Install Dioxus: `cargo binstall dioxus-cli --force` or without binstall `cargo install dioxus-cli`
 
-### Run and Develop Program
+#### Run and Develop Program
 
 1. Mount shared directory (if it's not): `sudo mount -t virtiofs share /mnt/share`
 2. Run `rsync -a --no-owner --no-group --delete --exclude='target/' --exclude='node_modules/' /mnt/share/ ~/Code/onyx/`
@@ -56,9 +56,9 @@ Use the respective package manager of your operating system.
 4. To watch for changes, run `./scripts/sync-linux-macos.sh`
 5. To start Dioxus, run `dx serve --package desktop`
 
-## Windows 11
+### Windows 11
 
-### Install Dependencies
+#### Install Dependencies
 
 1. Open Powershell as administrator
 2. Install Rust: `winget install -e --id Rustlang.Rustup`
@@ -83,7 +83,7 @@ Use the respective package manager of your operating system.
 6. Install binstall (recommended): `cargo install cargo-binstall`
 7. Install Dioxus: `cargo binstall dioxus-cli --force` or without binstall `cargo install dioxus-cli`
 
-### Run and Develop Program
+#### Run and Develop Program
 
 1. Important: Don't use administrator
 2. Run once: `robocopy Z:\ %USERPROFILE%\Code\onyx /E /PURGE /XD target node_modules /R:3 /W:1`
@@ -91,3 +91,29 @@ Use the respective package manager of your operating system.
 3. Check if the `onyx/` directory exists and enter it
 4. To watch for changes, run `./scripts/sync-windows.bat`
 5. To start Dioxus, run `dx serve --package desktop`
+
+### Optional UTM Tools
+
+Use SSH to execute commands from your host machine. Example for Linux:
+
+1. On the VM: `sudo systemctl enable --now sshd`
+2. On macOS: Run `ssh-copy-id utm@fedora.local` and enter your VM password
+3. Try `ssh utm@fedora.local 'dx --version'`
+
+#### Alernative Methode
+
+UTM allows you to run commands for the VM from the host machine using `utmctl`. Make sure utmctl is on your shell's `PATH`.
+
+1. Install UTM (if haven't done so already)
+2. Install the agent inside the VM:
+    - Linux:
+        1. Install the package on your distribution:
+            - Debian/Ubuntu: `sudo apt install qemu-guest-agent`
+            - Fedora/RHEL: `sudo dnf install qemu-guest-agent`
+            - Arch: `sudo pacman -S qemu-guest-agent`
+        2. `sudo systemctl enable --now qemu-guest-agent`
+    - Windows:
+        1. In UTM, with the VM running, click the CD/disc icon in the toolbar and choose Install Windows Guest Tools. This mounts an ISO.
+        2. Open the mounted drive inside Windows and run utm-guest-tools-*.exe. It installs the SPICE tools and the QEMU guest agent.
+        3. Reboot the VM.
+3. Verify that you can execute commands: `utmctl exec Fedora --cmd /home/utm/.cargo/bin/dx serve`
