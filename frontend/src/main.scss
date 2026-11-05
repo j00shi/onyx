@@ -20,6 +20,7 @@ body {
 
 body {
 	@include color(var(--primary-color-1), var(--secondary-color-1));
+
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 	user-select: none;
 

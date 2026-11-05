@@ -66,8 +66,8 @@ pub fn Settings() -> Element {
 					open: Some(color_picker_open()),
 					on_open_change: move |v: bool| color_picker_open.set(v),
 					on_color_change: move |c: Hsv<encoding::Srgb, f64>| {
-					    accent_color.set(c);
-					    *ACCENT_HUE.write() = c.hue.into_positive_degrees();
+						accent_color.set(c);
+						*ACCENT_HUE.write() = c.hue.into_positive_degrees();
 					},
 				}
 			}
@@ -120,11 +120,11 @@ pub fn Settings() -> Element {
 				Switch {
 					checked: Some(SIDEBAR_VARIANT() == SidebarVariant::Floating),
 					on_checked_change: move |v: bool| {
-					    *SIDEBAR_VARIANT.write() = if v {
-					        SidebarVariant::Floating
-					    } else {
-					        SidebarVariant::Sidebar
-					    };
+						*SIDEBAR_VARIANT.write() = if v {
+							SidebarVariant::Floating
+						} else {
+							SidebarVariant::Sidebar
+						};
 					},
 				}
 			}
