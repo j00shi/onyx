@@ -46,11 +46,9 @@ mod desktop {
 		rsx! {}
 	}
 
-	/// Apply or clear the platform's native backdrop on the live window. Errors (e.g. an unsupported
-	/// OS version) are ignored like the other live-window tweaks in `titlebar.rs` — the window simply
-	/// stays as-is. The window is always transparent, and the page is opaque while the effect is off,
-	/// so a failed/absent backdrop just reads as a normal opaque window (this also sidesteps the
-	/// Windows "white window until resize" transparency bug, Dioxus #4886).
+	/// Apply or clear the platform's native backdrop on the live window.
+	/// NOTE: Windows 11 blur is currently broken for Dioxus on the latest Windows 11 update.
+	/// See <https://github.com/DioxusLabs/dioxus/issues/4886>
 	fn apply_effect(window: &DesktopContext, on: bool, dark: bool) {
 		// `window.window` is an `Arc<tao::window::Window>`; `&Window` implements `HasWindowHandle`.
 		let handle = window.window.as_ref();

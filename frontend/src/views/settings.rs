@@ -43,7 +43,7 @@ pub fn Settings() -> Element {
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./settings.css") }
 		div { id: "settings",
-			h1 { class: "title", "Settings (1)" }
+			h1 { class: "title", "Settings" }
 			section { class: "setting",
 				div { class: "label",
 					span { class: "name", "Dark mode" }
