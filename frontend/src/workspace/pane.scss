@@ -1,0 +1,159 @@
+@use "../mixins" as *;
+
+// Keep in sync with `$tablist-height` in `primary_sidebar.scss`: the content tab bar matches the
+// height of the sidebar's tab bar.
+$tabbar-height: 2rem;
+
+// Width of the collapsed primary sidebar rail (where the content begins). Floating adds the
+// container padding; docked is just the icon column. Used to offset the tab bar so it clears the
+// sidebar header, which keeps its expanded width and overflows into the content when collapsed.
+$rail-floating: 4rem;
+$rail-docked: 2.75rem;
+
+// The content workspace fills `#content`; each leaf stacks a tab bar over its content.
+.leaf-pane {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+}
+
+.leaf-tabbar {
+	display: flex;
+	width: 100%;
+	height: $tabbar-height;
+	flex: 0 0 auto;
+	gap: var(--space-sm);
+	border-radius: calc(var(--border-radius-md) - 0.25rem);
+	backdrop-filter: blur(var(--blur));
+	background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
+	padding: var(--space-sm);
+	margin-left: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-floating}));
+
+	// Collapsed, the primary sidebar's header pill keeps its expanded width and overflows into the
+	// content; nudge the tab bar right so it sits beside the pill (the tab content below still
+	// reaches the rail). Offset = primary width minus the collapsed rail. `--primary-sidebar-*` come
+	// from `base_sidebar.rs`; `--primary-sidebar-collapsed` is 1 when collapsed, 0 otherwise.
+	// padding-left: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-floating}));
+
+	// Only as wide as its tabs so the add button sits right beside them; scrolls if they overflow.
+	.leaf-tablist {
+		display: flex;
+		height: 100%;
+		flex: 0 1 auto;
+		min-width: 0;
+		flex-direction: row;
+		align-items: center;
+		gap: var(--space-sm);
+		overflow-x: auto;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+
+		// A tab is the clickable pill: it holds the title and the close button, so the close sits inside
+		// the tab and the whole pill is a click target.
+		.leaf-tab {
+			display: flex;
+			position: relative;
+			height: 100%;
+			width: 12rem;
+			justify-content: space-between;
+			align-items: center;
+			padding: var(--space-sm);
+			gap: var(--space-md);
+			border-radius: calc(var(--border-radius-md) - 0.5rem);
+			background: none;
+			color: var(--secondary-color-5);
+			cursor: pointer;
+			transition: color var(--duration-medium) linear;
+
+			&:hover {
+				color: var(--secondary-color-1);
+			}
+
+			&[aria-selected="true"] {
+				background-color: color-mix(in oklab, var(--primary-color-6), transparent var(--transparency-light));
+				color: var(--secondary-color-1);
+				box-shadow: var(--dark, inset 0 0 0 1px var(--primary-color-7)) var(--light, 0 1px 2px rgb(0 0 0 / 18%));
+			}
+
+			&::after {
+				content: "";
+				position: absolute;
+				right: calc(var(--space-sm) / -2);
+				width: 1px;
+				height: 100%;
+				background-color: var(--secondary-color-6);
+			}
+
+			.leaf-tab-title {
+				padding-left: var(--space-sm);
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+
+			.leaf-tab-close {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border: none;
+				background: none;
+				border-radius: calc(var(--border-radius-md) - 0.75rem);
+				color: var(--secondary-color-5);
+				cursor: pointer;
+				transition:
+					color var(--duration-medium) linear,
+					background-color var(--duration-medium) linear;
+
+				&:hover {
+					background-color: var(--light, var(--primary-color-5))
+						var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent));
+					color: var(--secondary-color-1);
+				}
+			}
+		}
+	}
+
+	.leaf-tab-add {
+		width: 1.5rem !important;
+		height: 1.5rem !important;
+		border-radius: calc(var(--border-radius-md) - 0.5rem);
+	}
+}
+
+// Docked drops the floating container padding, so the collapsed rail is narrower.
+#content[data-sidebar-variant="sidebar"] .leaf-tabbar {
+	padding-left: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-docked}));
+}
+
+// Swapped, the primary sidebar (and its overflowing header) is on the right, so clear on that side.
+#frame[data-swapped="true"] .leaf-tabbar {
+	padding-right: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-floating}));
+	padding-left: 0;
+}
+
+#frame[data-swapped="true"] #content[data-sidebar-variant="sidebar"] .leaf-tabbar {
+	padding-right: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-docked}));
+}
+
+// A split lays its children along one axis; `flex-direction` is set inline per node.
+.pane-split {
+	display: flex;
+	height: 100%;
+	min-height: 0;
+	flex: 1;
+}
+
+.pane-split-child {
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.leaf-content {
+	min-height: 0;
+	flex: 1;
+	overflow: auto;
+}

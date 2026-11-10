@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::sidebar::SidebarTrigger;
+use crate::components::sidebar::SidebarVariant;
 use crate::elements::PrimarySidebar;
 use crate::elements::SecondarySidebar;
 use crate::elements::TitleBar;
@@ -10,8 +10,9 @@ use crate::views::BORDER_RADIUS_SCALE;
 use crate::views::DARK_MODE;
 use crate::views::SHOW_WALLPAPER;
 use crate::views::SIDEBAR_SWAPPED;
+use crate::views::SIDEBAR_VARIANT;
 use crate::views::WINDOW_EFFECT;
-use crate::Route;
+use crate::workspace::WorkspaceView;
 
 // Using a hardcoded const as background for now
 const BACKGROUND: Asset = asset!("/assets/media/pexels-167691936-37955298.jpg");
@@ -47,10 +48,14 @@ pub fn Frame() -> Element {
 			TitleBar {}
 			WindowEffect {}
 			PrimarySidebar {
-				SidebarTrigger { title: "Toggle primary" }
 				SecondarySidebar {
-					SidebarTrigger { title: "Toggle secondary" }
-					div { id: "content", Outlet::<Route> {} }
+					div {
+						id: "content",
+						// Lets the content line its tab bar up with the sidebar header, which sits lower
+						// when floating (see `#content` in frame.scss).
+						"data-sidebar-variant": if SIDEBAR_VARIANT() == SidebarVariant::Floating { "floating" } else { "sidebar" },
+						WorkspaceView {}
+					}
 				}
 			}
 		}

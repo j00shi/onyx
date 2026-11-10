@@ -14,7 +14,8 @@ use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
 use crate::components::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
 use crate::elements::BaseSidebar;
 use crate::views::{CUSTOM_TITLEBAR, MOBILE_REACH_LAYOUT, SIDEBAR_SWAPPED};
-use crate::Route;
+use crate::workspace::model::View;
+use crate::workspace::WORKSPACE;
 use dioxus_primitives::ContentSide;
 
 /// The primary sidebar. Docks on the left by default, or the right when the layout is swapped.
@@ -417,7 +418,7 @@ fn SidebarTabs() -> Element {
 									size: ButtonSize::Icon,
 									class: "ribbon-button",
 									onclick: move |_| {
-										navigator().push(Route::Settings {});
+										WORKSPACE.write().open_view(View::Settings);
 									},
 									Settings { size: "1.25rem" }
 								}

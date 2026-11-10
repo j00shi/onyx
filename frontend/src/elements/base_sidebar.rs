@@ -51,9 +51,13 @@ pub fn BaseSidebar(
 			"data-reach": MOBILE_REACH_LAYOUT(),
 			SidebarProvider {
 				class: if dragging() { "resizing" } else { "" }, // See reason for this in base_sidebar.scss
+				// `--{name}-sidebar-*` expose this sidebar's width and collapsed state to the content
+				// area (a descendant), which uses them to keep its tab bar clear of the header that
+				// overflows when collapsed. See `.leaf-tabbar` in `workspace/pane.scss`.
 				style: format!(
-					"--dx-sidebar-width: {}px; --dx-sidebar-width-mobile: 18rem; --dx-sidebar-width-icon: 3rem",
-					width(),
+					"--dx-sidebar-width: {w}px; --dx-sidebar-width-mobile: 18rem; --dx-sidebar-width-icon: 3rem; --{name}-sidebar-width: {w}px; --{name}-sidebar-collapsed: {collapsed}",
+					w = width(),
+					collapsed = i32::from(!open()),
 				),
 				open: Some(open()),
 				on_open_change: move |v| open.set(v),

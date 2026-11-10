@@ -1,5 +1,5 @@
-//! Desktop window setup.
-
+/// Desktop window setup.
+///
 /// Launch the desktop window. On macOS, a transparent/full-size titlebar that keeps the real OS
 /// traffic lights; on Windows, a borderless window whose custom chrome ([`frontend::TitleBar`])
 /// draws the controls. Linux keeps its native title bar for now.

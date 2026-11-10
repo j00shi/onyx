@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::sidebar::{SidebarHeader, SidebarSide, SidebarTrigger};
+use crate::components::sidebar::{SidebarHeader, SidebarSide};
 use crate::elements::BaseSidebar;
 use crate::views::SIDEBAR_SWAPPED;
 
@@ -17,7 +17,7 @@ pub fn SecondarySidebar(children: Element) -> Element {
 			side: if SIDEBAR_SWAPPED() { SidebarSide::Left } else { SidebarSide::Right },
 			body: rsx! {
 				div { class: "sidebar-body",
-					SidebarHeader { class: "header", SidebarTrigger {} }
+					SidebarHeader { class: "header" }
 				}
 			},
 			{children}

@@ -41,6 +41,13 @@ html[data-window-effect="true"] #frame {
 	min-height: 0;
 	overflow-y: auto;
 	user-select: text;
+
+	// Drop the content so its tab bar lines up with the sidebar header
+	padding-top: 0.25rem;
+
+	&[data-sidebar-variant="floating"] {
+		padding-top: 0.75rem;
+	}
 }
 
 // On Windows the custom title bar is a real full-width row above the sidebars (its caption buttons

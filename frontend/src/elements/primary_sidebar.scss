@@ -26,7 +26,7 @@ $tab-max-count: 10;
 			.header,
 			.content {
 				// TODO: Is a calc really needed?
-				width: calc(var(--dx-sidebar-width) - var(--padding-sm) * 2); // Only the tabs' own 0.25rem*2 padding
+				width: calc(var(--dx-sidebar-width) - var(--space-sm) * 2); // Only the tabs' own 0.25rem*2 padding
 			}
 		}
 	}
@@ -86,7 +86,7 @@ $tab-max-count: 10;
 				flex-direction: row-reverse;
 
 				.ribbon {
-					padding-left: var(--padding-sm); // Gap now sits on the ribbon's inner (left) edge
+					padding-left: var(--space-sm); // Gap now sits on the ribbon's inner (left) edge
 					padding-right: 0;
 
 					// Tooltip now opens left (toward the content), so move the clip-box room there
@@ -100,7 +100,7 @@ $tab-max-count: 10;
 
 					// Open toward the content (left) instead of off the screen edge
 					.dropdown-content {
-						right: calc(anchor(left) + var(--gap-md));
+						right: calc(anchor(left) + var(--space-md));
 						left: auto;
 					}
 				}
@@ -115,8 +115,8 @@ $tab-max-count: 10;
 			position: relative;
 			flex: 1;
 			min-height: 0;
-			padding: var(--padding-sm);
-			gap: var(--gap-md);
+			padding: var(--space-sm);
+			gap: var(--space-md);
 
 			.header,
 			.content {
@@ -142,7 +142,7 @@ $tab-max-count: 10;
 					display: flex;
 					align-items: center;
 					justify-content: flex-end;
-					gap: var(--gap-sm);
+					gap: var(--space-sm);
 					height: $controls-height;
 				}
 
@@ -217,14 +217,14 @@ $tab-max-count: 10;
 				.ribbon {
 					min-height: 0;
 					padding: 0;
-					padding-right: var(--padding-sm);
+					padding-right: var(--space-sm);
 
 					// Two independent groups, both scroll so any number of buttons fits
 					.ribbon-top,
 					.ribbon-bottom {
 						display: flex;
 						flex-direction: column;
-						gap: var(--gap-sm);
+						gap: var(--space-sm);
 						min-height: 0;
 						overflow-y: auto;
 						scrollbar-width: none;
@@ -273,7 +273,7 @@ $tab-max-count: 10;
 
 					// Divider between the two groups
 					.ribbon-divider {
-						margin: var(--margin-sm) 0;
+						margin: var(--space-sm) 0;
 					}
 
 					// Has the priority, only starts scrolling in the middle
@@ -286,7 +286,7 @@ $tab-max-count: 10;
 					// Lift the menu into a floating, non-clipped layer tethered to its trigger
 					.dropdown-content {
 						position: fixed;
-						inset: anchor(top) auto auto calc(anchor(right) + var(--gap-md));
+						inset: anchor(top) auto auto calc(anchor(right) + var(--space-md));
 						min-width: 11.5rem;
 						border-radius: var(--border-radius-md);
 						position-try-fallbacks:
@@ -316,7 +316,7 @@ $tab-max-count: 10;
 
 			// Shared tooltip styling for the tab bar and ribbon
 			.tooltip-content {
-				padding: var(--padding-sm) var(--padding-md);
+				padding: var(--space-sm) var(--space-md);
 				font-size: 0.75rem;
 				border-radius: var(--border-radius-sm);
 				animation-delay: var(--delay);
