@@ -31,48 +31,58 @@ $tab-max-count: 10;
 		}
 	}
 
-	[data-collapsible="icon"] {
-		.primary-sidebar {
-			// macOS also carries a window-controls row in the header, so the collapsed card edge and the
-			// resize handle start lower to clear it
-			&:has(.controls-wrapper) {
-				.tabs::before {
-					top: calc(#{$header-height} + 0.5rem);
-				}
+	[data-variant="floating"][data-collapsible="icon"] {
+		.tabs .header {
+			margin-left: -0.25rem;
+		}
 
-				.resize-handle {
-					top: calc(#{$header-height} + 1rem);
-				}
+		&[data-side="right"] {
+			.tabs .header {
+				margin-right: -0.25rem;
 			}
+		}
+	}
 
-			.tabs {
-				&::before {
-					// Slide the card's top edge down past the header
-					top: calc(#{$tablist-height} + 0.5rem);
-				}
-
-				.header {
-					backdrop-filter: blur(var(--blur));
-				}
-
-				// When collapsed, the content keeps its expanded width but is click-through
-				.content {
-					pointer-events: none;
-
-					.panel {
-						flex-grow: 0;
-						opacity: 0;
-
-						.tab-content {
-							width: max-content;
-						}
-					}
-				}
+	[data-collapsible="icon"] .primary-sidebar {
+		// macOS also carries a window-controls row in the header, so the collapsed card edge and the
+		// resize handle start lower to clear it
+		&:has(.controls-wrapper) {
+			.tabs::before {
+				top: calc(#{$header-height} + 0.5rem);
 			}
 
 			.resize-handle {
-				top: calc(#{$tablist-height} + 1rem);
+				top: calc(#{$header-height} + 1rem);
 			}
+		}
+
+		.tabs {
+			&::before {
+				// Slide the card's top edge down past the header
+				top: calc(#{$tablist-height} + 0.5rem);
+			}
+
+			.header {
+				backdrop-filter: blur(var(--blur));
+			}
+
+			// When collapsed, the content keeps its expanded width but is click-through
+			.content {
+				pointer-events: none;
+
+				.panel {
+					flex-grow: 0;
+					opacity: 0;
+
+					.tab-content {
+						width: max-content;
+					}
+				}
+			}
+		}
+
+		.resize-handle {
+			top: calc(#{$tablist-height} + 1rem);
 		}
 	}
 
@@ -130,7 +140,9 @@ $tab-max-count: 10;
 				gap: 0;
 				background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
 				border-radius: calc(var(--border-radius-md) - 0.25rem);
-				transition: backdrop-filter var(--duration-medium) linear;
+				transition:
+					backdrop-filter var(--duration-medium) linear,
+					margin-left var(--duration-medium) linear;
 
 				// macOS stacks a window-controls row above the tab bar (rendered on macOS only)
 				&:has(.controls-wrapper) {
