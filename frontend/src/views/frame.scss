@@ -38,6 +38,7 @@ html[data-window-effect="true"] #frame {
 // is selectable (see `user-select` in main.scss).
 #content {
 	flex: 1;
+	min-width: 0;
 	min-height: 0;
 	overflow-y: auto;
 	user-select: text;
@@ -48,6 +49,12 @@ html[data-window-effect="true"] #frame {
 	&[data-sidebar-variant="floating"] {
 		padding-top: 0.75rem;
 	}
+}
+
+// Default is `flex: 1 1 0%` with no `min-width`. This fix prevents content from being pushed
+// under the sidebar.
+[data-slot="sidebar-inset"] {
+	min-width: 0;
 }
 
 // On Windows the custom title bar is a real full-width row above the sidebars (its caption buttons
