@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Pre-commit: mirror CI's fast format gates so nothing stale lands.
+# Enable once with: git config core.hooksPath .githooks
+# Skips clippy (too slow for a hook) — CI still gates on it.
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+fail() {
+	echo "✖ $1" >&2
+	echo "  fix: $2" >&2
+	exit 1
+}
+
+# Rust formatting (tabs via rustfmt.toml).
+./scripts/fmt.sh --check || fail "Rust formatting is off." "./scripts/fmt.sh"
+
+# Style gates need node_modules; skip gracefully if deps aren't installed.
+if [[ -d node_modules ]]; then
+	npm run --silent format:check || fail "SCSS formatting is off." "npm run format && npm run lint:style:fix"
+	npm run --silent lint:style || fail "Stylelint failed." "npm run lint:style:fix"
+	npm run --silent build:css:check || fail "Compiled CSS is stale." "npm run build:css"
+else
+	echo "pre-commit: node_modules missing — skipping SCSS/CSS checks (run 'npm install')." >&2
+fi

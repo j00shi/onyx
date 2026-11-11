@@ -19,6 +19,9 @@ cargo clippy --workspace --all-targets -- -D warnings
 ./scripts/fmt.sh --check  # verify formatting (used by CI)
 ```
 
+> [!info]
+> If you have the Dioxus extension installed, it will automatically format rust code using its own guidelines, overwriting the correct formatting. If this problem occurs, add `"dioxus.formatOnSave": "disabled"` to the settings.
+
 ### SCSS
 
 SCSS is linted with [Stylelint](https://stylelint.io/) and formatted with [Prettier](https://prettier.io/). Install the tooling once with `npm install`, then:
