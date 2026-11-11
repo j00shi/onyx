@@ -162,6 +162,83 @@
 	place-content: $vertical $horizontal; // Shorthand for align-content (vertical) + justify-content (horizontal)
 }
 
+// Registers the custom props and keyframes `scroll-fade` animates. Call once at a stylesheet's root
+// before using `scroll-fade` in that file. The props are a unitless 0..1 progress per edge; keeping
+// `var()` out of the keyframes lets Firefox interpolate them (it falls back to a discrete jump
+// otherwise), and the progress is scaled to a length in the mask so the keyframes stay size-agnostic.
+@mixin scroll-fade-keyframes {
+	@property --scroll-fade-start {
+		syntax: "<number>";
+		inherits: false;
+		initial-value: 0;
+	}
+
+	@property --scroll-fade-end {
+		syntax: "<number>";
+		inherits: false;
+		initial-value: 0;
+	}
+
+	@keyframes scroll-fade-start {
+		from {
+			--scroll-fade-start: 0;
+		}
+
+		to {
+			--scroll-fade-start: 1;
+		}
+	}
+
+	@keyframes scroll-fade-end {
+		from {
+			--scroll-fade-end: 1;
+		}
+
+		to {
+			--scroll-fade-end: 0;
+		}
+	}
+}
+
+// Fades a scroll container's content at whichever edge(s) still have hidden content, hinting that it
+// scrolls. A scroll-driven animation drives a mask, so it's pure CSS. `$axis` is `block` (vertical)
+// or `inline` (horizontal). Needs `scroll-fade-keyframes` once per file; no-ops where
+// `animation-timeline` is unsupported or the content doesn't overflow.
+@mixin scroll-fade($axis, $size: 2.5rem) {
+	@supports (animation-timeline: scroll()) {
+		--scroll-fade-size: #{$size};
+
+		$dir: to bottom;
+
+		@if $axis == inline {
+			$dir: to right;
+		}
+
+		// Each edge's 0..1 progress scales the fade length `$size`
+		mask-image: linear-gradient(
+			#{$dir},
+			transparent 0,
+			black calc(var(--scroll-fade-start) * var(--scroll-fade-size)),
+			black calc(100% - var(--scroll-fade-end) * var(--scroll-fade-size)),
+			transparent 100%
+		);
+
+		// One animation per edge so each is gated to its own slice of the scroll range: the start edge
+		// fades in over the first `$size` of scroll, the end edge fades out over the last `$size`.
+		animation:
+			scroll-fade-start linear both,
+			scroll-fade-end linear both;
+
+		// `auto` keeps each animation spanning its scroll range; the `animation` shorthand above would
+		// otherwise reset the duration to `0s`, pinning both to their end keyframe (always faded).
+		animation-duration: auto;
+		animation-timeline: scroll(self #{$axis});
+		animation-range:
+			0 var(--scroll-fade-size),
+			calc(100% - var(--scroll-fade-size)) 100%;
+	}
+}
+
 // Configures CSS Grid child with area placement, order, and self-alignment
 @mixin grid-child($area, $order, $horizontal: null, $vertical: null) {
 	// Assigns an item to a named area OR specifies position with row/column numbers

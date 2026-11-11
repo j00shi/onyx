@@ -1,4 +1,5 @@
 @use "../mixins" as *;
+@include scroll-fade-keyframes;
 
 // Keep in sync with `$tablist-height` in `primary_sidebar.scss`: the content tab bar matches the
 // height of the sidebar's tab bar.
@@ -45,6 +46,9 @@ $rail-docked: 2.75rem;
 		gap: var(--space-sm);
 		overflow-x: auto;
 		scrollbar-width: none;
+
+		// Fade the edge that still has off-screen tabs
+		@include scroll-fade(inline, 3rem);
 
 		&::-webkit-scrollbar {
 			display: none;

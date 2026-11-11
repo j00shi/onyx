@@ -1,4 +1,5 @@
 @use "../mixins" as *;
+@include scroll-fade-keyframes;
 
 // The header stacks a window-controls row above the tab bar.
 $controls-height: 2rem;
@@ -240,6 +241,9 @@ $tab-max-count: 10;
 						min-height: 0;
 						overflow-y: auto;
 						scrollbar-width: none;
+
+						// Fade the edge that still has off-screen buttons
+						@include scroll-fade(block);
 
 						// `overflow-y` forces `overflow-x` to clip, which would cut off tooltips
 						// tooltips. Pad the clip-box toward to give them room, then cancel that
