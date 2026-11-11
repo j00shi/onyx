@@ -73,23 +73,23 @@ fn LeafPane(id: NodeId) -> Element {
 							"aria-selected": if i == active { "true" } else { "false" },
 							onclick: move |_| WORKSPACE.write().set_active(id, i),
 							onkeydown: move |e: KeyboardEvent| {
-							    let activate = match e.key() {
-							        Key::Enter => true,
-							        Key::Character(c) => c == " ",
-							        _ => false,
-							    };
-							    if activate {
-							        e.prevent_default();
-							        WORKSPACE.write().set_active(id, i);
-							    }
+								let activate = match e.key() {
+									Key::Enter => true,
+									Key::Character(c) => c == " ",
+									_ => false,
+								};
+								if activate {
+									e.prevent_default();
+									WORKSPACE.write().set_active(id, i);
+								}
 							},
 							span { class: "leaf-tab-title", "{tab.view.title()}" }
 							button {
 								class: "leaf-tab-close",
 								"aria-label": "Close tab",
 								onclick: move |e: MouseEvent| {
-								    e.stop_propagation();
-								    WORKSPACE.write().close_tab(id, i);
+									e.stop_propagation();
+									WORKSPACE.write().close_tab(id, i);
 								},
 								X { size: "1rem" }
 							}

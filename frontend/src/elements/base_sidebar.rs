@@ -66,6 +66,7 @@ pub fn BaseSidebar(
 					side,
 					variant: SIDEBAR_VARIANT(),
 					collapsible: SidebarCollapsible::Icon,
+					style: if width() > MIN_WIDTH { "transition: none" } else { "transition: all .2s linear" },
 					{body}
 					div {
 						class: "resize-handle",

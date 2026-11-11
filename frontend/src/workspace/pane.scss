@@ -19,15 +19,14 @@ $rail-docked: 2.75rem;
 
 .leaf-tabbar {
 	display: flex;
-	width: 100%;
 	height: $tabbar-height;
-	flex: 0 0 auto;
 	gap: var(--space-sm);
 	border-radius: calc(var(--border-radius-md) - 0.25rem);
 	backdrop-filter: blur(var(--blur));
 	background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
 	padding: var(--space-sm);
-	margin-left: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-floating}));
+	margin-left: calc((var(--primary-sidebar-width) - 5rem) * var(--primary-sidebar-collapsed));
+	transition: margin-left 0.2s ease-out;
 
 	// Collapsed, the primary sidebar's header pill keeps its expanded width and overflows into the
 	// content; nudge the tab bar right so it sits beside the pill (the tab content below still
@@ -122,21 +121,6 @@ $rail-docked: 2.75rem;
 		height: 1.5rem !important;
 		border-radius: calc(var(--border-radius-md) - 0.5rem);
 	}
-}
-
-// Docked drops the floating container padding, so the collapsed rail is narrower.
-#content[data-sidebar-variant="sidebar"] .leaf-tabbar {
-	padding-left: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-docked}));
-}
-
-// Swapped, the primary sidebar (and its overflowing header) is on the right, so clear on that side.
-#frame[data-swapped="true"] .leaf-tabbar {
-	padding-right: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-floating}));
-	padding-left: 0;
-}
-
-#frame[data-swapped="true"] #content[data-sidebar-variant="sidebar"] .leaf-tabbar {
-	padding-right: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-docked}));
 }
 
 // A split lays its children along one axis; `flex-direction` is set inline per node.
