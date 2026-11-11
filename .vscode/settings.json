@@ -1,5 +1,6 @@
 {
 	"editor.formatOnSave": true,
+	"dioxus.formatOnSave": "disabled",
 	"liveSassCompile.settings.formats": [
 		{
 			"format": "compressed",
