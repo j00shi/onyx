@@ -436,7 +436,7 @@ fn SidebarTabs() -> Element {
 						class: "tab-content",
 						value: "home".to_string(),
 						index: 0usize,
-						"Home tab content"
+						"Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda?"
 					}
 					TabContent {
 						class: "tab-content",

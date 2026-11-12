@@ -7,7 +7,7 @@ use dioxus::prelude::*;
 pub mod model;
 mod pane;
 
-pub use model::{Axis, Node, NodeId, Tab, TabId, View, Workspace};
+pub use model::{Axis, Edge, Node, NodeId, Tab, TabId, View, Workspace};
 pub use pane::*;
 
 /// Global content workspace: the pane tree, its tabs, and focus. Mutate via `WORKSPACE.write()`

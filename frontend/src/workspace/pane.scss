@@ -12,8 +12,13 @@ $rail-floating: 4rem;
 $rail-docked: 2.75rem;
 
 // The content workspace fills `#content`; each leaf stacks a tab bar over its content.
+.workspace {
+	height: 100%;
+}
+
 .leaf-pane {
 	display: flex;
+	position: relative;
 	height: 100%;
 	flex-direction: column;
 }
@@ -70,10 +75,16 @@ $rail-docked: 2.75rem;
 			background: none;
 			color: var(--secondary-color-5);
 			cursor: pointer;
+			user-select: none;
 			transition: color var(--duration-medium) linear;
 
 			&:hover {
 				color: var(--secondary-color-1);
+			}
+
+			// Dim the tab being dragged to its new slot (reorder feedback).
+			&[data-dragging="true"] {
+				opacity: 0.6;
 			}
 
 			&[aria-selected="true"] {
@@ -125,6 +136,26 @@ $rail-docked: 2.75rem;
 		height: 1.5rem !important;
 		border-radius: calc(var(--border-radius-md) - 0.5rem);
 	}
+
+	// Split-pane dropdown trigger. The descendant selector outranks the vendored
+	// `.dx-dropdown-menu-trigger` so we can reset its chunky default to a plain icon button.
+	.leaf-tab-split {
+		display: flex;
+		width: 1.5rem;
+		height: 1.5rem;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border-radius: calc(var(--border-radius-md) - 0.5rem);
+		background: none;
+		box-shadow: none;
+		color: var(--secondary-color-5);
+
+		&:hover {
+			background: none;
+			color: var(--secondary-color-1);
+		}
+	}
 }
 
 // A split lays its children along one axis; `flex-direction` is set inline per node.
@@ -141,8 +172,130 @@ $rail-docked: 2.75rem;
 	overflow: hidden;
 }
 
+// Draggable handle between two panes. The thin line carries a wider invisible hit area so it's
+// easy to grab; `touch-action: none` keeps a touch-drag from scrolling instead.
+.pane-divider {
+	position: relative;
+	z-index: 1;
+	flex: 0 0 auto;
+	background-color: var(--primary-color-6);
+	touch-action: none;
+	user-select: none;
+
+	&[data-axis="horizontal"] {
+		width: 1px;
+		cursor: col-resize;
+	}
+
+	&[data-axis="vertical"] {
+		height: 1px;
+		cursor: row-resize;
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+	}
+
+	&[data-axis="horizontal"]::after {
+		right: -3px;
+		left: -3px;
+	}
+
+	&[data-axis="vertical"]::after {
+		top: -3px;
+		bottom: -3px;
+	}
+
+	&:hover {
+		background-color: var(--focused-border-color);
+	}
+}
+
+// Full-viewport layer that captures pointer events for the duration of a divider drag, so the
+// pointer keeps being tracked even as it crosses other panes.
+.resize-overlay {
+	position: fixed;
+	z-index: 9999;
+	inset: 0;
+	touch-action: none;
+
+	&[data-axis="horizontal"] {
+		cursor: col-resize;
+	}
+
+	&[data-axis="vertical"] {
+		cursor: row-resize;
+	}
+}
+
+// Drop target shown over each pane while a tab is being dragged across panes.
+.pane-drop {
+	position: absolute;
+	z-index: 50;
+	inset: 0;
+	touch-action: none;
+	cursor: grabbing;
+}
+
+// Highlight of the zone a drop would land in: an edge half (→ split) or the whole pane (→ move in).
+.pane-drop-indicator {
+	position: absolute;
+	border: 1px solid var(--focused-border-color);
+	background-color: color-mix(in oklab, var(--focused-border-color), transparent 70%);
+	pointer-events: none;
+	transition:
+		inset 0.08s ease-out,
+		width 0.08s ease-out,
+		height 0.08s ease-out;
+
+	&[data-zone="center"] {
+		inset: 0;
+	}
+
+	&[data-zone="left"] {
+		top: 0;
+		bottom: 0;
+		left: 0;
+		width: 50%;
+	}
+
+	&[data-zone="right"] {
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: 50%;
+	}
+
+	&[data-zone="top"] {
+		top: 0;
+		right: 0;
+		left: 0;
+		height: 50%;
+	}
+
+	&[data-zone="bottom"] {
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: 50%;
+	}
+}
+
 .leaf-content {
+	position: relative;
 	min-height: 0;
 	flex: 1;
 	overflow: auto;
+}
+
+// Insertion line shown on a tab while a dragged tab hovers its slot (left edge), or on the last
+// tab when the drop would append (right edge).
+.leaf-tab[data-insert="before"] {
+	box-shadow: inset 2px 0 0 0 var(--focused-border-color);
+}
+
+.leaf-tab[data-insert="after"] {
+	box-shadow: inset -2px 0 0 0 var(--focused-border-color);
 }
