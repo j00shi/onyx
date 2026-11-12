@@ -1,4 +1,4 @@
-@use "../mixins" as *;
+@use "../../mixins" as *;
 @include scroll-fade-keyframes;
 
 // Keep in sync with `$tablist-height` in `primary_sidebar.scss`: the content tab bar matches the
