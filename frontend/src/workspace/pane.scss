@@ -31,8 +31,9 @@ $rail-docked: 2.75rem;
 	backdrop-filter: blur(var(--blur));
 	background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
 	padding: var(--space-sm);
-	margin-left: calc((var(--primary-sidebar-width) - 5rem) * var(--primary-sidebar-collapsed));
-	transition: margin-left 0.2s ease-out;
+
+	// margin-left: calc((var(--primary-sidebar-width) - 5rem) * var(--primary-sidebar-collapsed));
+	// transition: margin-left 0.2s ease-out;
 
 	// Collapsed, the primary sidebar's header pill keeps its expanded width and overflows into the
 	// content; nudge the tab bar right so it sits beside the pill (the tab content below still
@@ -230,7 +231,8 @@ $rail-docked: 2.75rem;
 	}
 }
 
-// Drop target shown over each pane while a tab is being dragged across panes.
+// Drop target shown over each pane's content while a tab is being dragged across panes. Kept to
+// the content area so the tab bar above stays a drop target for slot insertion.
 .pane-drop {
 	position: absolute;
 	z-index: 50;
@@ -239,47 +241,26 @@ $rail-docked: 2.75rem;
 	cursor: grabbing;
 }
 
-// Highlight of the zone a drop would land in: an edge half (→ split) or the whole pane (→ move in).
-.pane-drop-indicator {
-	position: absolute;
-	border: 1px solid var(--focused-border-color);
-	background-color: color-mix(in oklab, var(--focused-border-color), transparent 70%);
+// Single viewport-fixed indicator that tweens between drop zones. It glides and resizes between
+// edge halves / the full pane, and narrows into a line (`data-line`) over a tab bar.
+.drop-indicator {
+	position: fixed;
+	z-index: 200;
+	border-radius: var(--border-radius-sm);
+	background-color: color-mix(in oklab, var(--focused-border-color), transparent 75%);
+	box-shadow: inset 0 0 0 1px var(--focused-border-color);
 	pointer-events: none;
 	transition:
-		inset 0.08s ease-out,
-		width 0.08s ease-out,
-		height 0.08s ease-out;
+		left 0.12s ease-out,
+		top 0.12s ease-out,
+		width 0.12s ease-out,
+		height 0.12s ease-out,
+		background-color 0.12s ease-out;
 
-	&[data-zone="center"] {
-		inset: 0;
-	}
-
-	&[data-zone="left"] {
-		top: 0;
-		bottom: 0;
-		left: 0;
-		width: 50%;
-	}
-
-	&[data-zone="right"] {
-		top: 0;
-		right: 0;
-		bottom: 0;
-		width: 50%;
-	}
-
-	&[data-zone="top"] {
-		top: 0;
-		right: 0;
-		left: 0;
-		height: 50%;
-	}
-
-	&[data-zone="bottom"] {
-		right: 0;
-		bottom: 0;
-		left: 0;
-		height: 50%;
+	&[data-line="true"] {
+		border-radius: 1px;
+		background-color: var(--focused-border-color);
+		box-shadow: none;
 	}
 }
 
@@ -288,14 +269,4 @@ $rail-docked: 2.75rem;
 	min-height: 0;
 	flex: 1;
 	overflow: auto;
-}
-
-// Insertion line shown on a tab while a dragged tab hovers its slot (left edge), or on the last
-// tab when the drop would append (right edge).
-.leaf-tab[data-insert="before"] {
-	box-shadow: inset 2px 0 0 0 var(--focused-border-color);
-}
-
-.leaf-tab[data-insert="after"] {
-	box-shadow: inset -2px 0 0 0 var(--focused-border-color);
 }

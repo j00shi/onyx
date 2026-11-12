@@ -247,23 +247,6 @@ impl Workspace {
 		}
 	}
 
-	/// Move the tab at `from` to index `to` within `leaf`, keeping the same tab active.
-	pub fn reorder_tab(&mut self, leaf: NodeId, from: usize, to: usize) {
-		if let Some(Node::Leaf { tabs, active, .. }) = self.nodes.get_mut(&leaf) {
-			if from >= tabs.len() || to >= tabs.len() || from == to {
-				return;
-			}
-			let Some(active_id) = tabs.get(*active).map(|t| t.id) else {
-				return;
-			};
-			let tab = tabs.remove(from);
-			tabs.insert(to, tab);
-			if let Some(idx) = tabs.iter().position(|t| t.id == active_id) {
-				*active = idx;
-			}
-		}
-	}
-
 	/// Close the tab at `idx` in `leaf`. When that empties the leaf, remove the leaf and collapse
 	/// its parent split if it drops to a single child. The root leaf can't be removed, so emptying
 	/// it re-seeds a New Tab instead (the workspace always keeps at least one pane).
@@ -646,5 +629,33 @@ mod tests {
 			Some(Node::Leaf { tabs, .. }) => assert_eq!(tabs.len(), 2),
 			_ => assert!(matches!(ws.node(ws.root()), Some(Node::Leaf { .. }))),
 		}
+	}
+
+	/// Views of a leaf's tabs, for order assertions.
+	fn tab_views(ws: &Workspace, leaf: NodeId) -> Vec<View> {
+		match ws.node(leaf) {
+			Some(Node::Leaf { tabs, .. }) => tabs.iter().map(|t| t.view).collect(),
+			_ => Vec::new(),
+		}
+	}
+
+	#[test]
+	fn move_within_leaf_to_end_reorders_and_follows_focus() {
+		let mut ws = Workspace::single_home(); // [Home]
+		let leaf = ws.root();
+		ws.add_tab(leaf, View::Settings); // [Home, Settings]
+		ws.add_tab(leaf, View::NewTab); // [Home, Settings, NewTab]
+		ws.move_tab_to_leaf_at(leaf, 0, leaf, 3); // move Home to the end
+		assert_eq!(tab_views(&ws, leaf), vec![View::Settings, View::NewTab, View::Home]);
+		assert!(matches!(ws.node(leaf), Some(Node::Leaf { active: 2, .. })));
+	}
+
+	#[test]
+	fn move_within_leaf_to_front_reorders() {
+		let mut ws = Workspace::single_home(); // [Home]
+		let leaf = ws.root();
+		ws.add_tab(leaf, View::Settings); // [Home, Settings]
+		ws.move_tab_to_leaf_at(leaf, 1, leaf, 0); // move Settings to the front
+		assert_eq!(tab_views(&ws, leaf), vec![View::Settings, View::Home]);
 	}
 }

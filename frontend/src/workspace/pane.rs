@@ -26,9 +26,12 @@ struct TabDrag {
 	over: Option<DropTarget>,
 }
 
-/// The active cross-pane tab drag, or `None`. A within-bar reorder (see [`LeafPane`]) promotes to
-/// this once the pointer leaves the tab bar.
+/// The active tab drag, or `None`. Pressing a tab records a pending press; moving past
+/// `DRAG_THRESHOLD` promotes it to a drag (whether it stays in the bar or leaves it).
 static DRAG: GlobalSignal<Option<TabDrag>> = Signal::global(|| None);
+
+/// Pointer travel (px) past which a press on a tab becomes a drag rather than a click.
+const DRAG_THRESHOLD: f64 = 4.0;
 
 /// Update the current drop target (no-op if unchanged or no drag is active).
 fn set_over(target: DropTarget) {
@@ -52,7 +55,13 @@ fn commit_drag() {
 			DropTarget::Bar(dest, at) => WORKSPACE.write().move_tab_to_leaf_at(source, index, dest, at),
 		}
 	}
+	end_drag();
+}
+
+/// Clear the drag and its visual hint.
+fn end_drag() {
 	*DRAG.write() = None;
+	*DROP_HINT.write() = None;
 }
 
 /// Classify a pointer at `(x, y)` within a `w`×`h` pane into a drop zone: an edge band near each
@@ -76,24 +85,54 @@ fn drop_zone(x: f64, y: f64, w: f64, h: f64) -> DropZone {
 	}
 }
 
-/// `data-zone` attribute value for a drop zone (drives the indicator's position in CSS).
-const fn zone_attr(zone: DropZone) -> &'static str {
-	match zone {
-		DropZone::Center => "center",
-		DropZone::Edge(Edge::Left) => "left",
-		DropZone::Edge(Edge::Right) => "right",
-		DropZone::Edge(Edge::Top) => "top",
-		DropZone::Edge(Edge::Bottom) => "bottom",
+/// Viewport-pixel rectangle the drop indicator should occupy for the zone a pointer at `(x, y)`
+/// (element-relative) is in, given the pane's viewport origin `(ox, oy)` and size `w`×`h`.
+fn zone_rect(x: f64, y: f64, ox: f64, oy: f64, w: f64, h: f64) -> DropHint {
+	let (rx, ry, rw, rh) = match drop_zone(x, y, w, h) {
+		DropZone::Center => (ox, oy, w, h),
+		DropZone::Edge(Edge::Left) => (ox, oy, w / 2.0, h),
+		DropZone::Edge(Edge::Right) => (ox + w / 2.0, oy, w / 2.0, h),
+		DropZone::Edge(Edge::Top) => (ox, oy, w, h / 2.0),
+		DropZone::Edge(Edge::Bottom) => (ox, oy + h / 2.0, w, h / 2.0),
+	};
+	DropHint { x: rx, y: ry, w: rw, h: rh, line: false }
+}
+
+/// The drop indicator's target rectangle in viewport pixels. A single element tweens between
+/// these, so the highlight glides between zones and narrows into a line over a tab bar.
+#[derive(Clone, Copy, PartialEq)]
+struct DropHint {
+	x: f64,
+	y: f64,
+	w: f64,
+	h: f64,
+	/// Draw as a slim bar-insertion line rather than a filled zone.
+	line: bool,
+}
+
+/// Where the drop indicator should be drawn, or `None` when nothing is hovered.
+static DROP_HINT: GlobalSignal<Option<DropHint>> = Signal::global(|| None);
+
+/// Update the drop hint, skipping redundant writes so the indicator only re-renders on change.
+fn set_hint(hint: DropHint) {
+	if *DROP_HINT.read() != Some(hint) {
+		*DROP_HINT.write() = Some(hint);
 	}
 }
 
-/// `data-insert` value for the tab at index `i`: a line on its left (`before`) when a dragged tab
-/// would land at slot `i`, or on the right of the last tab (`after`) when appending.
-const fn insert_mark(bar_insert: Option<usize>, i: usize, count: usize) -> &'static str {
-	match bar_insert {
-		Some(at) if at == i => "before",
-		Some(at) if at == count && i + 1 == count => "after",
-		_ => "",
+/// A single viewport-fixed element that animates (via CSS transitions) between drop zones and
+/// bar-insertion lines as [`DROP_HINT`] changes.
+#[component]
+fn DropIndicator() -> Element {
+	let Some(h) = DROP_HINT() else {
+		return rsx! {};
+	};
+	rsx! {
+		div {
+			class: "drop-indicator",
+			"data-line": h.line,
+			style: "left: {h.x}px; top: {h.y}px; width: {h.w}px; height: {h.h}px;",
+		}
 	}
 }
 
@@ -109,10 +148,11 @@ pub fn WorkspaceView() -> Element {
 			// stop propagation so their own release commits instead).
 			onpointerup: move |_| {
 				if DRAG().is_some() {
-					*DRAG.write() = None;
+					end_drag();
 				}
 			},
 			PaneNode { id: root }
+			DropIndicator {}
 		}
 	}
 }
@@ -257,17 +297,19 @@ fn LeafPane(id: NodeId) -> Element {
 
 	let active_view = tabs.get(active).map(|t| t.view);
 
-	// Pointer-drag reorder within this bar: `dragging` tracks the dragged tab's current index;
-	// `moved` suppresses the click that would otherwise fire selection at the end of a drag.
-	let mut dragging = use_signal(|| None::<usize>);
+	// A pending tab press: (index, start x, start y). Promoted to a drag once the pointer moves
+	// past `DRAG_THRESHOLD`; `moved` then suppresses the click that would fire selection.
+	let mut press = use_signal(|| None::<(usize, f64, f64)>);
 	let mut moved = use_signal(|| false);
 	// Size (px) of this pane's drop overlay, for classifying the pointer into a zone while dragging.
 	let mut drop_size = use_signal(|| (0.0_f64, 0.0_f64));
+	// Size (px) of a tab pill, for positioning the bar-insertion line.
+	let mut tab_size = use_signal(|| (0.0_f64, 0.0_f64));
 
 	let tab_count = tabs.len();
-	// Insertion slot to mark while a cross-pane drag hovers this bar.
-	let bar_insert = match DRAG().and_then(|d| d.over) {
-		Some(DropTarget::Bar(leaf, at)) if leaf == id => Some(at),
+	// Index of the tab being dragged out of this leaf (dimmed while dragging), if any.
+	let dragged = match DRAG() {
+		Some(d) if d.source == id => Some(d.index),
 		_ => None,
 	};
 
@@ -277,9 +319,13 @@ fn LeafPane(id: NodeId) -> Element {
 				div {
 					class: "leaf-tablist",
 					// Over empty bar space mid-drag, target the end of this bar.
-					onpointermove: move |_| {
+					onpointermove: move |e: PointerEvent| {
 						if DRAG().is_some() {
 							set_over(DropTarget::Bar(id, tab_count));
+							let (_, th) = tab_size();
+							let el = e.element_coordinates();
+							let cl = e.client_coordinates();
+							set_hint(DropHint { x: cl.x - 1.5, y: cl.y - el.y, w: 3.0, h: th, line: true });
 						}
 					},
 					onpointerup: move |e: PointerEvent| {
@@ -287,15 +333,19 @@ fn LeafPane(id: NodeId) -> Element {
 							e.stop_propagation();
 							commit_drag();
 						} else {
-							dragging.set(None);
+							press.set(None);
 						}
 					},
-					// Leaving the bar mid-reorder hands off to a cross-pane drag (drop on a pane edge
-					// to split, its center to append, or a bar to insert at a slot).
+					// A fast drag can leave the bar before the move threshold registers on a tab;
+					// promote here too so dragging a tab straight out still starts a drag.
 					onpointerleave: move |_| {
-						if let Some(idx) = dragging() {
+						if DRAG().is_some() {
+							return;
+						}
+						if let Some((idx, _, _)) = press() {
 							*DRAG.write() = Some(TabDrag { source: id, index: idx, over: None });
-							dragging.set(None);
+							moved.set(true);
+							press.set(None);
 						}
 					},
 					for (i , tab) in tabs.iter().enumerate() {
@@ -308,28 +358,41 @@ fn LeafPane(id: NodeId) -> Element {
 							role: "tab",
 							tabindex: 0,
 							"aria-selected": if i == active { "true" } else { "false" },
-							"data-dragging": if dragging() == Some(i) { "true" } else { "false" },
-							"data-insert": insert_mark(bar_insert, i, tab_count),
-							onpointerdown: move |_| {
-								dragging.set(Some(i));
+							"data-dragging": if dragged == Some(i) { "true" } else { "false" },
+							onresize: move |e| {
+								if let Ok(size) = e.get_border_box_size() {
+									tab_size.set((size.width, size.height));
+								}
+							},
+							onpointerdown: move |e: PointerEvent| {
+								let c = e.client_coordinates();
+								press.set(Some((i, c.x, c.y)));
 								moved.set(false);
 							},
-							// Mid cross-pane drag, hovering a tab targets its slot for insertion.
+							// Promote a pending press to a drag once it moves past the threshold, then mark
+							// the slot before/after this tab and place the insertion line there.
 							onpointermove: move |e: PointerEvent| {
-								if DRAG().is_some() {
-									e.stop_propagation();
-									set_over(DropTarget::Bar(id, i));
-								}
-							},
-							// Hovering another tab mid-reorder slots the dragged tab into its place.
-							onpointerenter: move |_| {
-								if let Some(from) = dragging() {
-									if from != i {
-										WORKSPACE.write().reorder_tab(id, from, i);
-										dragging.set(Some(i));
-										moved.set(true);
+								if DRAG().is_none() {
+									let Some((idx, sx, sy)) = press() else {
+										return;
+									};
+									let c = e.client_coordinates();
+									if (c.x - sx).hypot(c.y - sy) <= DRAG_THRESHOLD {
+										return;
 									}
+									*DRAG.write() = Some(TabDrag { source: id, index: idx, over: None });
+									moved.set(true);
+									press.set(None);
 								}
+								e.stop_propagation();
+								let (tw, th) = tab_size();
+								let el = e.element_coordinates();
+								let cl = e.client_coordinates();
+								let before = el.x < tw / 2.0;
+								set_over(DropTarget::Bar(id, if before { i } else { i + 1 }));
+								let left = cl.x - el.x;
+								let line_x = if before { left } else { left + tw };
+								set_hint(DropHint { x: line_x - 1.5, y: cl.y - el.y, w: 3.0, h: th, line: true });
 							},
 							onclick: move |_| {
 								if moved() {
@@ -416,21 +479,17 @@ fn LeafPane(id: NodeId) -> Element {
 								drop_size.set((size.width, size.height));
 							}
 						},
-						onpointermove: move |e| {
+						onpointermove: move |e: PointerEvent| {
 							let (w, h) = drop_size();
-							let p = e.element_coordinates();
-							set_over(DropTarget::Pane(id, drop_zone(p.x, p.y, w, h)));
+							let el = e.element_coordinates();
+							let cl = e.client_coordinates();
+							set_over(DropTarget::Pane(id, drop_zone(el.x, el.y, w, h)));
+							set_hint(zone_rect(el.x, el.y, cl.x - el.x, cl.y - el.y, w, h));
 						},
 						onpointerup: move |e: PointerEvent| {
 							e.stop_propagation();
 							commit_drag();
 						},
-						// Highlight the zone the drop would land in.
-						if let Some(DropTarget::Pane(over_id, zone)) = DRAG().and_then(|d| d.over) {
-							if over_id == id {
-								div { class: "pane-drop-indicator", "data-zone": zone_attr(zone) }
-							}
-						}
 					}
 				}
 			}
