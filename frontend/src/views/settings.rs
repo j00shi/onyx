@@ -32,6 +32,12 @@ pub static WINDOW_EFFECT: GlobalSignal<bool> = Signal::global(|| false);
 /// Multiplier applied to the `--border-radius-*` custom properties in `_theme.scss`.
 /// `1.0` keeps the designed radii; `0.0` squares every corner.
 pub static BORDER_RADIUS_SCALE: GlobalSignal<f64> = Signal::global(|| 1.0);
+/// Multiplier applied to the `--space-*` custom properties in `_theme.scss`.
+/// `1.0` keeps the designed spacing; larger values spread the interface out.
+pub static SPACING_SCALE: GlobalSignal<f64> = Signal::global(|| 1.0);
+/// Multiplier applied to the `--duration-*` and `--delay` custom properties in `_theme.scss`.
+/// `1.0` keeps the designed timings; `0.0` makes transitions instant.
+pub static DURATION_SCALE: GlobalSignal<f64> = Signal::global(|| 1.0);
 
 #[component]
 pub fn Settings() -> Element {
@@ -108,6 +114,40 @@ pub fn Settings() -> Element {
 					step: 0.25,
 					value: BORDER_RADIUS_SCALE(),
 					on_value_change: move |v: f64| *BORDER_RADIUS_SCALE.write() = v,
+				}
+			}
+			section { class: "setting",
+				div { class: "label",
+					span { class: "name", "Spacing" }
+					span { class: "description",
+						"Scale the spacing throughout the interface, from compact to roomy."
+					}
+				}
+				Slider {
+					label: "Spacing",
+					horizontal: true,
+					min: 0.5,
+					max: 2.0,
+					step: 0.25,
+					value: SPACING_SCALE(),
+					on_value_change: move |v: f64| *SPACING_SCALE.write() = v,
+				}
+			}
+			section { class: "setting",
+				div { class: "label",
+					span { class: "name", "Animation speed" }
+					span { class: "description",
+						"Scale the duration of transitions and animations, from instant to slow."
+					}
+				}
+				Slider {
+					label: "Animation speed",
+					horizontal: true,
+					min: 0.0,
+					max: 2.0,
+					step: 0.25,
+					value: DURATION_SCALE(),
+					on_value_change: move |v: f64| *DURATION_SCALE.write() = v,
 				}
 			}
 			section { class: "setting",

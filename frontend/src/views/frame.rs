@@ -8,9 +8,11 @@ use crate::platform::WindowEffect;
 use crate::views::ACCENT_HUE;
 use crate::views::BORDER_RADIUS_SCALE;
 use crate::views::DARK_MODE;
+use crate::views::DURATION_SCALE;
 use crate::views::SHOW_WALLPAPER;
 use crate::views::SIDEBAR_SWAPPED;
 use crate::views::SIDEBAR_VARIANT;
+use crate::views::SPACING_SCALE;
 use crate::views::WINDOW_EFFECT;
 use crate::workspace::WorkspaceView;
 
@@ -23,6 +25,8 @@ pub fn Frame() -> Element {
 		let theme = if DARK_MODE() { "dark" } else { "light" };
 		let hue = ACCENT_HUE();
 		let scale = BORDER_RADIUS_SCALE();
+		let spacing = SPACING_SCALE();
+		let duration = DURATION_SCALE();
 		let effect = WINDOW_EFFECT();
 		let js = format!(
 			"const r = document.documentElement; \
@@ -31,7 +35,14 @@ pub fn Frame() -> Element {
 			 r.style.setProperty('--hue', '{hue}deg'); \
 			 r.style.setProperty('--border-radius-sm', 'calc(0.5rem * {scale})'); \
 			 r.style.setProperty('--border-radius-md', 'calc(1rem * {scale})'); \
-			 r.style.setProperty('--border-radius-lg', 'calc(1.5rem * {scale})');"
+			 r.style.setProperty('--border-radius-lg', 'calc(1.5rem * {scale})'); \
+			 r.style.setProperty('--space-sm', 'calc(0.25rem * {spacing})'); \
+			 r.style.setProperty('--space-md', 'calc(0.5rem * {spacing})'); \
+			 r.style.setProperty('--space-lg', 'calc(1rem * {spacing})'); \
+			 r.style.setProperty('--duration-fast', 'calc(0.1s * {duration})'); \
+			 r.style.setProperty('--duration-medium', 'calc(0.2s * {duration})'); \
+			 r.style.setProperty('--duration-slow', 'calc(0.5s * {duration})'); \
+			 r.style.setProperty('--delay', 'calc(0.5s * {duration})');"
 		);
 		_ = document::eval(&js);
 	});
