@@ -228,6 +228,9 @@ $tab-max-count: 10;
 				flex-direction: row;
 
 				.ribbon {
+					// Lift above the panel so that tooltips aren't behind it
+					position: relative;
+					z-index: 1;
 					min-height: 0;
 					padding: 0;
 					padding-right: var(--space-sm);
