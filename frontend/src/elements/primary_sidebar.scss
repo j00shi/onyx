@@ -326,9 +326,11 @@ $tab-max-count: 10;
 						flex-grow var(--duration-medium) ease-out;
 
 					.tab-content {
+						flex: 1;
+						padding: var(--space-lg);
+						overflow-y: auto;
 						background-color: transparent;
 						border: none;
-						flex: 1;
 					}
 				}
 			}

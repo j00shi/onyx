@@ -81,6 +81,10 @@ $rail-docked: 2.75rem;
 
 			&:hover {
 				color: var(--secondary-color-1);
+
+				.leaf-tab-close {
+					opacity: 1;
+				}
 			}
 
 			// Dim the tab being dragged to its new slot (reorder feedback).
@@ -119,8 +123,10 @@ $rail-docked: 2.75rem;
 				border-radius: calc(var(--border-radius-md) - 0.75rem);
 				color: var(--secondary-color-5);
 				cursor: pointer;
+				opacity: 0;
 				transition:
 					color var(--duration-medium) linear,
+					opacity var(--duration-fast) linear,
 					background-color var(--duration-medium) linear;
 
 				&:hover {
