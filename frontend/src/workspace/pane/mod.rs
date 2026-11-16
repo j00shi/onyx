@@ -100,7 +100,7 @@ fn zone_rect(x: f64, y: f64, ox: f64, oy: f64, w: f64, h: f64) -> DropHint {
 		DropZone::Edge(Edge::Top) => (ox, oy, w, h / 2.0),
 		DropZone::Edge(Edge::Bottom) => (ox, oy + h / 2.0, w, h / 2.0),
 	};
-	DropHint { x: rx, y: ry, w: rw, h: rh, line: false }
+	DropHint { x: rx, y: ry, w: rw, h: rh, line: false, shift: GapShift::None }
 }
 
 /// The drop indicator's target rectangle in viewport pixels. A single element tweens between
@@ -113,6 +113,18 @@ struct DropHint {
 	h: f64,
 	/// Draw as a slim bar-insertion line rather than a filled zone.
 	line: bool,
+	/// For a bar-insertion line, nudge `x` by half the inter-tab gap (in CSS units) so the gap's
+	/// two edges resolve to one center point. Ignored for filled zones.
+	shift: GapShift,
+}
+
+/// Which way an insertion line is nudged into the gap's center: toward the previous tab
+/// (`Before`), the next (`After`), or not at all (filled zones).
+#[derive(Clone, Copy, PartialEq)]
+enum GapShift {
+	None,
+	Before,
+	After,
 }
 
 /// Where the drop indicator should be drawn, or `None` when nothing is hovered.
@@ -132,11 +144,18 @@ fn DropIndicator() -> Element {
 	let Some(h) = DROP_HINT() else {
 		return rsx! {};
 	};
+	// Fold the gap nudge into `left` so both edges of a gap compute to the same value — the tween
+	// then has nothing to animate across a gap, keeping the line from flicking between two points.
+	let shift = match h.shift {
+		GapShift::Before => " - (var(--space-sm) / 2)",
+		GapShift::After => " + (var(--space-sm) / 2)",
+		GapShift::None => "",
+	};
 	rsx! {
 		div {
 			class: "drop-indicator",
 			"data-line": h.line,
-			style: "left: {h.x}px; top: {h.y}px; width: {h.w}px; height: {h.h}px;",
+			style: "left: calc({h.x}px{shift}); top: {h.y}px; width: {h.w}px; height: {h.h}px;",
 		}
 	}
 }

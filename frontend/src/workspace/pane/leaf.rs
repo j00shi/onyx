@@ -7,7 +7,8 @@ use dioxus_icons::lucide::{Columns2, Plus, X};
 use super::super::model::{Edge, Node, NodeId, View};
 use super::super::WORKSPACE;
 use super::{
-	commit_drag, drop_zone, set_hint, set_over, zone_rect, DropHint, DropTarget, TabDrag, DRAG, DRAG_THRESHOLD,
+	commit_drag, drop_zone, set_hint, set_over, zone_rect, DropHint, DropTarget, GapShift, TabDrag, DRAG,
+	DRAG_THRESHOLD,
 };
 use crate::components::button::{Button, ButtonSize, ButtonVariant};
 use crate::components::dropdown_menu::{DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger};
@@ -32,7 +33,6 @@ pub(super) fn LeafPane(id: NodeId) -> Element {
 	// Size (px) of a tab pill, for positioning the bar-insertion line.
 	let mut tab_size = use_signal(|| (0.0_f64, 0.0_f64));
 
-	let tab_count = tabs.len();
 	// Index of the tab being dragged out of this leaf (dimmed while dragging), if any.
 	let dragged = match DRAG() {
 		Some(d) if d.source == id => Some(d.index),
@@ -43,17 +43,9 @@ pub(super) fn LeafPane(id: NodeId) -> Element {
 		div { class: "leaf-pane",
 			div { class: "leaf-tabbar", role: "tablist",
 				div {
-					class: "leaf-tablist",
-					// Over empty bar space mid-drag, target the end of this bar.
-					onpointermove: move |e: PointerEvent| {
-						if DRAG().is_some() {
-							set_over(DropTarget::Bar(id, tab_count));
-							let (_, th) = tab_size();
-							let el = e.element_coordinates();
-							let cl = e.client_coordinates();
-							set_hint(DropHint { x: cl.x - 1.5, y: cl.y - el.y, w: 3.0, h: th, line: true });
-						}
-					},
+					// `dragging` makes the pills' children pointer-transparent mid-drag so pointermove
+					// coordinates stay relative to the pill (see the per-tab handler below).
+					class: if DRAG().is_some() { "leaf-tablist dragging" } else { "leaf-tablist" },
 					onpointerup: move |e: PointerEvent| {
 						if DRAG().is_some() {
 							e.stop_propagation();
@@ -117,8 +109,11 @@ pub(super) fn LeafPane(id: NodeId) -> Element {
 								let before = el.x < tw / 2.0;
 								set_over(DropTarget::Bar(id, if before { i } else { i + 1 }));
 								let left = cl.x - el.x;
-								let line_x = if before { left } else { left + tw };
-								set_hint(DropHint { x: line_x - 1.5, y: cl.y - el.y, w: 3.0, h: th, line: true });
+								// Snap to the near edge; CSS nudges the line to the gap's center so both sides of a
+								// gap land on the same point instead of two edges a gap apart.
+								let (line_x, shift) =
+									if before { (left, GapShift::Before) } else { (left + tw, GapShift::After) };
+								set_hint(DropHint { x: line_x - 1.5, y: cl.y - el.y, w: 3.0, h: th, line: true, shift });
 							},
 							onclick: move |_| {
 								if moved() {
