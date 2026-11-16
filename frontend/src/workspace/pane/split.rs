@@ -74,6 +74,7 @@ pub(super) fn SplitPane(id: NodeId) -> Element {
 					div {
 						class: "pane-divider",
 						"data-axis": axis_attr,
+						"data-resizing": if drag.read().as_ref().is_some_and(|d| d.index == i) { "true" } else { "false" },
 						onpointerdown: move |e| {
 							let p = if horizontal { e.client_coordinates().x } else { e.client_coordinates().y };
 							if let Some(Node::Split { fractions, .. }) = WORKSPACE.read().node(id).cloned() {

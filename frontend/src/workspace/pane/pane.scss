@@ -178,44 +178,37 @@ $rail-docked: 2.75rem;
 	overflow: hidden;
 }
 
-// Draggable handle between two panes. The thin line carries a wider invisible hit area so it's
-// easy to grab; `touch-action: none` keeps a touch-drag from scrolling instead.
+// Draggable handle between two panes. Mirrors the sidebar's resize handle (`base_sidebar.scss`):
+// a 0.75rem band floating over the seam (negative margins collapse its layout footprint so the
+// panes stay flush), invisible until hovered or dragged, when a soft gradient line fades in.
+// `touch-action: none` keeps a touch-drag from scrolling instead.
 .pane-divider {
 	position: relative;
 	z-index: 1;
 	flex: 0 0 auto;
-	background-color: var(--primary-color-6);
+	opacity: 0;
 	touch-action: none;
 	user-select: none;
+	transition: opacity var(--duration-medium) ease;
 
 	&[data-axis="horizontal"] {
-		width: 1px;
-		cursor: col-resize;
+		width: 0.75rem;
+		margin: 0 -0.375rem;
+		background-image: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
+		cursor: ew-resize;
 	}
 
 	&[data-axis="vertical"] {
-		height: 1px;
-		cursor: row-resize;
+		height: 0.75rem;
+		margin: -0.375rem 0;
+		background-image: linear-gradient(to bottom, transparent, var(--focused-border-color), transparent);
+		cursor: ns-resize;
 	}
 
-	&::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-	}
-
-	&[data-axis="horizontal"]::after {
-		right: -3px;
-		left: -3px;
-	}
-
-	&[data-axis="vertical"]::after {
-		top: -3px;
-		bottom: -3px;
-	}
-
-	&:hover {
-		background-color: var(--focused-border-color);
+	// Stay lit through the drag; the overlay captures the pointer (losing :hover) but is transparent.
+	&:hover,
+	&[data-resizing="true"] {
+		opacity: 1;
 	}
 }
 
@@ -228,11 +221,11 @@ $rail-docked: 2.75rem;
 	touch-action: none;
 
 	&[data-axis="horizontal"] {
-		cursor: col-resize;
+		cursor: ew-resize;
 	}
 
 	&[data-axis="vertical"] {
-		cursor: row-resize;
+		cursor: ns-resize;
 	}
 }
 
