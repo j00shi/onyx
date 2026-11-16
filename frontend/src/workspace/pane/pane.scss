@@ -21,10 +21,17 @@ $rail-docked: 2.75rem;
 	position: relative;
 	height: 100%;
 	flex-direction: column;
+	border-radius: calc(var(--border-radius-md) - 0.25rem);
+	overflow: hidden;
 }
 
 .leaf-tabbar {
 	display: flex;
+	position: absolute;
+	z-index: 60;
+	top: 0;
+	right: 0;
+	left: 0;
 	height: $tabbar-height;
 	gap: var(--space-sm);
 	border-radius: calc(var(--border-radius-md) - 0.25rem);
@@ -273,5 +280,8 @@ $rail-docked: 2.75rem;
 	position: relative;
 	min-height: 0;
 	flex: 1;
+
+	// Clear the floating tab bar so the top of the content isn't hidden; content scrolls up under it.
+	padding-top: $tabbar-height;
 	overflow: auto;
 }
