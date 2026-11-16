@@ -52,6 +52,7 @@ $rail-docked: 2.75rem;
 		gap: var(--space-sm);
 		overflow-x: auto;
 		scrollbar-width: none;
+		border-radius: calc(var(--border-radius-md) - 0.5rem);
 
 		// Fade the edge that still has off-screen tabs
 		@include scroll-fade(inline, 3rem);
@@ -104,6 +105,12 @@ $rail-docked: 2.75rem;
 				width: 1px;
 				height: 100%;
 				background-color: var(--secondary-color-6);
+			}
+
+			// No gap on the last tab. This divider would overhang the content and make the
+			// tablist always scroll
+			&:last-child::after {
+				display: none;
 			}
 
 			.leaf-tab-title {
