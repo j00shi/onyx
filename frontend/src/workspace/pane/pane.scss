@@ -17,27 +17,26 @@ $rail-docked: 2.75rem;
 }
 
 .leaf-pane {
-	display: flex;
-	position: relative;
+	@include default(relative, flex);
+	@include rounding(var(--border-radius-md), 1, 0.25rem);
+
 	height: 100%;
 	flex-direction: column;
-	border-radius: calc(var(--border-radius-md) - 0.25rem);
 	overflow: hidden;
 }
 
 .leaf-tabbar {
-	display: flex;
-	position: absolute;
+	@include default(absolute, flex);
+	@include rounding(var(--border-radius-md), 1, 0.25rem);
+	@include color(color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal)), null);
+	@include space(null, var(--space-sm), var(--space-sm));
+
+	backdrop-filter: blur(var(--blur));
 	z-index: 60;
 	top: 0;
 	right: 0;
 	left: 0;
 	height: $tabbar-height;
-	gap: var(--space-sm);
-	border-radius: calc(var(--border-radius-md) - 0.25rem);
-	backdrop-filter: blur(var(--blur));
-	background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
-	padding: var(--space-sm);
 
 	// margin-left: calc((var(--primary-sidebar-width) - 5rem) * var(--primary-sidebar-collapsed));
 	// transition: margin-left 0.2s ease-out;
@@ -50,19 +49,16 @@ $rail-docked: 2.75rem;
 
 	// Only as wide as its tabs so the add button sits right beside them; scrolls if they overflow.
 	.leaf-tablist {
-		display: flex;
+		@include rounding(var(--border-radius-md), 2, 0.25rem);
+		@include flex-parent(row, null, center, var(--space-sm));
+		@include scroll-fade(inline, 3rem);
+
 		height: 100%;
 		flex: 0 1 auto;
 		min-width: 0;
 		flex-direction: row;
-		align-items: center;
-		gap: var(--space-sm);
 		overflow-x: auto;
 		scrollbar-width: none;
-		border-radius: calc(var(--border-radius-md) - 0.5rem);
-
-		// Fade the edge that still has off-screen tabs
-		@include scroll-fade(inline, 3rem);
 
 		&::-webkit-scrollbar {
 			display: none;
@@ -71,17 +67,15 @@ $rail-docked: 2.75rem;
 		// A tab is the clickable pill: it holds the title and the close button, so the close sits inside
 		// the tab and the whole pill is a click target.
 		.leaf-tab {
-			display: flex;
-			position: relative;
-			height: 100%;
+			@include default(relative, flex);
+			@include size(12rem, 100%);
+			@include rounding(var(--border-radius-md), 2, 0.25rem);
+
+			color: var(--secondary-color-5);
 			flex-shrink: 0;
-			width: 12rem;
 			justify-content: space-between;
 			align-items: center;
 			padding: var(--space-sm);
-			border-radius: calc(var(--border-radius-md) - 0.5rem);
-			background: none;
-			color: var(--secondary-color-5);
 			cursor: pointer;
 			user-select: none;
 			transition: color var(--duration-medium) linear;
@@ -100,17 +94,20 @@ $rail-docked: 2.75rem;
 			}
 
 			&[aria-selected="true"] {
-				background-color: color-mix(in oklab, var(--primary-color-6), transparent var(--transparency-light));
-				color: var(--secondary-color-1);
+				@include color(
+					color-mix(in oklab, var(--primary-color-6), transparent var(--transparency-light)),
+					var(--secondary-color-1)
+				);
+
 				box-shadow: var(--dark, inset 0 0 0 1px var(--primary-color-7)) var(--light, 0 1px 2px rgb(0 0 0 / 18%));
 			}
 
 			&::after {
+				@include size(1px, 100%);
+
 				content: "";
 				position: absolute;
 				right: calc(var(--space-sm) / -2);
-				width: 1px;
-				height: 100%;
 				background-color: var(--secondary-color-6);
 			}
 
@@ -128,13 +125,11 @@ $rail-docked: 2.75rem;
 			}
 
 			.leaf-tab-close {
-				display: flex;
-				align-items: center;
-				justify-content: center;
+				@include flex-center;
+				@include color(transparent, var(--secondary-color-5));
+				@include rounding(var(--border-radius-md), 3, 0.25rem);
+
 				border: none;
-				background: none;
-				border-radius: calc(var(--border-radius-md) - 0.75rem);
-				color: var(--secondary-color-5);
 				cursor: pointer;
 				opacity: 0;
 				transition:
@@ -143,37 +138,38 @@ $rail-docked: 2.75rem;
 					background-color var(--duration-medium) linear;
 
 				&:hover {
-					background-color: var(--light, var(--primary-color-5))
-						var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent));
-					color: var(--secondary-color-1);
+					@include color(
+						var(--light, var(--primary-color-5))
+							var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
+						var(--secondary-color-1)
+					);
 				}
 			}
 		}
 	}
 
 	.leaf-tab-add {
-		width: 1.5rem !important;
-		height: 1.5rem !important;
-		border-radius: calc(var(--border-radius-md) - 0.5rem);
+		@include size(1.5rem !important);
+		@include rounding(var(--border-radius-md), 2, 0.25rem);
 	}
 
 	// Split-pane dropdown trigger. The descendant selector outranks the vendored
 	// `.dx-dropdown-menu-trigger` so we can reset its chunky default to a plain icon button.
 	.leaf-tab-split {
-		display: flex;
-		width: 1.5rem;
-		height: 1.5rem;
-		align-items: center;
-		justify-content: center;
+		@include flex-center;
+		@include size(1.5rem);
+		@include rounding(var(--border-radius-md), 2, 0.25rem);
+		@include color(transparent, var(--secondary-color-4));
+
 		padding: 0;
-		border-radius: calc(var(--border-radius-md) - 0.5rem);
-		background: none;
 		box-shadow: none;
-		color: var(--secondary-color-5);
 
 		&:hover {
-			background: none;
-			color: var(--secondary-color-1);
+			@include color(
+				var(--light, var(--primary-color-5))
+					var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
+				var(--secondary-color-1)
+			);
 		}
 	}
 }

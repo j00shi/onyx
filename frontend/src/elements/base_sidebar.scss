@@ -98,17 +98,17 @@
 
 			// Wrapper used for the expand/collapse transition
 			&::before {
+				@include color(
+					color-mix(in oklab, var(--dx-sidebar-background), transparent var(--transparency-strong)),
+					null
+				);
+
+				backdrop-filter: blur(var(--blur));
 				content: "";
 				position: absolute;
 				z-index: 0;
 				inset: 0;
-				background-color: color-mix(
-					in oklab,
-					var(--dx-sidebar-background),
-					transparent var(--transparency-strong)
-				);
 				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-				backdrop-filter: blur(var(--blur));
 				border: var(--border);
 				border-radius: var(--border-radius-md);
 				transition: top var(--duration-medium) linear;
@@ -158,7 +158,8 @@
 	// Mobile only styling
 	[data-mobile="true"] {
 		// Translucent, blurred panel to match the desktop sidebar instead of a solid fill
-		background-color: color-mix(in oklab, var(--dx-sidebar-background), transparent var(--transparency-strong));
+		@include color(color-mix(in oklab, var(--dx-sidebar-background), transparent var(--transparency-strong)), null);
+
 		backdrop-filter: blur(var(--blur));
 
 		// Resize handle not needed on mobile

@@ -123,11 +123,11 @@ $tab-max-count: 10;
 	.primary-sidebar,
 	[data-mobile="true"] {
 		.tabs {
+			@include space(null, var(--space-sm), var(--space-md));
+
 			position: relative;
 			flex: 1;
 			min-height: 0;
-			padding: var(--space-sm);
-			gap: var(--space-md);
 
 			.header,
 			.content {
@@ -136,11 +136,12 @@ $tab-max-count: 10;
 			}
 
 			.header {
+				@include rounding(var(--border-radius-md), 1, 0.25rem);
+
 				flex-direction: column;
 				height: $tablist-height;
 				gap: 0;
 				background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
-				border-radius: calc(var(--border-radius-md) - 0.25rem);
 				transition:
 					backdrop-filter var(--duration-medium) linear,
 					margin-left var(--duration-medium) linear;
@@ -160,9 +161,10 @@ $tab-max-count: 10;
 				}
 
 				.tablist {
+					// Header is a column now, so grow across (flex: 1 only grows down)
+					@include size(100%, #{$tablist-height});
+
 					position: relative;
-					width: 100%; // Header is a column now, so grow across (flex: 1 only grows down)
-					height: #{$tablist-height};
 					background-color: transparent;
 
 					// Each tab is wrapped in a tooltip
@@ -189,11 +191,12 @@ $tab-max-count: 10;
 					// active tab's position — both via `:has()`, so this adapts to tabs added/removed at
 					// runtime (see `$tab-max-count` above).
 					&::before {
+						@include rounding(var(--border-radius-md), 2, 0.25rem);
+
 						content: "";
 						position: absolute;
 						z-index: 0;
 						inset: $tab-pill-inset;
-						border-radius: calc(var(--border-radius-md) - 0.5rem);
 
 						// background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
 						background-color: color-mix(
@@ -238,15 +241,14 @@ $tab-max-count: 10;
 					// Two independent groups, both scroll so any number of buttons fits
 					.ribbon-top,
 					.ribbon-bottom {
+						@include scroll-fade(block);
+
 						display: flex;
 						flex-direction: column;
 						gap: var(--space-sm);
 						min-height: 0;
 						overflow-y: auto;
 						scrollbar-width: none;
-
-						// Fade the edge that still has off-screen buttons
-						@include scroll-fade(block);
 
 						// `overflow-y` forces `overflow-x` to clip, which would cut off tooltips
 						// tooltips. Pad the clip-box toward to give them room, then cancel that
@@ -269,19 +271,20 @@ $tab-max-count: 10;
 
 					// Basically a normal sized ghost button. Needed because some ribbons buttons are not actually button
 					.ribbon-button {
-						width: 2.25rem;
-						height: 2.25rem;
+						@include size(2.25rem);
+						@include color(transparent, var(--secondary-color-4));
+
 						padding: 0;
-						background-color: transparent;
 						border-radius: var(--border-radius-md);
 						box-shadow: none;
 						cursor: default;
-						color: var(--secondary-color-4);
 
 						&:hover {
-							background-color: var(--light, var(--primary-color-5))
-								var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%));
-							color: var(--secondary-color-1);
+							@include color(
+								var(--light, var(--primary-color-5))
+									var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%)),
+								var(--secondary-color-1)
+							);
 						}
 					}
 
@@ -304,14 +307,16 @@ $tab-max-count: 10;
 
 					// Lift the menu into a floating, non-clipped layer tethered to its trigger
 					.dropdown-content {
+						@include rounding(var(--border-radius-md));
+
 						position: fixed;
 						inset: anchor(top) auto auto calc(anchor(right) + var(--space-md));
 						min-width: 11.5rem;
-						border-radius: var(--border-radius-md);
 						position-try-fallbacks:
 							flip-block, flip-inline; // Flip across the trigger if the default placement would spill off a viewport edge.
+
 						.dropdown-item {
-							border-radius: calc(var(--border-radius-md) - 0.25rem);
+							@include rounding(var(--border-radius-md), 1, 0.25rem);
 						}
 					}
 				}
