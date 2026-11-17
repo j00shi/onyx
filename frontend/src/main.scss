@@ -21,12 +21,7 @@ body {
 body {
 	@include color(var(--primary-color-1), var(--secondary-color-1));
 
-	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-	user-select: none;
-
-	::-webkit-scrollbar {
-		display: none;
-	}
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 // When the native window backdrop is on, the page itself must be see-through for the blur to show
@@ -34,8 +29,4 @@ body {
 // set in `views/frame.rs`.
 html[data-window-effect="true"] body {
 	background: transparent;
-}
-
-[data-button-disabled="true"] {
-	pointer-events: none;
 }

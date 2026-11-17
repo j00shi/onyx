@@ -322,6 +322,8 @@ $tab-max-count: 10;
 				}
 
 				.panel {
+					@include rounding(var(--border-radius-md), 1, 0.25rem);
+
 					padding: 0;
 					flex: 1;
 					overflow: hidden;
