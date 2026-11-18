@@ -2,7 +2,7 @@
 //! content, which doubles as an edge/center drop target while a tab is being dragged.
 
 use dioxus::prelude::*;
-use dioxus_icons::lucide::{Columns2, Plus, X};
+use dioxus_icons::lucide::{Columns2, PanelLeft, PanelRight, Plus, X};
 
 use super::super::model::{Edge, Node, NodeId, View};
 use super::super::WORKSPACE;
@@ -12,7 +12,8 @@ use super::{
 };
 use crate::components::button::{Button, ButtonSize, ButtonVariant};
 use crate::components::dropdown_menu::{DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger};
-use crate::views::{Home, NewTab, Settings};
+use crate::elements::{PRIMARY_SIDEBAR_CTX, SECONDARY_SIDEBAR_CTX};
+use crate::views::{Home, NewTab, Settings, SIDEBAR_SWAPPED};
 
 /// A single tab group: its own tab bar plus the active tab's content below it.
 #[component]
@@ -42,6 +43,21 @@ pub(super) fn LeafPane(id: NodeId) -> Element {
 	rsx! {
 		div { class: "leaf-pane",
 			div { class: "leaf-tabbar", role: "tablist",
+				// Toggles whichever sidebar is docked on the left (primary unless swapped); sits at the
+				// start of the bar.
+				Button {
+					class: "leaf-sidebar-toggle",
+					variant: ButtonVariant::Ghost,
+					size: ButtonSize::IconSm,
+					"aria-label": "Toggle left sidebar",
+					onclick: move |_| {
+						let ctx = if SIDEBAR_SWAPPED() { SECONDARY_SIDEBAR_CTX() } else { PRIMARY_SIDEBAR_CTX() };
+						if let Some(ctx) = ctx {
+							ctx.toggle();
+						}
+					},
+					PanelLeft { size: "1rem" }
+				}
 				div {
 					// `dragging` makes the pills' children pointer-transparent mid-drag so pointermove
 					// coordinates stay relative to the pill (see the per-tab handler below).
@@ -184,6 +200,21 @@ pub(super) fn LeafPane(id: NodeId) -> Element {
 							"Split up"
 						}
 					}
+				}
+				// Toggles whichever sidebar is docked on the right (secondary unless swapped); pushed to
+				// the far end of the bar.
+				Button {
+					class: "leaf-sidebar-toggle leaf-sidebar-toggle-end",
+					variant: ButtonVariant::Ghost,
+					size: ButtonSize::IconSm,
+					"aria-label": "Toggle right sidebar",
+					onclick: move |_| {
+						let ctx = if SIDEBAR_SWAPPED() { PRIMARY_SIDEBAR_CTX() } else { SECONDARY_SIDEBAR_CTX() };
+						if let Some(ctx) = ctx {
+							ctx.toggle();
+						}
+					},
+					PanelRight { size: "1rem" }
 				}
 			}
 			div { class: "leaf-content",

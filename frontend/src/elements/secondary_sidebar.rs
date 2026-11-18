@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::components::sidebar::{SidebarHeader, SidebarSide};
-use crate::elements::BaseSidebar;
+use crate::elements::{BaseSidebar, SECONDARY_SIDEBAR_CTX};
 use crate::views::SIDEBAR_SWAPPED;
 
 /// The secondary sidebar. Docks on the right by default, or the left when the layout is swapped.
@@ -15,6 +15,7 @@ pub fn SecondarySidebar(children: Element) -> Element {
 		BaseSidebar {
 			name: "secondary".to_string(),
 			side: if SIDEBAR_SWAPPED() { SidebarSide::Left } else { SidebarSide::Right },
+			register: move |ctx| *SECONDARY_SIDEBAR_CTX.write() = Some(ctx),
 			body: rsx! {
 				div { class: "sidebar-body",
 					SidebarHeader { class: "header" }

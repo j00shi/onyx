@@ -1,9 +1,16 @@
 use dioxus::prelude::*;
 
 use crate::components::sidebar::{
-	Sidebar, SidebarCollapsible, SidebarInset, SidebarProvider, SidebarSide, SidebarVariant,
+	use_sidebar, Sidebar, SidebarCollapsible, SidebarCtx, SidebarInset, SidebarProvider, SidebarSide, SidebarVariant,
 };
 use crate::views::{MOBILE_REACH_LAYOUT, SIDEBAR_VARIANT};
+
+/// Live handles to each sidebar's context, published by [`SidebarCtxBridge`].
+///
+/// Let UI outside the providers (the content tab bar) toggle the sidebars; `None` until the
+/// matching sidebar has rendered.
+pub static PRIMARY_SIDEBAR_CTX: GlobalSignal<Option<SidebarCtx>> = Signal::global(|| None);
+pub static SECONDARY_SIDEBAR_CTX: GlobalSignal<Option<SidebarCtx>> = Signal::global(|| None);
 
 /// Minimal and maximal width for the sidebar
 const MIN_WIDTH: f64 = 200.0;
@@ -31,6 +38,10 @@ pub fn BaseSidebar(
 	/// Starting width in px
 	#[props(default = 256.0)]
 	default_width: f64,
+	/// Called once with this sidebar's [`SidebarCtx`] once it's live, so UI outside the provider
+	/// (the content tab bar) can toggle it. See [`SidebarCtxBridge`].
+	#[props(default)]
+	register: Callback<SidebarCtx>,
 	/// The sidebar's own content; its root must carry the `sidebar-body` class
 	body: Element,
 	/// Content shown in the inset (nested sidebars / outlet)
@@ -61,6 +72,8 @@ pub fn BaseSidebar(
 				),
 				open: Some(open()),
 				on_open_change: move |v| open.set(v),
+				// Publishes the provider's context outward (see the `register` prop).
+				SidebarCtxBridge { register }
 				Sidebar {
 					class: format!("base-sidebar {name}-sidebar"),
 					side,
@@ -119,4 +132,14 @@ pub fn BaseSidebar(
 			}
 		}
 	}
+}
+
+/// Zero-render child mounted inside the `SidebarProvider` so it can read the provider's
+/// [`SidebarCtx`] and hand it back to `register`. Lets the content tab bar (outside the provider)
+/// toggle the sidebar — `ctx.toggle()` already picks the right desktop/mobile state.
+#[component]
+fn SidebarCtxBridge(register: Callback<SidebarCtx>) -> Element {
+	let ctx = use_sidebar();
+	use_effect(move || register.call(ctx));
+	rsx! {}
 }

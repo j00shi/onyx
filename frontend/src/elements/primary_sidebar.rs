@@ -12,7 +12,7 @@ use crate::components::sidebar::{
 };
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
 use crate::components::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
-use crate::elements::BaseSidebar;
+use crate::elements::{BaseSidebar, PRIMARY_SIDEBAR_CTX};
 use crate::views::{CUSTOM_TITLEBAR, MOBILE_REACH_LAYOUT, SIDEBAR_SWAPPED};
 use crate::workspace::model::View;
 use crate::workspace::WORKSPACE;
@@ -29,6 +29,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 		BaseSidebar {
 			name: "primary".to_string(),
 			side: if SIDEBAR_SWAPPED() { SidebarSide::Right } else { SidebarSide::Left },
+			register: move |ctx| *PRIMARY_SIDEBAR_CTX.write() = Some(ctx),
 			body: rsx! {
 				SidebarTabs {}
 			},

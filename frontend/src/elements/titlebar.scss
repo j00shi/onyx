@@ -2,21 +2,17 @@
 // (recompile with `sass frontend/src:frontend/src --style=compressed`).
 
 #titlebar {
-	--titlebar-height: 2.5rem;
-
 	display: flex;
 	flex: 0 0 auto;
 	align-items: stretch;
-	height: var(--titlebar-height);
+	height: 2.5rem;
 	user-select: none;
 
 	// macOS keeps the native traffic lights with a full-size content view, so the bar overlays the
 	// content (the lights sit over the sidebar's top corner) rather than taking a row of its own
 	&[data-os="macos"] {
 		position: absolute;
-		top: 0;
-		right: 0;
-		left: 0;
+		inset: 0 0 auto;
 		z-index: 50;
 	}
 

@@ -18,10 +18,10 @@ html[data-theme="light"] {
 }
 
 :root {
-	/* Application tint */
+	// Application tint
 	--hue: 200deg;
 
-	/* Primary colors */
+	// Primary colors
 	--primary-color: var(--dark, hsl(var(--hue) 100% 1%)) var(--light, hsl(var(--hue) 25% 99%));
 	--primary-color-1: var(--dark, hsl(var(--hue) 25% 3%)) var(--light, hsl(var(--hue) 25% 97%));
 	--primary-color-2: var(--dark, hsl(var(--hue) 25% 5%)) var(--light, hsl(var(--hue) 25% 95%));
@@ -31,7 +31,7 @@ html[data-theme="light"] {
 	--primary-color-6: var(--dark, hsl(var(--hue) 25% 20%)) var(--light, hsl(var(--hue) 25% 80%));
 	--primary-color-7: var(--dark, hsl(var(--hue) 25% 25%)) var(--light, hsl(var(--hue) 25% 75%));
 
-	/* Secondary colors */
+	// Secondary colors
 	--secondary-color: var(--dark, hsl(var(--hue) 25% 100%)) var(--light, hsl(var(--hue) 25% 0%));
 	--secondary-color-1: var(--dark, hsl(var(--hue) 25% 95%)) var(--light, hsl(var(--hue) 25% 5%));
 	--secondary-color-2: var(--dark, hsl(var(--hue) 25% 90%)) var(--light, hsl(var(--hue) 25% 10%));
@@ -40,7 +40,7 @@ html[data-theme="light"] {
 	--secondary-color-5: var(--dark, hsl(var(--hue) 25% 50%)) var(--light, hsl(var(--hue) 25% 50%));
 	--secondary-color-6: var(--dark, hsl(var(--hue) 25% 25%)) var(--light, hsl(var(--hue) 25% 75%));
 
-	/* Highlight colors */
+	// Highlight colors
 	--focused-border-color: var(--dark, hsl(216deg 100% 58%)) var(--light, hsl(216deg 100% 58%));
 	--primary-success-color: var(--dark, hsl(162deg 90% 8%)) var(--light, hsl(152deg 81% 96%));
 	--secondary-success-color: var(--dark, hsl(160deg 87% 85%)) var(--light, hsl(160deg 84% 39%));
@@ -52,24 +52,24 @@ html[data-theme="light"] {
 	--primary-info-color: var(--dark, var(--primary-color-5)) var(--light, var(--primary-color));
 	--secondary-info-color: var(--dark, var(--primary-color-7)) var(--light, var(--secondary-color-3));
 
-	/* Borders */
+	// Borders
 	--border: 1px solid var(--primary-color-6);
 	--border-radius-sm: 0.5rem;
 	--border-radius-md: 1rem;
 	--border-radius-lg: 1.5rem;
 
-	/* Spacing */
+	// Spacing
 	--space-sm: 0.25rem;
 	--space-md: 0.5rem;
 	--space-lg: 1rem;
 
-	/* Transition & Animatinon */
+	// Transition & Animatinon
 	--duration-fast: 0.1s;
 	--duration-medium: 0.2s;
 	--duration-slow: 0.5s;
 	--delay: 0.5s;
 
-	/* Misc */
+	// Misc
 	--transparency-light: 20%;
 	--transparency-normal: 40%;
 	--transparency-strong: 60%;
