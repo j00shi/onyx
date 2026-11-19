@@ -1,10 +1,6 @@
 @use "../../mixins" as *;
 @include scroll-fade-keyframes;
 
-// Keep in sync with `$tablist-height` in `primary_sidebar.scss`: the content tab bar matches the
-// height of the sidebar's tab bar.
-$tabbar-height: 2rem;
-
 // Width of the collapsed primary sidebar rail (where the content begins). Floating adds the
 // container padding; docked is just the icon column. Used to offset the tab bar so it clears the
 // sidebar header, which keeps its expanded width and overflows into the content when collapsed.
@@ -23,6 +19,11 @@ $rail-docked: 2.75rem;
 	height: 100%;
 	flex-direction: column;
 	overflow: hidden;
+
+	// No rounding on small layout
+	@media (width <= 768px) {
+		border-radius: 0;
+	}
 }
 
 .leaf-tabbar {
@@ -34,7 +35,12 @@ $rail-docked: 2.75rem;
 	backdrop-filter: blur(var(--blur));
 	z-index: 60;
 	inset: 0 0 auto;
-	height: $tabbar-height;
+	height: var(--header-height);
+
+	// No rounding on small layout
+	@media (width <= 768px) {
+		border-radius: 0;
+	}
 
 	// margin-left: calc((var(--primary-sidebar-width) - 5rem) * var(--primary-sidebar-collapsed));
 	// transition: margin-left 0.2s ease-out;
@@ -42,8 +48,10 @@ $rail-docked: 2.75rem;
 	// Primary/secondary sidebar toggles. The primary sits at the start of the bar; the end one
 	// (secondary) is pushed to the far side.
 	.leaf-sidebar-toggle {
-		@include size(1.5rem !important);
 		@include rounding(var(--border-radius-md), 2, 0.25rem);
+		@include size(null, 100% !important, 1);
+
+		max-width: 2rem;
 
 		&.leaf-sidebar-toggle-end {
 			margin-left: auto;
@@ -68,6 +76,11 @@ $rail-docked: 2.75rem;
 		flex-direction: row;
 		overflow-x: auto;
 		scrollbar-width: none;
+
+		// No rounding on small layout
+		@media (width <= 768px) {
+			border-radius: 0;
+		}
 
 		&::-webkit-scrollbar {
 			display: none;
@@ -135,9 +148,11 @@ $rail-docked: 2.75rem;
 
 			.leaf-tab-close {
 				@include flex-center;
+				@include size(null, 100%, 1);
 				@include color(transparent, var(--secondary-color-5));
 				@include rounding(var(--border-radius-md), 3, 0.25rem);
 
+				max-width: 2rem;
 				border: none;
 				cursor: pointer;
 				opacity: 0;
@@ -158,18 +173,21 @@ $rail-docked: 2.75rem;
 	}
 
 	.leaf-tab-add {
-		@include size(1.5rem !important);
 		@include rounding(var(--border-radius-md), 2, 0.25rem);
+		@include size(null, 100% !important, 1);
+
+		max-width: 2rem;
 	}
 
 	// Split-pane dropdown trigger. The descendant selector outranks the vendored
 	// `.dx-dropdown-menu-trigger` so we can reset its chunky default to a plain icon button.
 	.leaf-tab-split {
 		@include flex-center;
-		@include size(1.5rem);
+		@include size(null, 100%, 1);
 		@include rounding(var(--border-radius-md), 2, 0.25rem);
 		@include color(transparent, var(--secondary-color-4));
 
+		max-width: 2rem;
 		padding: 0;
 		box-shadow: none;
 
@@ -287,6 +305,6 @@ $rail-docked: 2.75rem;
 	flex: 1;
 
 	// Clear the floating tab bar so the top of the content isn't hidden; content scrolls up under it.
-	padding-top: $tabbar-height;
+	padding-top: var(--header-height);
 	overflow: auto;
 }

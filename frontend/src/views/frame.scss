@@ -49,6 +49,15 @@ html[data-window-effect="true"] #frame {
 	&[data-sidebar-variant="floating"] {
 		padding-top: 0.75rem;
 	}
+
+	// In the small (mobile) layout the sidebars collapse away; sit the content flush to the top.
+	@media (width <= 768px) {
+		padding-top: 0;
+
+		&[data-sidebar-variant="floating"] {
+			padding-top: 0;
+		}
+	}
 }
 
 // Default is `flex: 1 1 0%` with no `min-width`. This fix prevents content from being pushed

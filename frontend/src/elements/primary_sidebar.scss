@@ -1,10 +1,9 @@
 @use "../mixins" as *;
 @include scroll-fade-keyframes;
 
-// The header stacks a window-controls row above the tab bar.
-$controls-height: 2rem;
-$tablist-height: 2rem;
-$header-height: $controls-height + $tablist-height; // Needed for the transition
+:root {
+	--header-height-macos: var(--header-height) + 2rem;
+}
 
 // Horizontal room added to the ribbon's scroll clip-box so a sideways tooltip isn't clipped
 $ribbon-tooltip-room: 17rem;
@@ -49,18 +48,18 @@ $tab-max-count: 10;
 		// resize handle start lower to clear it
 		&:has(.controls-wrapper) {
 			.tabs::before {
-				top: calc(#{$header-height} + 0.5rem);
+				top: calc(var(--header-height-macos) + 0.5rem);
 			}
 
 			.resize-handle {
-				top: calc(#{$header-height} + 1rem);
+				top: calc(var(--header-height-macos) + 1rem);
 			}
 		}
 
 		.tabs {
 			&::before {
 				// Slide the card's top edge down past the header
-				top: calc(#{$tablist-height} + 0.5rem);
+				top: calc(var(--header-height) + 0.5rem);
 			}
 
 			.header {
@@ -83,7 +82,7 @@ $tab-max-count: 10;
 		}
 
 		.resize-handle {
-			top: calc(#{$tablist-height} + 1rem);
+			top: calc(var(--header-height) + 1rem);
 		}
 	}
 
@@ -139,7 +138,7 @@ $tab-max-count: 10;
 				@include rounding(var(--border-radius-md), 1, 0.25rem);
 
 				flex-direction: column;
-				height: $tablist-height;
+				height: var(--header-height);
 				gap: 0;
 				background-color: color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal));
 				transition:
@@ -148,7 +147,7 @@ $tab-max-count: 10;
 
 				// macOS stacks a window-controls row above the tab bar (rendered on macOS only)
 				&:has(.controls-wrapper) {
-					height: $header-height;
+					height: var(--header-height-macos);
 				}
 
 				// Wrapper for the back/forward nav and window controls
@@ -157,12 +156,12 @@ $tab-max-count: 10;
 					align-items: center;
 					justify-content: flex-end;
 					gap: var(--space-sm);
-					height: $controls-height;
+					height: var(--header-controls-height);
 				}
 
 				.tablist {
 					// Header is a column now, so grow across (flex: 1 only grows down)
-					@include size(100%, #{$tablist-height});
+					@include size(100%, var(--header-height));
 
 					position: relative;
 					background-color: transparent;
