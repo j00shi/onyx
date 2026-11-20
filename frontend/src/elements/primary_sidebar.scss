@@ -21,23 +21,21 @@ $tab-max-count: 10;
 // collapse/expand transitions are shared and live in `base_sidebar.scss`.
 .primary-sidebar-wrapper {
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
-	[data-variant="sidebar"] {
-		.primary-sidebar .tabs {
-			.header,
-			.content {
-				// TODO: Is a calc really needed?
-				width: calc(var(--dx-sidebar-width) - var(--space-sm) * 2); // Only the tabs' own 0.25rem*2 padding
-			}
+	[data-variant="sidebar"] .primary-sidebar .sidebar-body {
+		.sidebar-header,
+		.sidebar-content {
+			// TODO: Is a calc really needed?
+			width: calc(var(--dx-sidebar-width) - var(--space-sm) * 2); // Only the tabs' own 0.25rem*2 padding
 		}
 	}
 
 	[data-variant="floating"][data-collapsible="icon"] {
-		.tabs .header {
+		.sidebar-body .sidebar-header {
 			margin-left: -0.25rem;
 		}
 
 		&[data-side="right"] {
-			.tabs .header {
+			.sidebar-body .sidebar-header {
 				margin-right: -0.25rem;
 			}
 		}
@@ -47,7 +45,7 @@ $tab-max-count: 10;
 		// macOS also carries a window-controls row in the header, so the collapsed card edge and the
 		// resize handle start lower to clear it
 		&:has(.controls-wrapper) {
-			.tabs::before {
+			.sidebar-body::before {
 				top: calc(var(--header-height-macos) + 0.5rem);
 			}
 
@@ -56,18 +54,18 @@ $tab-max-count: 10;
 			}
 		}
 
-		.tabs {
+		.sidebar-body {
 			&::before {
 				// Slide the card's top edge down past the header
 				top: calc(var(--header-height) + 0.5rem);
 			}
 
-			.header {
+			.sidebar-header {
 				backdrop-filter: blur(var(--blur));
 			}
 
 			// When collapsed, the content keeps its expanded width but is click-through
-			.content {
+			.sidebar-content {
 				pointer-events: none;
 
 				.panel {
@@ -89,30 +87,30 @@ $tab-max-count: 10;
 	// When docked on the right (swapped)
 	[data-side="right"] .primary-sidebar {
 		// Mirror the sidebar so the ribbon sits on the outer edge and the panel faces the content
-		.tabs {
+		.sidebar-body {
 			align-items: flex-end;
 
-			.content {
+			.sidebar-content {
 				flex-direction: row-reverse;
 
 				.ribbon {
 					padding-left: var(--space-sm); // Gap now sits on the ribbon's inner (left) edge
 					padding-right: 0;
 
-					// Tooltip now opens left (toward the content), so move the clip-box room there
-					.ribbon-top,
-					.ribbon-bottom {
-						padding-right: 0;
-						margin-right: 0;
-						padding-left: $ribbon-tooltip-room;
-						margin-left: -$ribbon-tooltip-room;
-					}
-
 					// Open toward the content (left) instead of off the screen edge
 					.dropdown-content {
 						right: calc(anchor(left) + var(--space-md));
 						left: auto;
 					}
+				}
+
+				// Tooltip now opens left (toward the content), so move the clip-box room there
+				.ribbon-top,
+				.ribbon-bottom {
+					padding-right: 0;
+					margin-right: 0;
+					padding-left: $ribbon-tooltip-room;
+					margin-left: -$ribbon-tooltip-room;
 				}
 			}
 		}
@@ -121,20 +119,20 @@ $tab-max-count: 10;
 	// Dioxus drops class name at 768px breakpoint for mobile, so [data-mobile="true"] is needed
 	.primary-sidebar,
 	[data-mobile="true"] {
-		.tabs {
+		.sidebar-body {
 			@include space(null, var(--space-sm), var(--space-md));
 
 			position: relative;
 			flex: 1;
 			min-height: 0;
 
-			.header,
-			.content {
+			.sidebar-header,
+			.sidebar-content {
 				position: relative;
 				padding: 0;
 			}
 
-			.header {
+			.sidebar-header {
 				@include rounding(var(--border-radius-md), 1, 0.25rem);
 
 				flex-direction: column;
@@ -225,120 +223,120 @@ $tab-max-count: 10;
 				}
 			}
 
-			.content {
+			.sidebar-content {
 				gap: 0;
 				flex-direction: row;
+			}
 
-				.ribbon {
-					// Lift above the panel so that tooltips aren't behind it
-					position: relative;
-					z-index: 1;
-					min-height: 0;
-					padding: 0;
-					padding-right: var(--space-sm);
+			.ribbon {
+				// Lift above the panel so that tooltips aren't behind it
+				position: relative;
+				z-index: 1;
+				min-height: 0;
+				padding: 0;
+				padding-right: var(--space-sm);
+			}
 
-					// Two independent groups, both scroll so any number of buttons fits
-					.ribbon-top,
-					.ribbon-bottom {
-						@include scroll-fade(block);
+			// Two independent groups, both scroll so any number of buttons fits
+			.ribbon-top,
+			.ribbon-bottom {
+				@include scroll-fade(block);
 
-						display: flex;
-						flex-direction: column;
-						gap: var(--space-sm);
-						min-height: 0;
-						overflow-y: auto;
-						scrollbar-width: none;
+				display: flex;
+				flex-direction: column;
+				gap: var(--space-sm);
+				min-height: 0;
+				overflow-y: auto;
+				scrollbar-width: none;
 
-						// `overflow-y` forces `overflow-x` to clip, which would cut off tooltips
-						// tooltips. Pad the clip-box toward to give them room, then cancel that
-						// width with a negative margin
-						padding-right: $ribbon-tooltip-room;
-						margin-right: -$ribbon-tooltip-room;
+				// `overflow-y` forces `overflow-x` to clip, which would cut off tooltips
+				// tooltips. Pad the clip-box toward to give them room, then cancel that
+				// width with a negative margin
+				padding-right: $ribbon-tooltip-room;
+				margin-right: -$ribbon-tooltip-room;
 
-						// That padding region overlaps the panel, so let clicks pass through it; the
-						// buttons and tooltip wrappers re-enable pointer events.
-						pointer-events: none;
+				// That padding region overlaps the panel, so let clicks pass through it; the
+				// buttons and tooltip wrappers re-enable pointer events.
+				pointer-events: none;
 
-						> * {
-							pointer-events: auto;
-						}
-
-						&::-webkit-scrollbar {
-							display: none;
-						}
-					}
-
-					// Basically a normal sized ghost button. Needed because some ribbons buttons are not actually button
-					.ribbon-button {
-						@include size(2.25rem);
-						@include color(transparent, var(--secondary-color-4));
-
-						padding: 0;
-						border-radius: var(--border-radius-md);
-						box-shadow: none;
-						cursor: default;
-
-						&:hover {
-							@include color(
-								var(--light, var(--primary-color-5))
-									var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%)),
-								var(--secondary-color-1)
-							);
-						}
-					}
-
-					// Grows depening on how much space it needs
-					.ribbon-top {
-						flex: 1;
-					}
-
-					// Divider between the two groups
-					.ribbon-divider {
-						margin: var(--space-sm) 0;
-					}
-
-					// Has the priority, only starts scrolling in the middle
-					.ribbon-bottom {
-						flex: 0 0 auto;
-						max-height: 50%;
-						flex-direction: column-reverse;
-					}
-
-					// Lift the menu into a floating, non-clipped layer tethered to its trigger
-					.dropdown-content {
-						@include rounding(var(--border-radius-md));
-
-						position: fixed;
-						inset: anchor(top) auto auto calc(anchor(right) + var(--space-md));
-						min-width: 11.5rem;
-						position-try-fallbacks:
-							flip-block, flip-inline; // Flip across the trigger if the default placement would spill off a viewport edge.
-
-						.dropdown-item {
-							@include rounding(var(--border-radius-md), 1, 0.25rem);
-						}
-					}
+				> * {
+					pointer-events: auto;
 				}
 
-				.panel {
-					@include rounding(var(--border-radius-md), 1, 0.25rem);
-
-					padding: 0;
-					flex: 1;
-					overflow: hidden;
-					opacity: 1;
-					transition:
-						opacity var(--duration-medium) ease-out,
-						flex-grow var(--duration-medium) ease-out;
-
-					.tab-content {
-						flex: 1;
-						padding: var(--space-lg);
-						overflow-y: auto;
-						background-color: transparent;
-						border: none;
-					}
+				&::-webkit-scrollbar {
+					display: none;
 				}
+			}
+
+			// Grows depening on how much space it needs
+			.ribbon-top {
+				flex: 1;
+			}
+
+			// Divider between the two groups
+			.ribbon-divider {
+				margin: var(--space-sm) 0;
+			}
+
+			// Has the priority, only starts scrolling in the middle
+			.ribbon-bottom {
+				flex: 0 0 auto;
+				max-height: 50%;
+				flex-direction: column-reverse;
+			}
+
+			// Basically a normal sized ghost button. Needed because some ribbons buttons are not actually button
+			.ribbon-button {
+				@include size(2.25rem);
+				@include color(transparent, var(--secondary-color-4));
+				@include rounding(var(--border-radius-md), 1, 0.25rem);
+
+				padding: 0;
+				box-shadow: none;
+				cursor: default;
+
+				&:hover {
+					@include color(
+						var(--light, var(--primary-color-5))
+							var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%)),
+						var(--secondary-color-1)
+					);
+				}
+			}
+
+			// Lift the menu into a floating, non-clipped layer tethered to its trigger
+			.ribbon-dropdown-content {
+				@include rounding(var(--border-radius-md));
+
+				position: fixed;
+				inset: anchor(top) auto auto calc(anchor(right) + var(--space-md));
+				min-width: 11.5rem;
+				position-try-fallbacks:
+					flip-block, flip-inline; // Flip across the trigger if the default placement would spill off a viewport edge.
+			}
+
+			.ribbon-dropdown-item {
+				@include rounding(var(--border-radius-md), 1, 0.25rem);
+			}
+
+			.panel {
+				@include rounding(var(--border-radius-md), 1, 0.25rem);
+
+				padding: 0;
+				flex: 1;
+				overflow: hidden;
+				opacity: 1;
+				transition:
+					opacity var(--duration-medium) ease-out,
+					flex-grow var(--duration-medium) ease-out;
+			}
+
+			.panel-tab-content {
+				flex: 1;
+				padding: var(--space-lg);
+				overflow-y: auto;
+				background-color: transparent;
+				border: none;
 			}
 
 			// Shared tooltip styling for the tab bar and ribbon
@@ -355,21 +353,21 @@ $tab-max-count: 10;
 	}
 
 	// These styles shouldn't be applied to mobile
-	.primary-sidebar .tabs {
+	.primary-sidebar .sidebar-body {
 		// Fixed width gives the collapse/expand animation a stable target to transition
-		.header,
-		.content {
+		.sidebar-header,
+		.sidebar-content {
 			width: calc(var(--dx-sidebar-width) - 1.5rem); // Container padding 0.5rem*2 + tabs padding 0.25rem*2
 		}
 	}
 
 	// Opt-in "reach" layout for mobile
-	&[data-reach="true"] [data-mobile="true"] .tabs {
+	&[data-reach="true"] [data-mobile="true"] .sidebar-body {
 		// Tab bar moves below the content
 		flex-direction: column-reverse;
 
 		// Larger touch target for the tab bar
-		.header {
+		.sidebar-header {
 			height: 3rem;
 		}
 	}

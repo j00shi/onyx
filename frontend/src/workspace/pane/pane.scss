@@ -12,195 +12,6 @@ $rail-docked: 2.75rem;
 	height: 100%;
 }
 
-.leaf-pane {
-	@include default(relative, flex);
-	@include rounding(var(--border-radius-md), 1, 0.25rem);
-
-	height: 100%;
-	flex-direction: column;
-	overflow: hidden;
-
-	// No rounding on small layout
-	@media (width <= 768px) {
-		border-radius: 0;
-	}
-}
-
-.leaf-tabbar {
-	@include default(absolute, flex);
-	@include rounding(var(--border-radius-md), 1, 0.25rem);
-	@include color(color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal)), null);
-	@include space(null, var(--space-sm), var(--space-sm));
-
-	backdrop-filter: blur(var(--blur));
-	z-index: 60;
-	inset: 0 0 auto;
-	height: var(--header-height);
-
-	// No rounding on small layout
-	@media (width <= 768px) {
-		border-radius: 0;
-	}
-
-	// margin-left: calc((var(--primary-sidebar-width) - 5rem) * var(--primary-sidebar-collapsed));
-	// transition: margin-left 0.2s ease-out;
-
-	// Primary/secondary sidebar toggles. The primary sits at the start of the bar; the end one
-	// (secondary) is pushed to the far side.
-	.leaf-sidebar-toggle {
-		@include rounding(var(--border-radius-md), 2, 0.25rem);
-		@include size(null, 100% !important, 1);
-
-		max-width: 2rem;
-
-		&.leaf-sidebar-toggle-end {
-			margin-left: auto;
-		}
-	}
-
-	// Collapsed, the primary sidebar's header pill keeps its expanded width and overflows into the
-	// content; nudge the tab bar right so it sits beside the pill (the tab content below still
-	// reaches the rail). Offset = primary width minus the collapsed rail. `--primary-sidebar-*` come
-	// from `base_sidebar.rs`; `--primary-sidebar-collapsed` is 1 when collapsed, 0 otherwise.
-	// padding-left: calc(var(--primary-sidebar-collapsed, 0) * (var(--primary-sidebar-width, 0px) - #{$rail-floating}));
-
-	// Only as wide as its tabs so the add button sits right beside them; scrolls if they overflow.
-	.leaf-tablist {
-		@include rounding(var(--border-radius-md), 2, 0.25rem);
-		@include flex-parent(row, null, center, var(--space-sm));
-		@include scroll-fade(inline, 3rem);
-
-		height: 100%;
-		flex: 0 1 auto;
-		min-width: 0;
-		flex-direction: row;
-		overflow-x: auto;
-		scrollbar-width: none;
-
-		// No rounding on small layout
-		@media (width <= 768px) {
-			border-radius: 0;
-		}
-
-		&::-webkit-scrollbar {
-			display: none;
-		}
-
-		// A tab is the clickable pill: it holds the title and the close button, so the close sits inside
-		// the tab and the whole pill is a click target.
-		.leaf-tab {
-			@include default(relative, flex);
-			@include size(12rem, 100%);
-			@include rounding(var(--border-radius-md), 2, 0.25rem);
-
-			color: var(--secondary-color-5);
-			flex-shrink: 0;
-			justify-content: space-between;
-			align-items: center;
-			padding: var(--space-sm);
-			cursor: pointer;
-			user-select: none;
-			transition: color var(--duration-medium) linear;
-
-			&:hover {
-				color: var(--secondary-color-1);
-
-				.leaf-tab-close {
-					opacity: 1;
-				}
-			}
-
-			// Dim the tab being dragged to its new slot (reorder feedback).
-			&[data-dragging="true"] {
-				opacity: 0.6;
-			}
-
-			&[aria-selected="true"] {
-				@include color(
-					color-mix(in oklab, var(--primary-color-6), transparent var(--transparency-light)),
-					var(--secondary-color-1)
-				);
-
-				box-shadow: var(--dark, inset 0 0 0 1px var(--primary-color-7)) var(--light, 0 1px 2px rgb(0 0 0 / 18%));
-			}
-
-			&::after {
-				@include size(1px, 100%);
-
-				content: "";
-				position: absolute;
-				right: calc(var(--space-sm) / -2);
-				background-color: var(--secondary-color-6);
-			}
-
-			// No gap on the last tab. This divider would overhang the content and make the
-			// tablist always scroll
-			&:last-child::after {
-				display: none;
-			}
-
-			.leaf-tab-title {
-				padding-left: var(--space-sm);
-				overflow: hidden;
-				white-space: nowrap;
-				text-overflow: ellipsis;
-			}
-
-			.leaf-tab-close {
-				@include flex-center;
-				@include size(null, 100%, 1);
-				@include color(transparent, var(--secondary-color-5));
-				@include rounding(var(--border-radius-md), 3, 0.25rem);
-
-				max-width: 2rem;
-				border: none;
-				cursor: pointer;
-				opacity: 0;
-				transition:
-					color var(--duration-medium) linear,
-					opacity var(--duration-fast) linear,
-					background-color var(--duration-medium) linear;
-
-				&:hover {
-					@include color(
-						var(--light, var(--primary-color-5))
-							var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
-						var(--secondary-color-1)
-					);
-				}
-			}
-		}
-	}
-
-	.leaf-tab-add {
-		@include rounding(var(--border-radius-md), 2, 0.25rem);
-		@include size(null, 100% !important, 1);
-
-		max-width: 2rem;
-	}
-
-	// Split-pane dropdown trigger. The descendant selector outranks the vendored
-	// `.dx-dropdown-menu-trigger` so we can reset its chunky default to a plain icon button.
-	.leaf-tab-split {
-		@include flex-center;
-		@include size(null, 100%, 1);
-		@include rounding(var(--border-radius-md), 2, 0.25rem);
-		@include color(transparent, var(--secondary-color-4));
-
-		max-width: 2rem;
-		padding: 0;
-		box-shadow: none;
-
-		&:hover {
-			@include color(
-				var(--light, var(--primary-color-5))
-					var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
-				var(--secondary-color-1)
-			);
-		}
-	}
-}
-
 // A split lays its children along one axis; `flex-direction` is set inline per node.
 .pane-split {
 	display: flex;
@@ -297,6 +108,174 @@ $rail-docked: 2.75rem;
 		background-color: var(--focused-border-color);
 		box-shadow: none;
 	}
+}
+
+.leaf-pane {
+	@include default(relative, flex);
+	@include rounding(var(--border-radius-md), 1, 0.25rem);
+
+	height: 100%;
+	flex-direction: column;
+	overflow: hidden;
+
+	// No rounding on small layout
+	@media (width <= 768px) {
+		border-radius: 0;
+	}
+}
+
+.leaf-tabbar {
+	@include default(absolute, flex);
+	@include rounding(var(--border-radius-md), 1, 0.25rem);
+	@include color(color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal)), null);
+	@include space(null, var(--space-sm), var(--space-sm));
+
+	backdrop-filter: blur(var(--blur));
+	z-index: 60;
+	inset: 0 0 auto;
+	height: var(--header-height);
+
+	// No rounding on small layout
+	@media (width <= 768px) {
+		border-radius: 0;
+	}
+
+	// Split-pane dropdown trigger. The descendant selector outranks the vendored
+	// `.dx-dropdown-menu-trigger` so we can reset its chunky default to a plain icon button.
+	.leaf-tab-split {
+		@include flex-center;
+		@include size(null, 100%, 1);
+		@include rounding(var(--border-radius-md), 2, 0.25rem);
+		@include color(transparent, var(--secondary-color-4));
+
+		max-width: 2rem;
+		padding: 0;
+		box-shadow: none;
+
+		&:hover {
+			@include color(
+				var(--light, var(--primary-color-5))
+					var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
+				var(--secondary-color-1)
+			);
+		}
+	}
+}
+
+.leaf-sidebar-toggle {
+	@include rounding(var(--border-radius-md), 2, 0.25rem);
+	@include size(null, 100% !important, 1);
+
+	max-width: 2rem;
+
+	&.leaf-sidebar-toggle-end {
+		margin-left: auto;
+	}
+}
+
+// Only as wide as its tabs so the add button sits right beside them; scrolls if they overflow.
+.leaf-tablist {
+	@include rounding(var(--border-radius-md), 2, 0.25rem);
+	@include flex-parent(row, null, center, var(--space-sm));
+	@include scroll-fade(inline, 3rem);
+
+	height: 100%;
+	flex: 0 1 auto;
+	min-width: 0;
+	flex-direction: row;
+	overflow-x: auto;
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+// A tab is the clickable pill: it holds the title and the close button, so the close sits inside
+// the tab and the whole pill is a click target.
+.leaf-tab {
+	@include default(relative, flex);
+	@include size(12rem, 100%);
+	@include rounding(var(--border-radius-md), 2, 0.25rem);
+
+	color: var(--secondary-color-5);
+	flex-shrink: 0;
+	justify-content: space-between;
+	align-items: center;
+	padding: var(--space-sm);
+	cursor: pointer;
+	user-select: none;
+	transition: color var(--duration-medium) linear;
+
+	&:hover {
+		color: var(--secondary-color-1);
+
+		.leaf-tab-close {
+			opacity: 1;
+		}
+	}
+
+	&[aria-selected="true"] {
+		@include color(
+			color-mix(in oklab, var(--primary-color-6), transparent var(--transparency-light)),
+			var(--secondary-color-1)
+		);
+
+		box-shadow: var(--dark, inset 0 0 0 1px var(--primary-color-7)) var(--light, 0 1px 2px rgb(0 0 0 / 18%));
+	}
+
+	&::after {
+		@include size(1px, 100%);
+
+		content: "";
+		position: absolute;
+		right: calc(var(--space-sm) / -2);
+		background-color: var(--secondary-color-6);
+	}
+
+	// No gap on the last tab. This divider would overhang the content and make the
+	// tablist always scroll
+	&:last-child::after {
+		display: none;
+	}
+}
+
+.leaf-tab-title {
+	padding-left: var(--space-sm);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.leaf-tab-close {
+	@include flex-center;
+	@include size(null, 100%, 1);
+	@include color(transparent, var(--secondary-color-5));
+	@include rounding(var(--border-radius-md), 3, 0.25rem);
+
+	max-width: 2rem;
+	border: none;
+	cursor: pointer;
+	opacity: 0;
+	transition:
+		color var(--duration-medium) linear,
+		opacity var(--duration-fast) linear,
+		background-color var(--duration-medium) linear;
+
+	&:hover {
+		@include color(
+			var(--light, var(--primary-color-5))
+				var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
+			var(--secondary-color-1)
+		);
+	}
+}
+
+.leaf-tab-add {
+	@include rounding(var(--border-radius-md), 2, 0.25rem);
+	@include size(null, 100% !important, 1);
+
+	max-width: 2rem;
 }
 
 .leaf-content {

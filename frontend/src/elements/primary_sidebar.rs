@@ -60,8 +60,8 @@ fn SidebarTabs() -> Element {
 	};
 
 	rsx! {
-		Tabs { class: "sidebar-body tabs", default_value: "home".to_string(),
-			SidebarHeader { class: "header",
+		Tabs { class: "sidebar-body", default_value: "home".to_string(),
+			SidebarHeader { class: "sidebar-header",
 				// Traffic lights on macOS overlay this corner
 				if cfg!(all(feature = "desktop", target_os = "macos")) && CUSTOM_TITLEBAR() {
 					div { class: "controls-wrapper",
@@ -154,7 +154,7 @@ fn SidebarTabs() -> Element {
 					}
 				}
 			}
-			SidebarContent { class: "content",
+			SidebarContent { class: "sidebar-content",
 				SidebarGroup { class: "ribbon",
 					div {
 						class: "ribbon-top",
@@ -180,7 +180,7 @@ fn SidebarTabs() -> Element {
 							Tooltip {
 								TooltipTrigger {
 									DropdownMenuTrigger {
-										class: "dropdown-trigger ribbon-button",
+										class: "ribbon-button",
 										style: "anchor-name: --dd-calendar",
 										Calendar { size: "1.25rem" }
 									}
@@ -192,55 +192,55 @@ fn SidebarTabs() -> Element {
 								}
 							}
 							DropdownMenuContent {
-								class: "dropdown-content",
+								class: "ribbon-dropdown-content",
 								style: "position-anchor: --dd-calendar",
 								DropdownMenuItem::<String> {
 									value: "day".to_string(),
 									index: 0usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Day"
 								}
 								DropdownMenuItem::<String> {
 									value: "week".to_string(),
 									index: 1usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Week"
 								}
 								DropdownMenuItem::<String> {
 									value: "month".to_string(),
 									index: 2usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Month"
 								}
 								DropdownMenuItem::<String> {
 									value: "year".to_string(),
 									index: 3usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Year"
 								}
 								DropdownMenuItem::<String> {
 									value: "decade".to_string(),
 									index: 4usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Decade"
 								}
 								DropdownMenuItem::<String> {
 									value: "century".to_string(),
 									index: 5usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Century"
 								}
 								DropdownMenuItem::<String> {
 									value: "millennium".to_string(),
 									index: 6usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Millennium"
 								}
 								Separator { decorative: true }
 								DropdownMenuItem::<String> {
 									value: "new-event".to_string(),
 									index: 7usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"New event"
 								}
 							}
@@ -314,7 +314,7 @@ fn SidebarTabs() -> Element {
 							Tooltip {
 								TooltipTrigger {
 									DropdownMenuTrigger {
-										class: "dropdown-trigger ribbon-button",
+										class: "ribbon-button",
 										style: "anchor-name: --dd-vault",
 										Vault { size: "1.25rem" }
 									}
@@ -326,48 +326,48 @@ fn SidebarTabs() -> Element {
 								}
 							}
 							DropdownMenuContent {
-								class: "dropdown-content",
+								class: "ribbon-dropdown-content",
 								style: "position-anchor: --dd-vault",
 								DropdownMenuItem::<String> {
 									value: "personal".to_string(),
 									index: 0usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Personal"
 								}
 								DropdownMenuItem::<String> {
 									value: "work".to_string(),
 									index: 1usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Work"
 								}
 								DropdownMenuItem::<String> {
 									value: "university".to_string(),
 									index: 2usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"University"
 								}
 								DropdownMenuItem::<String> {
 									value: "monoversity".to_string(),
 									index: 3usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Monoversity"
 								}
 								DropdownMenuItem::<String> {
 									value: "idk".to_string(),
 									index: 4usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"IDK"
 								}
 								DropdownMenuItem::<String> {
 									value: "cool".to_string(),
 									index: 5usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Cool vault"
 								}
 								DropdownMenuItem::<String> {
 									value: "habmurger".to_string(),
 									index: 6usize,
-									class: "dropdown-item",
+									class: "ribbon-dropdown-item",
 									"Habmurger"
 								}
 								Separator { decorative: true }
@@ -434,26 +434,26 @@ fn SidebarTabs() -> Element {
 				}
 				SidebarGroup { class: "panel",
 					TabContent {
-						class: "tab-content",
+						class: "panel-tab-content",
 						value: "home".to_string(),
 						index: 0usize,
 						p { "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda?" }
 					}
 					TabContent {
-						class: "tab-content",
+						class: "panel-tab-content",
 						value: "files".to_string(),
 						index: 1usize,
 						style: "background-color:rgba(10,10,10,0.5)",
 						"Files tab content"
 					}
 					TabContent {
-						class: "tab-content",
+						class: "panel-tab-content",
 						value: "search".to_string(),
 						index: 2usize,
 						"Search tab content"
 					}
 					TabContent {
-						class: "tab-content",
+						class: "panel-tab-content",
 						value: "bookmarks".to_string(),
 						index: 3usize,
 						"Bookmarks tab content"

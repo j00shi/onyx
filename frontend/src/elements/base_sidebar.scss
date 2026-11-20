@@ -4,11 +4,8 @@
 // expand/collapse transitions.
 .base-sidebar-wrapper {
 	// Floating is when the sidebar is surrounded by a border. This is the default
-	[data-variant="floating"] {
-		// Fixes the collapsed width
-		&[data-collapsible="icon"] .base-sidebar {
-			width: calc(var(--dx-sidebar-width-icon) + 0.75rem);
-		}
+	[data-variant="floating"][data-collapsible="icon"] .base-sidebar {
+		width: calc(var(--dx-sidebar-width-icon) + 0.75rem);
 	}
 
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
