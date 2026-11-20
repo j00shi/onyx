@@ -144,7 +144,7 @@ pub fn Settings() -> Element {
 					label: "Animation speed",
 					horizontal: true,
 					min: 0.0,
-					max: 2.0,
+					max: 10.0,
 					step: 0.25,
 					value: DURATION_SCALE(),
 					on_value_change: move |v: f64| *DURATION_SCALE.write() = v,

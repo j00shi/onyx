@@ -25,6 +25,9 @@ const ICON_WIDTH_FLOATING: f64 = 62.0;
 const ICON_WIDTH_SIDEBAR: f64 = 48.0;
 /// Pointer travel (px) below which a press on the handle counts as a click, not a drag
 const CLICK_THRESHOLD: f64 = 4.0;
+/// Once a drag-expand's eased width catches to within this many px of the pointer, tracking hands
+/// off to instant (no-transition) resizing. See the drag-expand "rubber-band" logic below.
+const CATCH_UP_PX: f64 = 16.0;
 
 /// Shared sidebar scaffolding: the resizable, collapsible panel with its drag handle and
 /// transitions.
@@ -49,7 +52,10 @@ pub fn BaseSidebar(
 ) -> Element {
 	let mut width = use_signal(|| default_width); // Sidebar width (px)
 	let mut open = use_signal(|| true); // True when sidebar is open
-	let mut dragging = use_signal(|| false); // True when handle is being dragged
+	let mut dragging = use_signal(|| false); // True for the whole handle drag (lights the handle)
+	let mut resizing = use_signal(|| false); // True only while the width is actively changing
+	let mut catching_up = use_signal(|| false); // True while a drag-expand eases out to meet the pointer
+	let mut rendered = use_signal(|| 0.0_f64); // Live (mid-animation) sidebar width in px, from the probe
 	let mut moved = use_signal(|| false); // True once a press has travelled past `CLICK_THRESHOLD`
 	let mut start_x = use_signal(|| 0.0_f64); // Pointer x at drag start (px)
 	let mut start_width = use_signal(|| 0.0_f64); // Sidebar width at drag start (px)
@@ -61,7 +67,14 @@ pub fn BaseSidebar(
 			class: format!("base-sidebar-wrapper {name}-sidebar-wrapper"),
 			"data-reach": MOBILE_REACH_LAYOUT(),
 			SidebarProvider {
-				class: if dragging() { "resizing" } else { "" }, // See reason for this in base_sidebar.scss
+				// `dragging` lights the handle for the whole drag; `resizing` (only while the width is
+				// actively changing) cuts the collapse transition so a width-drag tracks the cursor
+				// while a drag-to-collapse/expand still animates. See base_sidebar.scss.
+				class: format!(
+					"{}{}",
+					if dragging() { "dragging " } else { "" },
+					if resizing() { "resizing" } else { "" },
+				),
 				// `--{name}-sidebar-*` expose this sidebar's width and collapsed state to the content
 				// area (a descendant), which uses them to keep its tab bar clear of the header that
 				// overflows when collapsed. See `.leaf-tabbar` in `workspace/pane.scss`.
@@ -79,12 +92,24 @@ pub fn BaseSidebar(
 					side,
 					variant: SIDEBAR_VARIANT(),
 					collapsible: SidebarCollapsible::Icon,
+					// Zero-height probe reporting the sidebar's live, mid-animation width (it tracks the
+					// transitioning container) so a drag-expand can tell when its eased edge has caught up
+					// to the pointer and hand off to instant tracking.
+					div {
+						class: "resize-probe",
+						onresize: move |e| {
+							if let Ok(size) = e.get_border_box_size() {
+								rendered.set(size.width);
+							}
+						},
+					}
 					{body}
 					div {
 						class: "resize-handle",
 						onpointerdown: move |e| {
 							dragging.set(true);
 							moved.set(false);
+							catching_up.set(false);
 							start_x.set(e.client_coordinates().x);
 							// Anchor to the visible collapsed width (differs per variant)
 							let icon_width = if SIDEBAR_VARIANT() == SidebarVariant::Floating {
@@ -111,13 +136,34 @@ pub fn BaseSidebar(
 						let desired = direction.mul_add(travel, start_width()); // Drag past the minimum and keep going -> collapse.
 						if open() {
 							if desired < COLLAPSE_BELOW {
+								// Collapsing: let it animate (don't suppress the transition this frame).
+								// Further drag stays below `EXPAND_ABOVE`, so no branch runs and the
+								// collapse animation plays out undisturbed.
 								open.set(false);
+								resizing.set(false);
+								catching_up.set(false);
 							} else {
-								width.set(desired.clamp(MIN_WIDTH, MAX_WIDTH));
+								let target = desired.clamp(MIN_WIDTH, MAX_WIDTH);
+								width.set(target);
+								if catching_up() {
+									// Rubber-band after a drag-expand: the edge eases out (transition still
+									// on) toward the pointer. Once it's within `CATCH_UP_PX` of the pointer,
+									// hand off to instant tracking so fine resizing has no lag.
+									if (rendered() - target).abs() <= CATCH_UP_PX {
+										catching_up.set(false);
+										resizing.set(true);
+									}
+								} else {
+									// Normal resize: track the cursor instantly (no transition)
+									resizing.set(true);
+								}
 							}
 						} else if desired > EXPAND_ABOVE {
+							// Expanding: ease open toward the pointer, then `catching_up` takes over
 							open.set(true);
 							width.set(desired.clamp(MIN_WIDTH, MAX_WIDTH));
+							resizing.set(false);
+							catching_up.set(true);
 						}
 					},
 					onpointerup: move |_| {
@@ -126,8 +172,14 @@ pub fn BaseSidebar(
 							open.set(!open());
 						}
 						dragging.set(false);
+						resizing.set(false);
+						catching_up.set(false);
 					},
-					onpointercancel: move |_| dragging.set(false),
+					onpointercancel: move |_| {
+						dragging.set(false);
+						resizing.set(false);
+						catching_up.set(false);
+					},
 				}
 			}
 		}

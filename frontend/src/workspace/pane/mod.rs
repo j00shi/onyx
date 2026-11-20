@@ -179,7 +179,7 @@ pub fn WorkspaceView() -> Element {
 					end_drag();
 				}
 			},
-			PaneNode { id: root, merged: false }
+			PaneNode { id: root, merged: false, top_left: true, top_right: true }
 			DropIndicator {}
 		}
 	}
@@ -187,16 +187,18 @@ pub fn WorkspaceView() -> Element {
 
 /// Renders a single node: a [`LeafPane`] for a leaf, or a [`SplitPane`] for a split. Only one of
 /// the two arms is reachable per node. `merged` is threaded through so a split's shared glass bar
-/// can suppress the per-leaf one across its top row (see [`LeafPane`]).
+/// can suppress the per-leaf one across its top row (see [`LeafPane`]). `top_left`/`top_right` mark
+/// the panes at the content's two top corners — they carry the sidebar-toggle buttons, and the
+/// sidebar-adjacent one also offsets its bar to clear the collapsed header.
 #[component]
-fn PaneNode(id: NodeId, merged: bool) -> Element {
+fn PaneNode(id: NodeId, merged: bool, top_left: bool, top_right: bool) -> Element {
 	let node = WORKSPACE.read().node(id).cloned();
 	match node {
 		Some(Node::Leaf { .. }) => rsx! {
-			LeafPane { id, merged }
+			LeafPane { id, merged, top_left, top_right }
 		},
 		Some(Node::Split { .. }) => rsx! {
-			SplitPane { id, merged }
+			SplitPane { id, merged, top_left, top_right }
 		},
 		None => rsx! {},
 	}

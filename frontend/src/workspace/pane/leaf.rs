@@ -18,12 +18,19 @@ use crate::views::{Home, NewTab, Settings, SIDEBAR_SWAPPED};
 /// A single tab group: its own tab bar plus the active tab's content below it. `merged` means an
 /// ancestor split paints one continuous glass bar across this leaf's top, so this bar drops its own
 /// background/blur/rounding and just holds the controls (see `.pane-band` in `pane.scss`).
+/// `top_left`/`top_right` mark the bars at the content's top corners: each carries the toggle for
+/// the sidebar on that side, and the sidebar-adjacent one offsets itself to clear the collapsed
+/// header (see `.leaf-tabbar` in `pane.scss`).
 #[component]
-pub(super) fn LeafPane(id: NodeId, merged: bool) -> Element {
+pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool) -> Element {
 	let node = WORKSPACE.read().node(id).cloned();
 	let Some(Node::Leaf { tabs, active, .. }) = node else {
 		return rsx! {};
 	};
+
+	// The collapsed primary sidebar's header overflows the corner it docks against — left, or right
+	// when swapped — so only that corner's bar steps aside for it.
+	let inner_top = if SIDEBAR_SWAPPED() { top_right } else { top_left };
 
 	let active_view = tabs.get(active).map(|t| t.view);
 
@@ -44,21 +51,23 @@ pub(super) fn LeafPane(id: NodeId, merged: bool) -> Element {
 
 	rsx! {
 		div { class: "leaf-pane",
-			div { class: "leaf-tabbar", role: "tablist", "data-merged": merged,
-				// Toggles whichever sidebar is docked on the left (primary unless swapped); sits at the
-				// start of the bar.
-				Button {
-					class: "leaf-sidebar-toggle",
-					variant: ButtonVariant::Ghost,
-					size: ButtonSize::IconSm,
-					"aria-label": "Toggle left sidebar",
-					onclick: move |_| {
-						let ctx = if SIDEBAR_SWAPPED() { SECONDARY_SIDEBAR_CTX() } else { PRIMARY_SIDEBAR_CTX() };
-						if let Some(ctx) = ctx {
-							ctx.toggle();
-						}
-					},
-					PanelLeft { size: "1rem" }
+			div { class: "leaf-tabbar", role: "tablist", "data-merged": merged, "data-inner-top": inner_top,
+				// Toggles whichever sidebar is docked on the left (primary unless swapped); only on the
+				// top-left bar, since that's the one that meets the left sidebar.
+				if top_left {
+					Button {
+						class: "leaf-sidebar-toggle",
+						variant: ButtonVariant::Ghost,
+						size: ButtonSize::IconSm,
+						"aria-label": "Toggle left sidebar",
+						onclick: move |_| {
+							let ctx = if SIDEBAR_SWAPPED() { SECONDARY_SIDEBAR_CTX() } else { PRIMARY_SIDEBAR_CTX() };
+							if let Some(ctx) = ctx {
+								ctx.toggle();
+							}
+						},
+						PanelLeft { size: "1rem" }
+					}
 				}
 				div {
 					// `dragging` makes the pills' children pointer-transparent mid-drag so pointermove
@@ -164,8 +173,8 @@ pub(super) fn LeafPane(id: NodeId, merged: bool) -> Element {
 						}
 					}
 				}
-					Button {
-						class: "leaf-tab-add",
+				Button {
+					class: "leaf-tab-add",
 					variant: ButtonVariant::Ghost,
 					size: ButtonSize::IconSm,
 					onclick: move |_| WORKSPACE.write().add_tab(id, View::NewTab),
@@ -203,20 +212,22 @@ pub(super) fn LeafPane(id: NodeId, merged: bool) -> Element {
 						}
 					}
 				}
-				// Toggles whichever sidebar is docked on the right (secondary unless swapped); pushed to
-				// the far end of the bar.
-				Button {
-					class: "leaf-sidebar-toggle leaf-sidebar-toggle-end",
-					variant: ButtonVariant::Ghost,
-					size: ButtonSize::IconSm,
-					"aria-label": "Toggle right sidebar",
-					onclick: move |_| {
-						let ctx = if SIDEBAR_SWAPPED() { PRIMARY_SIDEBAR_CTX() } else { SECONDARY_SIDEBAR_CTX() };
-						if let Some(ctx) = ctx {
-							ctx.toggle();
-						}
-					},
-					PanelRight { size: "1rem" }
+				// Toggles whichever sidebar is docked on the right (secondary unless swapped); only on
+				// the top-right bar, pushed to the far end.
+				if top_right {
+					Button {
+						class: "leaf-sidebar-toggle leaf-sidebar-toggle-end",
+						variant: ButtonVariant::Ghost,
+						size: ButtonSize::IconSm,
+						"aria-label": "Toggle right sidebar",
+						onclick: move |_| {
+							let ctx = if SIDEBAR_SWAPPED() { PRIMARY_SIDEBAR_CTX() } else { SECONDARY_SIDEBAR_CTX() };
+							if let Some(ctx) = ctx {
+								ctx.toggle();
+							}
+						},
+						PanelRight { size: "1rem" }
+					}
 				}
 			}
 			div { class: "leaf-content",

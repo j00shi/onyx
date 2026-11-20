@@ -5,6 +5,7 @@ use dioxus::prelude::*;
 use super::super::model::{Axis, Node, NodeId};
 use super::super::WORKSPACE;
 use super::PaneNode;
+use crate::views::SIDEBAR_SWAPPED;
 
 /// Minimum pixels a pane can be squeezed to while dragging a divider.
 const MIN_PANE_PX: f64 = 100.0;
@@ -37,8 +38,10 @@ fn resize_pair(a: f32, b: f32, delta_px: f64, container_px: f64) -> (f32, f32) {
 
 /// A split container: lays its children along one axis with a draggable divider between each pair.
 /// `merged` means an ancestor already paints a continuous glass bar across this split's top.
+/// `top_left`/`top_right` are passed down to only the children that stay in the content's top
+/// corners (see [`PaneNode`]).
 #[component]
-pub(super) fn SplitPane(id: NodeId, merged: bool) -> Element {
+pub(super) fn SplitPane(id: NodeId, merged: bool, top_left: bool, top_right: bool) -> Element {
 	let node = WORKSPACE.read().node(id).cloned();
 	let Some(Node::Split { axis, children, fractions, .. }) = node else {
 		return rsx! {};
@@ -58,6 +61,16 @@ pub(super) fn SplitPane(id: NodeId, merged: bool) -> Element {
 	let band = horizontal && !merged;
 	let child_merged = |i: usize| if horizontal { true } else { i == 0 && merged };
 
+	// The two top corners each pass to one child: through a vertical (stacked) split both go to the
+	// top child; through a horizontal (side-by-side) split the left corner goes to the first child
+	// and the right corner to the last. The sidebar-adjacent corner (left, or right when swapped)
+	// is the one whose bar/band offsets for the collapsed header.
+	let swapped = SIDEBAR_SWAPPED();
+	let child_count = children.len();
+	let child_top_left = move |i: usize| top_left && i == 0;
+	let child_top_right = move |i: usize| top_right && if horizontal { i + 1 == child_count } else { i == 0 };
+	let inner_top = if swapped { top_right } else { top_left };
+
 	// Render the live fractions mid-drag, otherwise the model's.
 	let fracs = drag.read().as_ref().map_or_else(|| fractions.clone(), |d| d.live.clone());
 
@@ -70,16 +83,23 @@ pub(super) fn SplitPane(id: NodeId, merged: bool) -> Element {
 					container_px.set(if horizontal { size.width } else { size.height });
 				}
 			},
-			// The shared glass bar spanning this split's top row, behind every child's controls.
+			// The shared glass bar spanning this split's top row, behind every child's controls. When
+			// this row is the content's top one, its left (right when swapped) edge steps aside for the
+			// collapsed sidebar header like the corner leaf's controls do.
 			if band {
-				div { class: "pane-band" }
+				div { class: "pane-band", "data-inner-top": inner_top }
 			}
 			for (i , child) in children.iter().enumerate() {
 				div {
 					key: "{child.0}",
 					class: "pane-split-child",
 					style: "flex: {fracs.get(i).copied().unwrap_or(0.0)} 1 0;",
-					PaneNode { id: *child, merged: child_merged(i) }
+					PaneNode {
+						id: *child,
+						merged: child_merged(i),
+						top_left: child_top_left(i),
+						top_right: child_top_right(i),
+					}
 				}
 				if i + 1 < children.len() {
 					div {

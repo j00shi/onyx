@@ -1,9 +1,10 @@
 @use "../../mixins" as *;
 @include scroll-fade-keyframes;
 
-// Width of the collapsed primary sidebar rail (where the content begins). Floating adds the
-// container padding; docked is just the icon column. Used to offset the tab bar so it clears the
-// sidebar header, which keeps its expanded width and overflows into the content when collapsed.
+// Content's left inset once the primary sidebar is collapsed (its collapsed flex-item width, i.e.
+// where the content begins): floating adds the container padding, docked is just the icon column.
+// Used as the pivot for the tab bar's collapse offset so it clears the overflowing header — see
+// `.leaf-tabbar` below.
 $rail-floating: 4rem;
 $rail-docked: 2.75rem;
 
@@ -36,6 +37,18 @@ $rail-docked: 2.75rem;
 	height: var(--header-height);
 	backdrop-filter: blur(var(--blur));
 	pointer-events: none;
+	transition: margin var(--duration-medium) ease-out;
+
+	// Top row of the content: shrink the glass away from the collapsed sidebar header (its left edge,
+	// or right when swapped) so the header isn't backed by the band. Matches the corner leaf's bar.
+	&[data-inner-top="true"] {
+		margin-left: var(--leaf-offset);
+
+		#frame[data-swapped="true"] & {
+			margin-left: 0;
+			margin-right: var(--leaf-offset);
+		}
+	}
 
 	// No rounding on small layout
 	@media (width <= 768px) {
@@ -155,6 +168,27 @@ $rail-docked: 2.75rem;
 	}
 }
 
+// The collapsed rail depends on the sidebar variant, carried on `#content` (an ancestor of the
+// bars). Expose it as `--leaf-rail` for the tab bar's collapse offset below.
+#content[data-sidebar-variant="floating"] {
+	--leaf-rail: #{$rail-floating};
+}
+
+#content[data-sidebar-variant="sidebar"] {
+	--leaf-rail: #{$rail-docked};
+}
+
+// How far the top bar / band must step aside to clear the collapsed sidebar header: `sidebar width
+// − rail` (the rail is the content's inset once collapsed), which pins the edge to where it sits
+// while open so it lines up with the static header. `--primary-sidebar-collapsed` is 0/1, so it's 0
+// while open; consumers animate it to stay in sync with the sidebar's own collapse. Set on
+// `#content` so both `.leaf-tabbar` and `.pane-band` (descendants) can read it.
+#content {
+	--leaf-offset: calc(
+		(var(--primary-sidebar-width) - var(--leaf-rail, #{$rail-floating})) * var(--primary-sidebar-collapsed)
+	);
+}
+
 .leaf-tabbar {
 	@include default(absolute, flex);
 	@include rounding(var(--border-radius-md), 1, 0.25rem);
@@ -165,6 +199,23 @@ $rail-docked: 2.75rem;
 	z-index: 60;
 	inset: 0 0 auto;
 	height: var(--header-height);
+	transition: margin var(--duration-medium) ease-out;
+
+	// Only the bar at the content's sidebar-adjacent top corner (`data-inner-top`) sits beside the
+	// overflowing collapsed header; every other bar has no header in the way and spans full width.
+	// The offset (`--leaf-offset`, see `#content`) pins its edge to where it sits while open so it
+	// lines up with the static header. The transition matches the sidebar's own collapse (`width
+	// 200ms ease-out`) and, since the offset only changes on the collapse/expand frame (where
+	// `.resizing` doesn't apply), the two animate in lockstep — the gap holds even on drag-collapse.
+	&[data-inner-top="true"] {
+		margin-left: var(--leaf-offset);
+
+		// Swapped docks the primary on the right, so it overflows the content's right edge instead.
+		#frame[data-swapped="true"] & {
+			margin-left: 0;
+			margin-right: var(--leaf-offset);
+		}
+	}
 
 	// An ancestor split paints one shared `.pane-band` across this top row; drop this bar's own
 	// background/blur/rounding so the panes read as a single continuous bar (just hold the controls).
