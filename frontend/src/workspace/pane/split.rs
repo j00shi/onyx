@@ -36,8 +36,9 @@ fn resize_pair(a: f32, b: f32, delta_px: f64, container_px: f64) -> (f32, f32) {
 }
 
 /// A split container: lays its children along one axis with a draggable divider between each pair.
+/// `merged` means an ancestor already paints a continuous glass bar across this split's top.
 #[component]
-pub(super) fn SplitPane(id: NodeId) -> Element {
+pub(super) fn SplitPane(id: NodeId, merged: bool) -> Element {
 	let node = WORKSPACE.read().node(id).cloned();
 	let Some(Node::Split { axis, children, fractions, .. }) = node else {
 		return rsx! {};
@@ -51,6 +52,12 @@ pub(super) fn SplitPane(id: NodeId) -> Element {
 	let flow = if horizontal { "row" } else { "column" };
 	let axis_attr = if horizontal { "horizontal" } else { "vertical" };
 
+	// A horizontal split's children all start at the same top, so one glass bar spans them all —
+	// paint it here unless an ancestor already covers this top. A vertical split delegates: only its
+	// first child shares this split's top, the rest start their own.
+	let band = horizontal && !merged;
+	let child_merged = |i: usize| if horizontal { true } else { i == 0 && merged };
+
 	// Render the live fractions mid-drag, otherwise the model's.
 	let fracs = drag.read().as_ref().map_or_else(|| fractions.clone(), |d| d.live.clone());
 
@@ -63,12 +70,16 @@ pub(super) fn SplitPane(id: NodeId) -> Element {
 					container_px.set(if horizontal { size.width } else { size.height });
 				}
 			},
+			// The shared glass bar spanning this split's top row, behind every child's controls.
+			if band {
+				div { class: "pane-band" }
+			}
 			for (i , child) in children.iter().enumerate() {
 				div {
 					key: "{child.0}",
 					class: "pane-split-child",
 					style: "flex: {fracs.get(i).copied().unwrap_or(0.0)} 1 0;",
-					PaneNode { id: *child }
+					PaneNode { id: *child, merged: child_merged(i) }
 				}
 				if i + 1 < children.len() {
 					div {

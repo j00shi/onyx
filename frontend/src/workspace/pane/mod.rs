@@ -164,10 +164,14 @@ fn DropIndicator() -> Element {
 #[component]
 pub fn WorkspaceView() -> Element {
 	let root = WORKSPACE.read().root();
+	// Only flips at drag start/end (not on every pointer move), so the root re-renders twice a drag.
+	// Drives `.pane-divider`'s pointer-events so handles don't shadow drop targets mid-drag.
+	let dragging = use_memo(|| DRAG().is_some());
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./pane.css") }
 		div {
 			class: "workspace",
+			"data-dragging": dragging(),
 			// Releasing a tab drag anywhere that isn't a pane drop target cancels it (pane overlays
 			// stop propagation so their own release commits instead).
 			onpointerup: move |_| {
@@ -175,23 +179,24 @@ pub fn WorkspaceView() -> Element {
 					end_drag();
 				}
 			},
-			PaneNode { id: root }
+			PaneNode { id: root, merged: false }
 			DropIndicator {}
 		}
 	}
 }
 
 /// Renders a single node: a [`LeafPane`] for a leaf, or a [`SplitPane`] for a split. Only one of
-/// the two arms is reachable per node.
+/// the two arms is reachable per node. `merged` is threaded through so a split's shared glass bar
+/// can suppress the per-leaf one across its top row (see [`LeafPane`]).
 #[component]
-fn PaneNode(id: NodeId) -> Element {
+fn PaneNode(id: NodeId, merged: bool) -> Element {
 	let node = WORKSPACE.read().node(id).cloned();
 	match node {
 		Some(Node::Leaf { .. }) => rsx! {
-			LeafPane { id }
+			LeafPane { id, merged }
 		},
 		Some(Node::Split { .. }) => rsx! {
-			SplitPane { id }
+			SplitPane { id, merged }
 		},
 		None => rsx! {},
 	}

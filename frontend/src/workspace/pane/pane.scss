@@ -12,12 +12,35 @@ $rail-docked: 2.75rem;
 	height: 100%;
 }
 
-// A split lays its children along one axis; `flex-direction` is set inline per node.
+// A split lays its children along one axis; `flex-direction` is set inline per node. `relative`
+// anchors `.pane-band`, the shared glass tab bar a horizontal split paints across its top row.
 .pane-split {
+	position: relative;
 	display: flex;
 	height: 100%;
 	min-height: 0;
 	flex: 1;
+}
+
+// One continuous bar spanning a horizontal split's top row, sitting behind every child
+// leaf's (now transparent) tab bar. Replacing the per-leaf blur with a single surface is what
+// removes the seam two adjacent `backdrop-filter`s leave at their shared edge. Above the divider
+// line (z 2 > 1) but below the controls (`.leaf-tabbar` is z 60).
+.pane-band {
+	@include rounding(var(--border-radius-md), 1, 0.25rem);
+	@include color(color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal)), null);
+
+	position: absolute;
+	z-index: 2;
+	inset: 0 0 auto;
+	height: var(--header-height);
+	backdrop-filter: blur(var(--blur));
+	pointer-events: none;
+
+	// No rounding on small layout
+	@media (width <= 768px) {
+		border-radius: 0;
+	}
 }
 
 .pane-split-child {
@@ -29,10 +52,12 @@ $rail-docked: 2.75rem;
 // Draggable handle between two panes. Mirrors the sidebar's resize handle (`base_sidebar.scss`):
 // a 0.75rem band floating over the seam (negative margins collapse its layout footprint so the
 // panes stay flush), invisible until hovered or dragged, when a soft gradient line fades in.
-// `touch-action: none` keeps a touch-drag from scrolling instead.
+// `touch-action: none` keeps a touch-drag from scrolling instead. Sits above the tab bars (z 60) so
+// the hover line reads across the seam even where a pane's bar meets it; a tab drag switches off its
+// pointer events (below) so it can't shadow the drop targets at the seam.
 .pane-divider {
 	position: relative;
-	z-index: 1;
+	z-index: 65;
 	flex: 0 0 auto;
 	opacity: 0;
 	touch-action: none;
@@ -57,6 +82,12 @@ $rail-docked: 2.75rem;
 	&:hover,
 	&[data-resizing="true"] {
 		opacity: 1;
+	}
+
+	// While a tab is being dragged, step out of the way so the pane/bar drop targets at the seam
+	// (which sit below this handle) still receive the pointer.
+	.workspace[data-dragging="true"] & {
+		pointer-events: none;
 	}
 }
 
@@ -134,6 +165,14 @@ $rail-docked: 2.75rem;
 	z-index: 60;
 	inset: 0 0 auto;
 	height: var(--header-height);
+
+	// An ancestor split paints one shared `.pane-band` across this top row; drop this bar's own
+	// background/blur/rounding so the panes read as a single continuous bar (just hold the controls).
+	&[data-merged="true"] {
+		background-color: transparent;
+		border-radius: 0;
+		backdrop-filter: none;
+	}
 
 	// No rounding on small layout
 	@media (width <= 768px) {

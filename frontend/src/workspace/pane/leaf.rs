@@ -15,9 +15,11 @@ use crate::components::dropdown_menu::{DropdownMenu, DropdownMenuContent, Dropdo
 use crate::elements::{PRIMARY_SIDEBAR_CTX, SECONDARY_SIDEBAR_CTX};
 use crate::views::{Home, NewTab, Settings, SIDEBAR_SWAPPED};
 
-/// A single tab group: its own tab bar plus the active tab's content below it.
+/// A single tab group: its own tab bar plus the active tab's content below it. `merged` means an
+/// ancestor split paints one continuous glass bar across this leaf's top, so this bar drops its own
+/// background/blur/rounding and just holds the controls (see `.pane-band` in `pane.scss`).
 #[component]
-pub(super) fn LeafPane(id: NodeId) -> Element {
+pub(super) fn LeafPane(id: NodeId, merged: bool) -> Element {
 	let node = WORKSPACE.read().node(id).cloned();
 	let Some(Node::Leaf { tabs, active, .. }) = node else {
 		return rsx! {};
@@ -42,7 +44,7 @@ pub(super) fn LeafPane(id: NodeId) -> Element {
 
 	rsx! {
 		div { class: "leaf-pane",
-			div { class: "leaf-tabbar", role: "tablist",
+			div { class: "leaf-tabbar", role: "tablist", "data-merged": merged,
 				// Toggles whichever sidebar is docked on the left (primary unless swapped); sits at the
 				// start of the bar.
 				Button {
