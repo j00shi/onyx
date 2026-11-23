@@ -290,6 +290,7 @@ $tab-max-count: 10;
 				@include size(2.25rem);
 				@include color(transparent, var(--secondary-color-4));
 				@include rounding(var(--border-radius-md), 1, 0.25rem);
+				@include flex-center;
 
 				padding: 0;
 				box-shadow: none;

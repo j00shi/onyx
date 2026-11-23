@@ -27,7 +27,7 @@ const ICON_WIDTH_SIDEBAR: f64 = 48.0;
 const CLICK_THRESHOLD: f64 = 4.0;
 /// Once a drag-expand's eased width catches to within this many px of the pointer, tracking hands
 /// off to instant (no-transition) resizing. See the drag-expand "rubber-band" logic below.
-const CATCH_UP_PX: f64 = 16.0;
+const CATCH_UP_PX: f64 = 8.0;
 
 /// Shared sidebar scaffolding: the resizable, collapsible panel with its drag handle and
 /// transitions.
