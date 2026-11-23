@@ -5,14 +5,10 @@ use dioxus_icons::lucide::{
 };
 
 use crate::components::button::{Button, ButtonSize, ButtonVariant};
-use crate::components::dropdown_menu::{DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger};
-use crate::components::separator::Separator;
-use crate::components::sidebar::{
-	use_sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarSide, SidebarTrigger,
-};
+use crate::components::sidebar::{use_sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarSide};
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs};
 use crate::components::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
-use crate::elements::{BaseSidebar, PRIMARY_SIDEBAR_CTX};
+use crate::elements::{BaseSidebar, Ribbon, RibbonItem, RibbonItemKind, RibbonMenuItem, PRIMARY_SIDEBAR_CTX};
 use crate::views::{CUSTOM_TITLEBAR, MOBILE_REACH_LAYOUT, SIDEBAR_SWAPPED};
 use crate::workspace::model::View;
 use crate::workspace::WORKSPACE;
@@ -47,17 +43,83 @@ fn SidebarTabs() -> Element {
 	// reach layout the tab bar moves to the bottom, so they flip up to stay on screen.
 	let tab_tooltip_side =
 		if MOBILE_REACH_LAYOUT() && (ctx.is_mobile)() { ContentSide::Top } else { ContentSide::Bottom };
-	let ribbon_tooltip_side = if SIDEBAR_SWAPPED() { ContentSide::Left } else { ContentSide::Right };
 
-	// The ribbon dropdowns float in a fixed, non-clipped layer anchored to their trigger (see
-	// `.dropdown-content` in the SCSS). Their open state is controlled here so a ribbon scroll can
-	// close whichever is open. TODO: This is a temporary placeholder, will implement better later
-	let mut calendar_open = use_signal(|| false);
-	let mut vault_open = use_signal(|| false);
-	let mut close_dropdowns = move || {
-		calendar_open.set(false);
-		vault_open.set(false);
-	};
+	// Placeholder ribbon content. Later these lists come from the plugin registry.
+	let noop = EventHandler::new(|()| {});
+
+	let mut ribbon_top = vec![
+		RibbonItem {
+			icon: rsx! { ListTodo { size: "1.25rem" } },
+			tooltip: "I wonder how long I can type before this gets cut off".to_string(),
+			kind: RibbonItemKind::Action(noop),
+		},
+		RibbonItem {
+			icon: rsx! { Calendar { size: "1.25rem" } },
+			tooltip: "Calendar".to_string(),
+			kind: RibbonItemKind::Menu(vec![
+				menu_item("Day", false),
+				menu_item("Week", false),
+				menu_item("Month", false),
+				menu_item("Year", false),
+				menu_item("Decade", false),
+				menu_item("Century", false),
+				menu_item("Millennium", false),
+				menu_item("New event", true),
+			]),
+		},
+		RibbonItem {
+			icon: rsx! { Mail { size: "1.25rem" } },
+			tooltip: "Mail".to_string(),
+			kind: RibbonItemKind::Action(noop),
+		},
+		RibbonItem {
+			icon: rsx! { Bell { size: "1.25rem" } },
+			tooltip: "Notifications".to_string(),
+			kind: RibbonItemKind::Action(noop),
+		},
+	];
+	// Example filler buttons
+	ribbon_top.extend((0..10).map(|i| RibbonItem {
+		icon: rsx! { Square { size: "1.25rem" } },
+		tooltip: format!("Example {}", i + 1),
+		kind: RibbonItemKind::Action(noop),
+	}));
+
+	// Top-to-bottom visual order; the toggle is pinned below these by `Ribbon`.
+	let mut ribbon_bottom = vec![
+		RibbonItem {
+			icon: rsx! { Settings { size: "1.25rem" } },
+			tooltip: "Settings".to_string(),
+			kind: RibbonItemKind::Action(EventHandler::new(|()| {
+				WORKSPACE.write().open_view(View::Settings);
+			})),
+		},
+		RibbonItem {
+			icon: rsx! { User { size: "1.25rem" } },
+			tooltip: "Account".to_string(),
+			kind: RibbonItemKind::Action(noop),
+		},
+	];
+	// Example filler buttons
+	ribbon_bottom.extend((0..5).map(|i| RibbonItem {
+		icon: rsx! { Square { size: "1.25rem" } },
+		tooltip: format!("Example {}", i + 1),
+		kind: RibbonItemKind::Action(noop),
+	}));
+	ribbon_bottom.push(RibbonItem {
+		icon: rsx! { Vault { size: "1.25rem" } },
+		tooltip: "Vault".to_string(),
+		kind: RibbonItemKind::Menu(vec![
+			menu_item("Personal", false),
+			menu_item("Work", false),
+			menu_item("University", false),
+			menu_item("Monoversity", false),
+			menu_item("IDK", false),
+			menu_item("Cool vault", false),
+			menu_item("Habmurger", false),
+			menu_item("Manage Vaults", true),
+		]),
+	});
 
 	rsx! {
 		Tabs { class: "sidebar-body", default_value: "home".to_string(),
@@ -155,283 +217,7 @@ fn SidebarTabs() -> Element {
 				}
 			}
 			SidebarContent { class: "sidebar-content",
-				SidebarGroup { class: "ribbon",
-					div {
-						class: "ribbon-top",
-						onscroll: move |_| close_dropdowns(),
-						Tooltip {
-							TooltipTrigger {
-								Button {
-									variant: ButtonVariant::Ghost,
-									size: ButtonSize::Icon,
-									class: "ribbon-button",
-									ListTodo { size: "1.25rem" }
-								}
-							}
-							TooltipContent {
-								class: "tooltip-content",
-								side: ribbon_tooltip_side,
-								"I wonder how long I can type before this gets cut off"
-							}
-						}
-						DropdownMenu {
-							open: Some(calendar_open()),
-							on_open_change: move |v| calendar_open.set(v),
-							Tooltip {
-								TooltipTrigger {
-									DropdownMenuTrigger {
-										class: "ribbon-button",
-										style: "anchor-name: --dd-calendar",
-										Calendar { size: "1.25rem" }
-									}
-								}
-								TooltipContent {
-									class: "tooltip-content",
-									side: ribbon_tooltip_side,
-									"Calendar"
-								}
-							}
-							DropdownMenuContent {
-								class: "ribbon-dropdown-content",
-								style: "position-anchor: --dd-calendar",
-								DropdownMenuItem::<String> {
-									value: "day".to_string(),
-									index: 0usize,
-									class: "ribbon-dropdown-item",
-									"Day"
-								}
-								DropdownMenuItem::<String> {
-									value: "week".to_string(),
-									index: 1usize,
-									class: "ribbon-dropdown-item",
-									"Week"
-								}
-								DropdownMenuItem::<String> {
-									value: "month".to_string(),
-									index: 2usize,
-									class: "ribbon-dropdown-item",
-									"Month"
-								}
-								DropdownMenuItem::<String> {
-									value: "year".to_string(),
-									index: 3usize,
-									class: "ribbon-dropdown-item",
-									"Year"
-								}
-								DropdownMenuItem::<String> {
-									value: "decade".to_string(),
-									index: 4usize,
-									class: "ribbon-dropdown-item",
-									"Decade"
-								}
-								DropdownMenuItem::<String> {
-									value: "century".to_string(),
-									index: 5usize,
-									class: "ribbon-dropdown-item",
-									"Century"
-								}
-								DropdownMenuItem::<String> {
-									value: "millennium".to_string(),
-									index: 6usize,
-									class: "ribbon-dropdown-item",
-									"Millennium"
-								}
-								Separator { decorative: true }
-								DropdownMenuItem::<String> {
-									value: "new-event".to_string(),
-									index: 7usize,
-									class: "ribbon-dropdown-item",
-									"New event"
-								}
-							}
-						}
-						Tooltip {
-							TooltipTrigger {
-								Button {
-									variant: ButtonVariant::Ghost,
-									size: ButtonSize::Icon,
-									class: "ribbon-button",
-									Mail { size: "1.25rem" }
-								}
-							}
-							TooltipContent {
-								class: "tooltip-content",
-								side: ribbon_tooltip_side,
-								"Mail"
-							}
-						}
-						Tooltip {
-							TooltipTrigger {
-								Button {
-									variant: ButtonVariant::Ghost,
-									size: ButtonSize::Icon,
-									class: "ribbon-button",
-									Bell { size: "1.25rem" }
-								}
-							}
-							TooltipContent {
-								class: "tooltip-content",
-								side: ribbon_tooltip_side,
-								"Notifications"
-							}
-						}
-						// Example filler buttons
-						for i in 0..10 {
-							Tooltip {
-								TooltipTrigger {
-									Button {
-										variant: ButtonVariant::Ghost,
-										size: ButtonSize::Icon,
-										class: "ribbon-button",
-										Square { size: "1.25rem" }
-									}
-								}
-								TooltipContent {
-									class: "tooltip-content",
-									side: ribbon_tooltip_side,
-									"Example {i + 1}"
-								}
-							}
-						}
-					}
-					Separator { class: "ribbon-divider", decorative: true }
-					div {
-						class: "ribbon-bottom",
-						onscroll: move |_| close_dropdowns(),
-						Tooltip {
-							TooltipTrigger {
-								SidebarTrigger { class: "ribbon-button" }
-							}
-							TooltipContent {
-								class: "tooltip-content",
-								side: ribbon_tooltip_side,
-								"Toggle sidebar"
-							}
-						}
-						DropdownMenu {
-							open: Some(vault_open()),
-							on_open_change: move |v| vault_open.set(v),
-							Tooltip {
-								TooltipTrigger {
-									DropdownMenuTrigger {
-										class: "ribbon-button",
-										style: "anchor-name: --dd-vault",
-										Vault { size: "1.25rem" }
-									}
-								}
-								TooltipContent {
-									class: "tooltip-content",
-									side: ribbon_tooltip_side,
-									"Vault"
-								}
-							}
-							DropdownMenuContent {
-								class: "ribbon-dropdown-content",
-								style: "position-anchor: --dd-vault",
-								DropdownMenuItem::<String> {
-									value: "personal".to_string(),
-									index: 0usize,
-									class: "ribbon-dropdown-item",
-									"Personal"
-								}
-								DropdownMenuItem::<String> {
-									value: "work".to_string(),
-									index: 1usize,
-									class: "ribbon-dropdown-item",
-									"Work"
-								}
-								DropdownMenuItem::<String> {
-									value: "university".to_string(),
-									index: 2usize,
-									class: "ribbon-dropdown-item",
-									"University"
-								}
-								DropdownMenuItem::<String> {
-									value: "monoversity".to_string(),
-									index: 3usize,
-									class: "ribbon-dropdown-item",
-									"Monoversity"
-								}
-								DropdownMenuItem::<String> {
-									value: "idk".to_string(),
-									index: 4usize,
-									class: "ribbon-dropdown-item",
-									"IDK"
-								}
-								DropdownMenuItem::<String> {
-									value: "cool".to_string(),
-									index: 5usize,
-									class: "ribbon-dropdown-item",
-									"Cool vault"
-								}
-								DropdownMenuItem::<String> {
-									value: "habmurger".to_string(),
-									index: 6usize,
-									class: "ribbon-dropdown-item",
-									"Habmurger"
-								}
-								Separator { decorative: true }
-								DropdownMenuItem::<String> {
-									value: "manage".to_string(),
-									index: 7usize,
-									class: "dropdown-item",
-									"Manage Vaults"
-								}
-							}
-						}
-						// Example filler buttons
-						for i in 0..5 {
-							Tooltip {
-								TooltipTrigger {
-									Button {
-										variant: ButtonVariant::Ghost,
-										size: ButtonSize::Icon,
-										class: "ribbon-button",
-										Square { size: "1.25rem" }
-									}
-								}
-								TooltipContent {
-									class: "tooltip-content",
-									side: ribbon_tooltip_side,
-									"Example {i + 1}"
-								}
-							}
-						}
-						Tooltip {
-							TooltipTrigger {
-								Button {
-									variant: ButtonVariant::Ghost,
-									size: ButtonSize::Icon,
-									class: "ribbon-button",
-									User { size: "1.25rem" }
-								}
-							}
-							TooltipContent {
-								class: "tooltip-content",
-								side: ribbon_tooltip_side,
-								"Account"
-							}
-						}
-						Tooltip {
-							TooltipTrigger {
-								Button {
-									variant: ButtonVariant::Ghost,
-									size: ButtonSize::Icon,
-									class: "ribbon-button",
-									onclick: move |_| {
-										WORKSPACE.write().open_view(View::Settings);
-									},
-									Settings { size: "1.25rem" }
-								}
-							}
-							TooltipContent {
-								class: "tooltip-content",
-								side: ribbon_tooltip_side,
-								"Settings"
-							}
-						}
-					}
-				}
+				Ribbon { top: ribbon_top, bottom: ribbon_bottom }
 				SidebarGroup { class: "panel",
 					TabContent {
 						class: "panel-tab-content",
@@ -462,4 +248,9 @@ fn SidebarTabs() -> Element {
 			}
 		}
 	}
+}
+
+/// Builds a placeholder dropdown row (no action wired yet).
+fn menu_item(label: &str, separator_before: bool) -> RibbonMenuItem {
+	RibbonMenuItem { label: label.to_string(), on_select: EventHandler::new(|()| {}), separator_before }
 }

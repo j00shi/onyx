@@ -98,7 +98,7 @@ $tab-max-count: 10;
 					padding-right: 0;
 
 					// Open toward the content (left) instead of off the screen edge
-					.dropdown-content {
+					.ribbon-dropdown-content {
 						right: calc(anchor(left) + var(--space-md));
 						left: auto;
 					}
