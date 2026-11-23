@@ -8,17 +8,9 @@
 // Horizontal room added to the ribbon's scroll clip-box so a sideways tooltip isn't clipped
 $ribbon-tooltip-room: 17rem;
 
-// Sliding tab pill: distance the pill is inset from the tablist edges, the flex gap between tabs
-// (matches `.dx-tabs-list`'s `gap` in `components/tabs/style.css`), and how many tab counts the
-// pill rules are generated for. The `:has()` selectors below match live against whatever is in the
-// DOM, so adding/removing tabs at runtime re-sizes and re-positions the pill automatically — only
-// counts beyond this cap go unstyled, so keep it comfortably above the real maximum.
-$tab-pill-inset: 0.25rem;
-$tab-gap: 0.25rem;
-$tab-max-count: 10;
-
 // Primary-specific styling: the tab bar, ribbon and panels. The resizable panel, drag handle and
-// collapse/expand transitions are shared and live in `base_sidebar.scss`.
+// collapse/expand transitions are shared and live in `base_sidebar.scss`. The tablist/pill styling
+// lives with the `SidebarTabs` component in `sidebar_tabs.scss`.
 .primary-sidebar-wrapper {
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
 	[data-variant="sidebar"] .primary-sidebar .sidebar-body {
@@ -155,71 +147,6 @@ $tab-max-count: 10;
 					justify-content: flex-end;
 					gap: var(--space-sm);
 					height: var(--header-controls-height);
-				}
-
-				.tablist {
-					// Header is a column now, so grow across (flex: 1 only grows down)
-					@include size(100%, var(--header-height));
-
-					position: relative;
-					background-color: transparent;
-
-					// Each tab is wrapped in a tooltip
-					.tab-tooltip,
-					.tab-slot {
-						display: flex;
-						flex: 1;
-					}
-
-					.tab {
-						position: relative;
-						z-index: 1;
-						flex: 1;
-						transition: color var(--duration-medium) linear;
-
-						// Hides the old active tab indicator
-						&[data-state="active"] {
-							background-color: transparent;
-							box-shadow: none;
-						}
-					}
-
-					// Slides to the active tab. Width tracks the live tab count and the offset tracks the
-					// active tab's position — both via `:has()`, so this adapts to tabs added/removed at
-					// runtime (see `$tab-max-count` above).
-					&::before {
-						@include rounding(var(--border-radius-md), 2, 0.25rem);
-
-						content: "";
-						position: absolute;
-						z-index: 0;
-						inset: $tab-pill-inset;
-
-						// background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
-						background-color: color-mix(
-							in oklab,
-							var(--primary-color-6),
-							transparent var(--transparency-light)
-						);
-						box-shadow: var(--dark, inset 0 0 0 1px var(--primary-color-7))
-							var(--light, 0 1px 2px rgb(0 0 0 / 18%));
-						transition: transform var(--duration-medium) ease;
-					}
-
-					// One tab width = (tablist − both insets − the gaps between tabs) / tab count.
-					// `:nth-child(n):last-child` matches only when there are exactly n tabs.
-					@for $n from 1 through $tab-max-count {
-						&:has(.tab-tooltip:nth-child(#{$n}):last-child)::before {
-							width: calc((100% - #{2 * $tab-pill-inset} - #{($n - 1) * $tab-gap}) / #{$n});
-						}
-					}
-
-					// Each step over is one tab width (100% of the pill) plus one inter-tab gap.
-					@for $p from 1 through $tab-max-count {
-						&:has(.tab-tooltip:nth-child(#{$p}) .tab[data-state="active"])::before {
-							transform: translateX(calc(#{$p - 1} * (100% + #{$tab-gap})));
-						}
-					}
 				}
 			}
 
