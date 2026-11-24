@@ -38,7 +38,7 @@ pub fn Frame() -> Element {
 			 r.style.setProperty('--border-radius-lg', 'calc(1.5rem * {scale})'); \
 			 r.style.setProperty('--space-sm', 'calc(0.25rem * {spacing})'); \
 			 r.style.setProperty('--space-md', 'calc(0.5rem * {spacing})'); \
-			 r.style.setProperty('--space-lg', 'calc(1rem * {spacing})'); \
+			 r.style.setProperty('--space-xl', 'calc(1rem * {spacing})'); \
 			 r.style.setProperty('--duration-fast', 'calc(0.1s * {duration})'); \
 			 r.style.setProperty('--duration-medium', 'calc(0.2s * {duration})'); \
 			 r.style.setProperty('--duration-slow', 'calc(0.5s * {duration})'); \

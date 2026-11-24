@@ -59,9 +59,11 @@ html[data-theme="light"] {
 	--border-radius-lg: 1.5rem;
 
 	// Spacing
+	--space-xs: 0.125rem;
 	--space-sm: 0.25rem;
 	--space-md: 0.5rem;
-	--space-lg: 1rem;
+	--space-lg: 0.75rem;
+	--space-xl: 1rem;
 
 	// Transition & Animatinon
 	--duration-fast: 0.1s;

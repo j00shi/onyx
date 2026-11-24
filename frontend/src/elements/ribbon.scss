@@ -83,6 +83,11 @@ $ribbon-tooltip-room: 17rem;
 				var(--secondary-color-1)
 			);
 		}
+
+		img,
+		svg {
+			@include size(1rem !important);
+		}
 	}
 
 	// Lift the menu into a floating, non-clipped layer tethered to its trigger

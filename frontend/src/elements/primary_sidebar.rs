@@ -1,7 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_icons::lucide::{
-	Bell, Bookmark, Calendar, Folder, House, ListTodo, Mail, Search, Settings, Square, User, Vault,
-};
+use dioxus_icons::lucide::{Bell, Bookmark, Calendar, Folder, House, Mail, Search, Settings, Square, User, Vault};
 
 use crate::components::sidebar::SidebarSide;
 use crate::elements::{
@@ -69,12 +67,12 @@ fn PrimaryTabs() -> Element {
 
 	let mut ribbon_top = vec![
 		RibbonItem {
-			icon: rsx! { ListTodo { size: "1.25rem" } },
+			icon: rsx! { img { src: asset!("/assets/icons/favicon.ico") } },
 			tooltip: "I wonder how long I can type before this gets cut off".to_string(),
 			kind: RibbonItemKind::Action(noop),
 		},
 		RibbonItem {
-			icon: rsx! { Calendar { size: "1.25rem" } },
+			icon: rsx! { Calendar {} },
 			tooltip: "Calendar".to_string(),
 			kind: RibbonItemKind::Menu(vec![
 				menu_item("Day", false),
@@ -87,20 +85,12 @@ fn PrimaryTabs() -> Element {
 				menu_item("New event", true),
 			]),
 		},
-		RibbonItem {
-			icon: rsx! { Mail { size: "1.25rem" } },
-			tooltip: "Mail".to_string(),
-			kind: RibbonItemKind::Action(noop),
-		},
-		RibbonItem {
-			icon: rsx! { Bell { size: "1.25rem" } },
-			tooltip: "Notifications".to_string(),
-			kind: RibbonItemKind::Action(noop),
-		},
+		RibbonItem { icon: rsx! { Mail {} }, tooltip: "Mail".to_string(), kind: RibbonItemKind::Action(noop) },
+		RibbonItem { icon: rsx! { Bell {} }, tooltip: "Notifications".to_string(), kind: RibbonItemKind::Action(noop) },
 	];
 	// Example filler buttons
 	ribbon_top.extend((0..10).map(|i| RibbonItem {
-		icon: rsx! { Square { size: "1.25rem" } },
+		icon: rsx! { Square {} },
 		tooltip: format!("Example {}", i + 1),
 		kind: RibbonItemKind::Action(noop),
 	}));
@@ -108,26 +98,22 @@ fn PrimaryTabs() -> Element {
 	// Top-to-bottom visual order; the toggle is pinned below these by `Ribbon`.
 	let mut ribbon_bottom = vec![
 		RibbonItem {
-			icon: rsx! { Settings { size: "1.25rem" } },
+			icon: rsx! { Settings {} },
 			tooltip: "Settings".to_string(),
 			kind: RibbonItemKind::Action(EventHandler::new(|()| {
 				WORKSPACE.write().open_view(View::Settings);
 			})),
 		},
-		RibbonItem {
-			icon: rsx! { User { size: "1.25rem" } },
-			tooltip: "Account".to_string(),
-			kind: RibbonItemKind::Action(noop),
-		},
+		RibbonItem { icon: rsx! { User {} }, tooltip: "Account".to_string(), kind: RibbonItemKind::Action(noop) },
 	];
 	// Example filler buttons
 	ribbon_bottom.extend((0..5).map(|i| RibbonItem {
-		icon: rsx! { Square { size: "1.25rem" } },
+		icon: rsx! { Square {} },
 		tooltip: format!("Example {}", i + 1),
 		kind: RibbonItemKind::Action(noop),
 	}));
 	ribbon_bottom.push(RibbonItem {
-		icon: rsx! { Vault { size: "1.25rem" } },
+		icon: rsx! { Vault {} },
 		tooltip: "Vault".to_string(),
 		kind: RibbonItemKind::Menu(vec![
 			menu_item("Personal", false),

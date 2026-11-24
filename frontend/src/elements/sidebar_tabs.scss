@@ -3,19 +3,10 @@
 // Styling for the `SidebarTabs` component: the tab bar and its sliding pill. The containing
 // `.sidebar-header`/`.sidebar-content` structure and the ribbon live in `primary_sidebar.scss`.
 
-// Sliding tab pill: distance the pill is inset from the tablist edges, the flex gap between tabs
-// (matches `.dx-tabs-list`'s `gap` in `components/tabs/style.css`), and how many tab counts the
-// pill rules are generated for. The `:has()` selectors below match live against whatever is in the
-// DOM, so adding/removing tabs at runtime re-sizes and re-positions the pill automatically — only
-// counts beyond this cap go unstyled, so keep it comfortably above the real maximum.
-$tab-pill-inset: 0.25rem;
-$tab-gap: 0.25rem;
-$tab-max-count: 10;
-
 // Scoped under the component's own `.sidebar-body .sidebar-header` so the pill and the
 // active-state override stay more specific than the vendored `.dx-tabs-*` defaults.
 .sidebar-body .sidebar-header .tablist {
-	// Header is a column now, so grow across (flex: 1 only grows down)
+	// Header is a column, so grow across (flex: 1 only grows down)
 	@include size(100%, var(--header-height));
 
 	position: relative;
@@ -50,7 +41,7 @@ $tab-max-count: 10;
 		content: "";
 		position: absolute;
 		z-index: 0;
-		inset: $tab-pill-inset;
+		inset: var(--space-sm);
 
 		// background-color: var(--light, var(--primary-color)) var(--dark, var(--primary-color-6));
 		background-color: color-mix(in oklab, var(--primary-color-6), transparent var(--transparency-light));
@@ -60,16 +51,16 @@ $tab-max-count: 10;
 
 	// One tab width = (tablist − both insets − the gaps between tabs) / tab count.
 	// `:nth-child(n):last-child` matches only when there are exactly n tabs.
-	@for $n from 1 through $tab-max-count {
+	@for $n from 1 through 10 {
 		&:has(.tab-tooltip:nth-child(#{$n}):last-child)::before {
-			width: calc((100% - #{2 * $tab-pill-inset} - #{($n - 1) * $tab-gap}) / #{$n});
+			width: calc((100% - 2 * var(--space-sm) - #{($n - 1)} * var(--space-sm)) / #{$n});
 		}
 	}
 
 	// Each step over is one tab width (100% of the pill) plus one inter-tab gap.
-	@for $p from 1 through $tab-max-count {
+	@for $p from 1 through 10 {
 		&:has(.tab-tooltip:nth-child(#{$p}) .tab[data-state="active"])::before {
-			transform: translateX(calc(#{$p - 1} * (100% + #{$tab-gap})));
+			transform: translateX(calc(#{$p - 1} * (100% + var(--space-sm))));
 		}
 	}
 }
