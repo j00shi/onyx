@@ -293,6 +293,13 @@ $tab-gap: 5px;
 	&::-webkit-scrollbar {
 		display: none;
 	}
+
+	// Mid-drag, keep pointermove coordinates relative to the pill itself: a pill's children would
+	// otherwise be the event target, so `element_coordinates()` would be relative to the label or
+	// close button and the insertion line would jump.
+	&.dragging .leaf-tab * {
+		pointer-events: none;
+	}
 }
 
 // A tab is the clickable pill: it holds the title and the close button, so the close sits inside

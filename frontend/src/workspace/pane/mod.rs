@@ -172,11 +172,13 @@ pub fn WorkspaceView() -> Element {
 		div {
 			class: "workspace",
 			"data-dragging": dragging(),
-			// Releasing a tab drag anywhere that isn't a pane drop target cancels it (pane overlays
-			// stop propagation so their own release commits instead).
+			// Releasing a tab drag applies the last target it pointed at. The pane overlays stop
+			// propagation so their own release commits first; this catches releases over the rest of a
+			// pane's bar (buttons, gaps) that would otherwise drop the move. `commit_drag` just ends the
+			// drag when no target was hovered.
 			onpointerup: move |_| {
 				if DRAG().is_some() {
-					end_drag();
+					commit_drag();
 				}
 			},
 			PaneNode { id: root, merged: false, top_left: true, top_right: true }
