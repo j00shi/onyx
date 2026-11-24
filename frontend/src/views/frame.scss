@@ -44,10 +44,10 @@ html[data-window-effect="true"] #frame {
 	user-select: text;
 
 	// Drop the content so its tab bar lines up with the sidebar header
-	padding-top: 0.25rem;
+	padding-top: var(--space-sm);
 
 	&[data-sidebar-variant="floating"] {
-		padding-top: 0.75rem;
+		padding-top: calc(3 * var(--space-sm));
 	}
 
 	// In the small (mobile) layout the sidebars collapse away; sit the content flush to the top.

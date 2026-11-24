@@ -7,6 +7,7 @@
 // `.leaf-tabbar` below.
 $rail-floating: 4rem;
 $rail-docked: 2.75rem;
+$tab-gap: 5px;
 
 // The content workspace fills `#content`; each leaf stacks a tab bar over its content.
 .workspace {
@@ -266,7 +267,7 @@ $rail-docked: 2.75rem;
 // Only as wide as its tabs so the add button sits right beside them; scrolls if they overflow.
 .leaf-tablist {
 	@include rounding(var(--border-radius-md), 2, 0.25rem);
-	@include flex-parent(row, null, center, var(--space-sm));
+	@include flex-parent(row, null, center, #{$tab-gap});
 	@include scroll-fade(inline, 3rem);
 
 	height: 100%;
@@ -319,7 +320,7 @@ $rail-docked: 2.75rem;
 
 		content: "";
 		position: absolute;
-		right: calc(var(--space-sm) / -2);
+		right: calc(#{$tab-gap + 1} / -2); // Half the tab gap + the width to sit exactly in the center
 		background-color: var(--secondary-color-6);
 	}
 

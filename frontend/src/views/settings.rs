@@ -126,7 +126,7 @@ pub fn Settings() -> Element {
 				Slider {
 					label: "Spacing",
 					horizontal: true,
-					min: 0.5,
+					min: 0.0,
 					max: 2.0,
 					step: 0.25,
 					value: SPACING_SCALE(),

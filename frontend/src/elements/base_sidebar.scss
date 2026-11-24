@@ -14,6 +14,10 @@
 
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
 	[data-variant="sidebar"] {
+		.base-sidebar {
+			padding: 0 !important;
+		}
+
 		// Hides the default sidebar border
 		.base-sidebar .sidebar-body::before {
 			border-top: none;
@@ -88,6 +92,7 @@
 
 	// These are styles that shouldn't be applied to mobile
 	.base-sidebar {
+		padding: var(--space-md) !important;
 		transition:
 			left var(--duration-medium) ease-out,
 			right var(--duration-medium) ease-out,

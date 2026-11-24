@@ -75,13 +75,18 @@ $ribbon-tooltip-room: 17rem;
 		padding: 0;
 		box-shadow: none;
 		cursor: default;
+		transition: scale var(--duration-medium) ease-out;
 
-		&:hover {
+		&:is(:hover, :focus-visible) {
 			@include color(
 				var(--light, var(--primary-color-5))
 					var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%)),
 				var(--secondary-color-1)
 			);
+		}
+
+		&:active {
+			scale: 0.9 !important;
 		}
 
 		img,

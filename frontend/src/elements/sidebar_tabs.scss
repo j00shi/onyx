@@ -3,6 +3,8 @@
 // Styling for the `SidebarTabs` component: the tab bar and its sliding pill. The containing
 // `.sidebar-header`/`.sidebar-content` structure and the ribbon live in `primary_sidebar.scss`.
 
+$tab-max-count: 10;
+
 // Scoped under the component's own `.sidebar-body .sidebar-header` so the pill and the
 // active-state override stay more specific than the vendored `.dx-tabs-*` defaults.
 .sidebar-body .sidebar-header .tablist {
@@ -51,14 +53,14 @@
 
 	// One tab width = (tablist − both insets − the gaps between tabs) / tab count.
 	// `:nth-child(n):last-child` matches only when there are exactly n tabs.
-	@for $n from 1 through 10 {
+	@for $n from 1 through $tab-max-count {
 		&:has(.tab-tooltip:nth-child(#{$n}):last-child)::before {
 			width: calc((100% - 2 * var(--space-sm) - #{($n - 1)} * var(--space-sm)) / #{$n});
 		}
 	}
 
 	// Each step over is one tab width (100% of the pill) plus one inter-tab gap.
-	@for $p from 1 through 10 {
+	@for $p from 1 through $tab-max-count {
 		&:has(.tab-tooltip:nth-child(#{$p}) .tab[data-state="active"])::before {
 			transform: translateX(calc(#{$p - 1} * (100% + var(--space-sm))));
 		}

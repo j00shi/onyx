@@ -170,7 +170,8 @@
 		// Fixed width gives the collapse/expand animation a stable target to transition
 		.sidebar-header,
 		.sidebar-content {
-			width: calc(var(--dx-sidebar-width) - 1.5rem); // Container padding 0.5rem*2 + tabs padding 0.25rem*2
+			// Floating container's fixed 0.5rem*2 padding (vendored, doesn't scale) + tabs' own --space-sm*2
+			width: calc(var(--dx-sidebar-width) - var(--space-md) * 3);
 		}
 	}
 
