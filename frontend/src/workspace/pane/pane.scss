@@ -202,6 +202,12 @@ $tab-gap: 5px;
 	height: var(--header-height);
 	transition: margin var(--duration-medium) ease-out;
 
+	// The non-floating sidebar does not provide a gap so this adds them
+	#content[data-sidebar-variant="sidebar"] & {
+		left: var(--space-sm);
+		right: var(--space-sm);
+	}
+
 	// Only the bar at the content's sidebar-adjacent top corner (`data-inner-top`) sits beside the
 	// overflowing collapsed header; every other bar has no header in the way and spans full width.
 	// The offset (`--leaf-offset`, see `#content`) pins its edge to where it sits while open so it

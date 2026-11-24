@@ -145,6 +145,18 @@
 		left: 0;
 	}
 
+	// The non-floating variant has no container padding, so the sidebar sits a bit wider and the
+	// handle lands at the outer edge. Nudge it inward so it sits near the edge like the floating one
+	[data-variant="sidebar"] {
+		&[data-side="left"] .resize-handle {
+			right: calc(var(--space-md) * -1);
+		}
+
+		&[data-side="right"] .resize-handle {
+			left: calc(var(--space-md) * -1);
+		}
+	}
+
 	// Resize handle only visible when dragging. Needs ">" or else both handles are highlighted.
 	.dragging > [data-slot="sidebar"] .resize-handle {
 		opacity: 1;
