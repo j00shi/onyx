@@ -42,6 +42,33 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 	let mut drop_size = use_signal(|| (0.0_f64, 0.0_f64));
 	// Size (px) of a tab pill, for positioning the bar-insertion line.
 	let mut tab_size = use_signal(|| (0.0_f64, 0.0_f64));
+	// Mounted pill elements keyed by tab id, so we can scroll the active tab into view.
+	let mut tab_els = use_signal(std::collections::HashMap::<u64, std::rc::Rc<MountedData>>::new);
+
+	// Keep the active tab in view: scroll to it whenever it changes (a new tab is added, or a
+	// partially-visible tab is clicked). Reads WORKSPACE and `tab_els` so it reruns when the active
+	// tab changes or its pill (re)mounts — the latter covers a freshly added tab that isn't in the
+	// map yet when `active` first points at it.
+	use_effect(move || {
+		let els = tab_els.read();
+		let ws = WORKSPACE.read();
+		let Some(Node::Leaf { tabs, active, .. }) = ws.node(id) else {
+			return;
+		};
+		let Some(el) = tabs.get(*active).and_then(|t| els.get(&t.id.0)).cloned() else {
+			return;
+		};
+		spawn(async move {
+			// `Nearest` on both axes: scroll the minimum amount, and never nudge the vertical axis.
+			let _ = el
+				.scroll_to_with_options(ScrollToOptions {
+					behavior: ScrollBehavior::Smooth,
+					vertical: ScrollLogicalPosition::Nearest,
+					horizontal: ScrollLogicalPosition::Nearest,
+				})
+				.await;
+		});
+	});
 
 	// Index of the tab being dragged out of this leaf (dimmed while dragging), if any.
 	let dragged = match DRAG() {
@@ -104,6 +131,12 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 							tabindex: 0,
 							"aria-selected": if i == active { "true" } else { "false" },
 							"data-dragging": if dragged == Some(i) { "true" } else { "false" },
+							onmounted: {
+								let tab_id = tab.id.0;
+								move |e: MountedEvent| {
+									tab_els.write().insert(tab_id, e.data());
+								}
+							},
 							onresize: move |e| {
 								if let Ok(size) = e.get_border_box_size() {
 									tab_size.set((size.width, size.height));
