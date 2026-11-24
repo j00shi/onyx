@@ -9,13 +9,12 @@
 // Horizontal room added to the ribbon's scroll clip-box so a sideways tooltip isn't clipped
 $ribbon-tooltip-room: 17rem;
 
-.ribbon {
+.ribbon.ribbon {
 	// Lift above the panel so that tooltips aren't behind it
 	position: relative;
 	z-index: 1;
 	min-height: 0;
-	padding: 0 !important;
-	padding-right: var(--space-sm);
+	padding: 0 var(--space-sm) 0 0;
 
 	// Two independent groups, both scroll so any number of buttons fits
 	.ribbon-top,
@@ -86,12 +85,12 @@ $ribbon-tooltip-room: 17rem;
 		}
 
 		&:active {
-			scale: 0.9 !important;
+			scale: 0.9;
 		}
 
 		img,
 		svg {
-			@include size(1rem !important);
+			@include size(1rem);
 		}
 	}
 

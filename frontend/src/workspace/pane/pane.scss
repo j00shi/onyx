@@ -190,7 +190,7 @@ $tab-gap: 5px;
 	);
 }
 
-.leaf-tabbar {
+.leaf-tabbar.leaf-tabbar {
 	@include default(absolute, flex);
 	@include rounding(var(--border-radius-md), 1, 0.25rem);
 	@include color(color-mix(in oklab, var(--primary-color-5), transparent var(--transparency-normal)), null);
@@ -251,16 +251,23 @@ $tab-gap: 5px;
 			);
 		}
 	}
-}
 
-.leaf-sidebar-toggle {
-	@include rounding(var(--border-radius-md), 2, 0.25rem);
-	@include size(null, 100% !important, 1);
+	.leaf-sidebar-toggle {
+		@include rounding(var(--border-radius-md), 2, 0.25rem);
+		@include size(null, 100%, 1);
 
-	max-width: 2rem;
+		max-width: 2rem;
 
-	&.leaf-sidebar-toggle-end {
-		margin-left: auto;
+		&.leaf-sidebar-toggle-end {
+			margin-left: auto;
+		}
+	}
+
+	.leaf-tab-add {
+		@include rounding(var(--border-radius-md), 2, 0.25rem);
+		@include size(null, 100%, 1);
+
+		max-width: 2rem;
 	}
 }
 
@@ -360,13 +367,6 @@ $tab-gap: 5px;
 			var(--secondary-color-1)
 		);
 	}
-}
-
-.leaf-tab-add {
-	@include rounding(var(--border-radius-md), 2, 0.25rem);
-	@include size(null, 100% !important, 1);
-
-	max-width: 2rem;
 }
 
 .leaf-content {

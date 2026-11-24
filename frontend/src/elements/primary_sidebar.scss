@@ -7,7 +7,7 @@
 // Primary-specific styling: the tab bar and panels. The resizable panel, drag handle and
 // collapse/expand transitions are shared and live in `base_sidebar.scss`. The tablist/pill styling
 // lives with the `SidebarTabs` component in `sidebar_tabs.scss`, and the ribbon in `ribbon.scss`.
-.primary-sidebar-wrapper {
+.primary-sidebar-wrapper.primary-sidebar-wrapper {
 	// Sidebar is when the sidebar is connected to the frame and only has an inner border
 	[data-variant="sidebar"] .primary-sidebar .sidebar-body {
 		.sidebar-header,
@@ -17,7 +17,7 @@
 		}
 	}
 
-	[data-variant="floating"][data-collapsible="icon"] {
+	[data-variant="floating"][data-state="collapsed"] {
 		.sidebar-body .sidebar-header {
 			margin-left: -0.25rem;
 		}
@@ -29,7 +29,7 @@
 		}
 	}
 
-	[data-collapsible="icon"] .primary-sidebar {
+	[data-state="collapsed"] .primary-sidebar {
 		// macOS also carries a window-controls row in the header, so the collapsed card edge and the
 		// resize handle start lower to clear it
 		&:has(.controls-wrapper) {
@@ -90,10 +90,6 @@
 	[data-mobile="true"] {
 		.sidebar-body {
 			@include space(null, var(--space-sm), var(--space-md));
-
-			position: relative;
-			flex: 1;
-			min-height: 0;
 
 			.sidebar-header,
 			.sidebar-content {

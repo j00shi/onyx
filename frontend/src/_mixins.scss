@@ -173,6 +173,14 @@
 	place-self: $vertical $horizontal; // Shorthand for align-self (vertical) + justify-self (horizontal)
 }
 
+// Applies border-radius to an element and its children. Children need a different border-radius
+// when there is a gap between the child and parent.
+// The formular is `inner radius = outer radius - (padding + border-width)`.
+// The outer shell is level 0 and there is no gap by default.
+@mixin rounding($radius, $level: 0, $gap: 0px) {
+	border-radius: max(0px, calc(#{$radius} - #{$level} * #{$gap}));
+}
+
 // -------------------------------------------------------------------------------------------------
 // Onyx Specific Styles
 // -------------------------------------------------------------------------------------------------
@@ -252,12 +260,4 @@
 			0 var(--scroll-fade-size),
 			calc(100% - var(--scroll-fade-size)) 100%;
 	}
-}
-
-// Applies border-radius to an element and its children. Children need a different border-radius
-// when there is a gap between the child and parent.
-// The formular is `inner radius = outer radius - (padding + border-width)`.
-// The outer shell is level 0 and there is no gap by default.
-@mixin rounding($radius, $level: 0, $gap: 0px) {
-	border-radius: max(0px, calc(#{$radius} - #{$level} * #{$gap}));
 }

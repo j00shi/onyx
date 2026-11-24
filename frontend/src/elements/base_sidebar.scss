@@ -2,49 +2,124 @@
 
 // Shared sidebar scaffolding: the resizable, collapsible panel, its drag handle and the
 // expand/collapse transitions.
-.base-sidebar-wrapper {
+.base-sidebar-wrapper.base-sidebar-wrapper {
+	// The base-sidebar doesn't touch the sidebar inset, the gap does.
 	[data-slot="sidebar-gap"] {
+		// Overwrites the default duration
 		transition: width var(--duration-medium) ease-out;
 	}
 
-	// Floating is when the sidebar is surrounded by a border. This is the default
-	[data-variant="floating"][data-collapsible="icon"] .base-sidebar {
-		width: calc(var(--dx-sidebar-width-icon) + 0.75rem);
+	// Sidebar styles (not applied to mobile)
+	.base-sidebar {
+		padding: var(--space-md);
+		transition:
+			left var(--duration-medium) ease-out,
+			right var(--duration-medium) ease-out,
+			width var(--duration-medium) ease-out;
+
+		// Wrapper of sidebar contents
+		.sidebar-body {
+			position: relative;
+			flex: 1;
+			min-height: 0;
+
+			// The "fake" background of the sidebar used for the expand/collapse transition
+			&::before {
+				@include color(
+					color-mix(in oklab, var(--dx-sidebar-background), transparent var(--transparency-strong)),
+					null
+				);
+
+				backdrop-filter: blur(var(--blur));
+				content: "";
+				position: absolute;
+				z-index: 0;
+				inset: 0;
+				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+				border: var(--border);
+				border-radius: var(--border-radius-md);
+				transition: top var(--duration-medium) linear;
+			}
+		}
 	}
 
-	// Sidebar is when the sidebar is connected to the frame and only has an inner border
+	// Hides the default floating sidebar border
+	[data-slot="sidebar-inner"] {
+		background-color: transparent;
+		border: none;
+	}
+
+	// Zero-height mirror of the container's live width, read via ResizeObserver so a drag-expand
+	// knows when its eased edge has caught up to the pointer (see base_sidebar.rs)
+	.resize-probe {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 0;
+		pointer-events: none;
+	}
+
+	// Handle on the sidebar's inner edge
+	.resize-handle {
+		position: absolute;
+		inset: 0 0 0 auto;
+		z-index: 1;
+		width: 0.75rem;
+		cursor: ew-resize;
+		touch-action: none;
+		user-select: none;
+		background-image: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
+		opacity: 0;
+		transition: opacity var(--duration-medium) ease;
+		transition-delay: var(--delay);
+
+		// Highlight the handle when hovered
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	// When the sidebar is collapsed
+	[data-state="collapsed"] {
+		[data-slot="sidebar-gap"],
+		.base-sidebar {
+			width: calc(var(--dx-sidebar-width-icon) + 0.75rem); // TODO use var
+		}
+	}
+
+	// Sidebar (not floating)
 	[data-variant="sidebar"] {
 		.base-sidebar {
-			padding: 0 !important;
+			padding: 0;
+
+			// Hides the default sidebar border
+			.sidebar-body::before {
+				border-top: none;
+				border-bottom: none;
+				border-radius: 0;
+			}
 		}
 
-		// Hides the default sidebar border
-		.base-sidebar .sidebar-body::before {
-			border-top: none;
-			border-bottom: none;
-			border-radius: 0;
-		}
-
+		// Hide left border when left...
 		&[data-side="left"] .base-sidebar {
 			border-right: none;
 
-			// Hide left border when left...
 			.sidebar-body::before {
 				border-left: none;
 			}
 		}
 
+		// and right when right
 		&[data-side="right"] .base-sidebar {
 			border-left: none;
 
-			// and right when right
 			.sidebar-body::before {
 				border-right: none;
 			}
 		}
 
 		// When collapsed show a top border and add radius
-		&[data-collapsible="icon"] {
+		&[data-state="collapsed"] {
+			[data-slot="sidebar-gap"],
 			.base-sidebar {
 				width: calc(var(--dx-sidebar-width-icon) - 0.25rem);
 			}
@@ -64,104 +139,29 @@
 		}
 	}
 
-	// When docked on the right (swapped) the handle moves to the inner (left) edge
+	// When docked on the right the handle moves to the inner (left) edge
 	[data-side="right"] .base-sidebar .resize-handle {
 		right: auto;
 		left: 0;
 	}
 
-	// Scope to this provider's own sidebar via child combinators: the nested sidebar lives under
-	// SidebarInset (a sibling of this `[data-slot="sidebar"]`), so one dragged sidebar leaves the
-	// other's handle and transitions untouched.
-	.dragging > [data-slot="sidebar"] {
-		// Highlight the handle for the whole drag
-		.resize-handle {
-			opacity: 1;
-		}
+	// Resize handle only visible when dragging. Needs ">" or else both handles are highlighted.
+	.dragging > [data-slot="sidebar"] .resize-handle {
+		opacity: 1;
 	}
 
+	// Removes transition while resizing. Needs ">" or else both handles are highlighted.
 	.resizing > [data-slot="sidebar"] {
-		// No transition while actively dragging the width, so it tracks the cursor instead of
-		// lagging. `resizing` is off on the collapse/expand frame (see base_sidebar.rs), so those
-		// toggles still animate — and the content tab bar's matching offset transition stays in sync.
 		> [data-slot="sidebar-gap"],
 		> [data-slot="sidebar-container"] {
 			transition: none;
 		}
 	}
 
-	// These are styles that shouldn't be applied to mobile
-	.base-sidebar {
-		padding: var(--space-md) !important;
-		transition:
-			left var(--duration-medium) ease-out,
-			right var(--duration-medium) ease-out,
-			width var(--duration-medium) ease-out;
-
-		// Hides the default floating sidebar border
-		[data-slot="sidebar-inner"] {
-			background-color: transparent;
-			border: none;
-		}
-
-		.sidebar-body {
-			position: relative;
-			flex: 1;
-			min-height: 0;
-
-			// Wrapper used for the expand/collapse transition
-			&::before {
-				@include color(
-					color-mix(in oklab, var(--dx-sidebar-background), transparent var(--transparency-strong)),
-					null
-				);
-
-				backdrop-filter: blur(var(--blur));
-				content: "";
-				position: absolute;
-				z-index: 0;
-				inset: 0;
-				box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-				border: var(--border);
-				border-radius: var(--border-radius-md);
-				transition: top var(--duration-medium) linear;
-			}
-		}
-
-		// Zero-height mirror of the container's live width, read via ResizeObserver so a drag-expand
-		// knows when its eased edge has caught up to the pointer (see base_sidebar.rs).
-		.resize-probe {
-			position: absolute;
-			inset: 0 0 auto;
-			height: 0;
-			pointer-events: none;
-		}
-
-		// Handle on the sidebar's inner edge
-		.resize-handle {
-			position: absolute;
-			inset: 0 0 0 auto;
-			z-index: 1;
-			width: 0.75rem;
-			cursor: ew-resize;
-			touch-action: none;
-			user-select: none;
-			background-image: linear-gradient(to right, transparent, var(--focused-border-color), transparent);
-			opacity: 0;
-			transition: opacity var(--duration-medium) ease;
-			transition-delay: var(--delay);
-
-			// Highlight the handle when hovered
-			&:hover {
-				opacity: 1;
-			}
-		}
-	}
-
 	// The sheet overlay fades via opacity, which makes it a backdrop root and caps what the
 	// sidebar's backdrop-filter can sample. Fade via its background alpha instead, so it never
 	// becomes a backdrop root and the blur reaches the page behind it the whole time.
-	// TODO: Not happy with this. Better solution possible??
+	// TODO: Better solution possible?
 	[data-slot="sheet-root"] {
 		will-change: auto;
 		opacity: 1;
@@ -193,6 +193,7 @@
 		}
 	}
 
+	// The inset (content) of the sidebars
 	[data-slot="sidebar-inset"] {
 		background-color: transparent;
 	}
