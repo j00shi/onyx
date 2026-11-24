@@ -1,0 +1,125 @@
+@use "../mixins" as *;
+@include scroll-fade-keyframes;
+
+// Styling for the `Ribbon` component: the two scrolling button groups, the ghost buttons and the
+// anchored dropdown menus. Scoped under `.ribbon` so these stay more specific than the vendored
+// `.dx-*` button/menu defaults. The surrounding `.sidebar-content` layout and the right-dock
+// mirror live in `primary_sidebar.scss`.
+
+// Horizontal room added to the ribbon's scroll clip-box so a sideways tooltip isn't clipped
+$ribbon-tooltip-room: 17rem;
+
+.ribbon {
+	// Lift above the panel so that tooltips aren't behind it
+	position: relative;
+	z-index: 1;
+	min-height: 0;
+	padding: 0 !important;
+	padding-right: var(--space-sm);
+
+	// Two independent groups, both scroll so any number of buttons fits
+	.ribbon-top,
+	.ribbon-bottom {
+		@include scroll-fade(block);
+
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		min-height: 0;
+		overflow-y: auto;
+		scrollbar-width: none;
+
+		// `overflow-y` forces `overflow-x` to clip, which would cut off tooltips
+		// tooltips. Pad the clip-box toward to give them room, then cancel that
+		// width with a negative margin
+		padding-right: $ribbon-tooltip-room;
+		margin-right: -$ribbon-tooltip-room;
+
+		// That padding region overlaps the panel, so let clicks pass through it; the
+		// buttons and tooltip wrappers re-enable pointer events.
+		pointer-events: none;
+
+		> * {
+			pointer-events: auto;
+		}
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	// Grows depening on how much space it needs
+	.ribbon-top {
+		flex: 1;
+	}
+
+	// Divider between the two groups
+	.ribbon-divider {
+		margin: var(--space-sm) 0;
+	}
+
+	// Has the priority, only starts scrolling in the middle
+	.ribbon-bottom {
+		flex: 0 0 auto;
+		max-height: 50%;
+		flex-direction: column-reverse;
+	}
+
+	// Basically a normal sized ghost button. Needed because some ribbons buttons are not actually button
+	.ribbon-button {
+		@include size(2.25rem);
+		@include color(transparent, var(--secondary-color-4));
+		@include rounding(var(--border-radius-md), 1, 0.25rem);
+		@include flex-center;
+
+		padding: 0;
+		box-shadow: none;
+		cursor: default;
+
+		&:hover {
+			@include color(
+				var(--light, var(--primary-color-5))
+					var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%)),
+				var(--secondary-color-1)
+			);
+		}
+	}
+
+	// Lift the menu into a floating, non-clipped layer tethered to its trigger
+	.ribbon-dropdown-content {
+		@include rounding(var(--border-radius-md));
+
+		position: fixed;
+		inset: anchor(top) auto auto calc(anchor(right) + var(--space-md));
+		min-width: 11.5rem;
+		position-try-fallbacks:
+			flip-block, flip-inline; // Flip across the trigger if the default placement would spill off a viewport edge.
+	}
+
+	.ribbon-dropdown-item {
+		@include rounding(var(--border-radius-md), 1, 0.25rem);
+	}
+}
+
+// When the sidebar is docked on the right, the ribbon sits on the outer (right) edge; its inner
+// gap, tooltip clip-box room and dropdown direction all flip to the left. The sidebar mirror
+// itself (`row-reverse`) lives in `primary_sidebar.scss`.
+[data-side="right"] .ribbon {
+	padding-left: var(--space-sm); // Gap now sits on the ribbon's inner (left) edge
+	padding-right: 0;
+
+	// Open toward the content (left) instead of off the screen edge
+	.ribbon-dropdown-content {
+		right: calc(anchor(left) + var(--space-md));
+		left: auto;
+	}
+
+	// Tooltip now opens left (toward the content), so move the clip-box room there
+	.ribbon-top,
+	.ribbon-bottom {
+		padding-right: 0;
+		margin-right: 0;
+		padding-left: $ribbon-tooltip-room;
+		margin-left: -$ribbon-tooltip-room;
+	}
+}

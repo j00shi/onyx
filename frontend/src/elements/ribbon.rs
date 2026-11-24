@@ -55,6 +55,8 @@ pub fn Ribbon(top: Vec<RibbonItem>, bottom: Vec<RibbonItem>) -> Element {
 	let mut open_menu = use_signal(|| None::<String>);
 
 	rsx! {
+		document::Link { rel: "stylesheet", href: asset!("./ribbon.css") }
+
 		SidebarGroup { class: "ribbon",
 			div {
 				class: "ribbon-top",
