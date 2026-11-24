@@ -82,6 +82,8 @@ $ribbon-tooltip-room: 17rem;
 					var(--dark, color-mix(in oklab, var(--primary-color-5), transparent 50%)),
 				var(--secondary-color-1)
 			);
+
+			outline: none;
 		}
 
 		&:active {

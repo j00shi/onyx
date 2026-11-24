@@ -43,7 +43,10 @@ pub fn SidebarTabs(tabs: Vec<SidebarTab>, #[props(default)] default: Option<Stri
 	rsx! {
 		document::Link { rel: "stylesheet", href: asset!("./sidebar_tabs.css") }
 
-		Tabs { class: "sidebar-body", default_value,
+		// The tab bar is a horizontal row, so Left/Right (not the vertical default) navigate it.
+		// Tabs use a roving tabindex: Tab reaches the active tab, arrows move between them, Enter
+		// activates.
+		Tabs { class: "sidebar-body", horizontal: true, default_value,
 			SidebarHeader { class: "sidebar-header",
 				// Traffic lights on macOS overlay this corner
 				if cfg!(all(feature = "desktop", target_os = "macos")) && CUSTOM_TITLEBAR() {
@@ -76,7 +79,10 @@ pub fn SidebarTabs(tabs: Vec<SidebarTab>, #[props(default)] default: Option<Stri
 					TabList { class: "tablist",
 						for (i, tab) in tabs.iter().enumerate() {
 							Tooltip { key: "{tab.id}", class: "tab-tooltip",
-								TooltipTrigger { class: "tab-slot",
+								// `tabindex: -1` keeps the wrapper out of the tab order so focus lands on
+								// the tab button itself — otherwise its roving tabindex is bypassed and
+								// Enter/Space never reaches the button.
+								TooltipTrigger { class: "tab-slot", tabindex: "-1",
 									TabTrigger {
 										class: "tab",
 										value: tab.id.clone(),

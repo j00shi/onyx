@@ -243,7 +243,7 @@ $tab-gap: 5px;
 		padding: 0;
 		box-shadow: none;
 
-		&:hover {
+		&:is(:hover, :focus-visible) {
 			@include color(
 				var(--light, var(--primary-color-5))
 					var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
@@ -305,8 +305,9 @@ $tab-gap: 5px;
 	user-select: none;
 	transition: color var(--duration-medium) linear;
 
-	&:hover {
+	&:is(:hover, :focus-visible) {
 		color: var(--secondary-color-1);
+		outline: none;
 
 		.leaf-tab-close {
 			opacity: 1;
@@ -360,12 +361,14 @@ $tab-gap: 5px;
 		opacity var(--duration-fast) linear,
 		background-color var(--duration-medium) linear;
 
-	&:hover {
+	&:is(:hover, :focus-visible) {
 		@include color(
 			var(--light, var(--primary-color-5))
 				var(--dark, color-mix(in oklab, var(--primary-color-5) 50%, transparent)),
 			var(--secondary-color-1)
 		);
+
+		opacity: 1;
 	}
 }
 

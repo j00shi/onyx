@@ -77,7 +77,9 @@ pub fn Ribbon(top: Vec<RibbonItem>, bottom: Vec<RibbonItem>) -> Element {
 				onscroll: move |_| open_menu.set(None),
 				// First DOM child, so `column-reverse` places it at the very bottom.
 				Tooltip {
-					TooltipTrigger {
+					// `tabindex: -1` keeps the wrapper out of the tab order so only the inner control
+					// is a tab stop — otherwise keyboard users land on the trigger before the button.
+					TooltipTrigger { tabindex: "-1",
 						SidebarTrigger { class: "ribbon-button" }
 					}
 					TooltipContent {
@@ -109,7 +111,7 @@ fn RibbonEntry(id: String, item: RibbonItem, side: ContentSide, open_menu: Signa
 			let on_click = *on_click;
 			rsx! {
 				Tooltip {
-					TooltipTrigger {
+					TooltipTrigger { tabindex: "-1",
 						Button {
 							variant: ButtonVariant::Ghost,
 							size: ButtonSize::Icon,
@@ -135,7 +137,7 @@ fn RibbonEntry(id: String, item: RibbonItem, side: ContentSide, open_menu: Signa
 					open: Some(is_open),
 					on_open_change: move |v| open_menu.set(if v { Some(id.clone()) } else { None }),
 					Tooltip {
-						TooltipTrigger {
+						TooltipTrigger { tabindex: "-1",
 							DropdownMenuTrigger {
 								class: "ribbon-button",
 								style: "anchor-name: {anchor}",
