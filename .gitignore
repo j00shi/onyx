@@ -13,7 +13,6 @@ dx.log
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Debug
 *.log

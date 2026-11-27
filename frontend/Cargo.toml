@@ -6,6 +6,8 @@ edition = "2021"
 [dependencies]
 dioxus = { workspace = true }
 backend = { workspace = true }
+plugin-api = { workspace = true }
+example = { workspace = true }
 dioxus-primitives = { git = "https://github.com/DioxusLabs/components", rev = "9a758255" }
 dioxus-icons = "0.1"
 dioxus-code = { version = "0.1", default-features = false, features = ["macro", "lang-css"] }

@@ -6,8 +6,6 @@ use crate::elements::{
 	BaseSidebar, Ribbon, RibbonItem, RibbonItemKind, RibbonMenuItem, SidebarTab, SidebarTabs, PRIMARY_SIDEBAR_CTX,
 };
 use crate::views::SIDEBAR_SWAPPED;
-use crate::workspace::model::View;
-use crate::workspace::WORKSPACE;
 
 /// The primary sidebar. Docks on the left by default, or the right when the layout is swapped.
 /// Resizing and the collapse/expand transitions come from [`BaseSidebar`]; the tab ribbon and
@@ -101,7 +99,7 @@ fn PrimaryTabs() -> Element {
 			icon: rsx! { Settings {} },
 			tooltip: "Settings".to_string(),
 			kind: RibbonItemKind::Action(EventHandler::new(|()| {
-				WORKSPACE.write().open_view(View::Settings);
+				plugin_api::invoke_command("app:open-settings");
 			})),
 		},
 		RibbonItem { icon: rsx! { User {} }, tooltip: "Account".to_string(), kind: RibbonItemKind::Action(noop) },
