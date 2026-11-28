@@ -1,52 +1,80 @@
 @use "../mixins" as *;
 
+// The vendored dialog scrim (our palette's parent) is a backdrop root two ways: it sets
+// `will-change: opacity` and it fades its `opacity` 0→1 on open. Both starve the palette's
+// `backdrop-filter` so it only samples the flat scrim (and the blur pops in once the fade ends).
+// Clear `will-change` and hold opacity at 1 so the blur reaches real page content from the first
+// frame; fade the scrim tint via `background-color` instead. We can't name the scrim's hashed
+// class, so reach it structurally — its `[data-state]` lives on the scrim and outranks the vendored
+// rule.
+:has(> .command-palette.command-palette) {
+	opacity: 1;
+	will-change: auto;
+}
+
+:has(> .command-palette.command-palette)[data-state="open"] {
+	animation: command-palette-scrim-in var(--duration-medium) ease-out;
+}
+
+:has(> .command-palette.command-palette)[data-state="closed"] {
+	animation: command-palette-scrim-out var(--duration-fast) ease-in forwards;
+}
+
+@keyframes command-palette-scrim-in {
+	from {
+		background-color: transparent;
+	}
+}
+
+@keyframes command-palette-scrim-out {
+	to {
+		background-color: transparent;
+	}
+}
+
 // Styling for the `CommandPalette`: the modal content box, its filter input and the scrollable
 // result list. Scoped under `.command-palette` with the doubled-class trick so these stay more
 // specific than the vendored `.dx-dialog`/`.dx-input`/`.dx-item` defaults.
-
 .command-palette.command-palette {
-	@include color(var(--primary-color-2), var(--secondary-color-1));
-	@include space($padding: var(--space-md));
+	@include rounding(var(--border-radius-md), 0, 0.25rem);
+	@include space(null, var(--space-md), var(--space-md));
+	@include color(color-mix(in oklab, var(--dx-sidebar-background), transparent var(--transparency-strong)), null);
 
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-md);
 	width: min(40rem, 90vw);
 	max-height: min(28rem, 70vh);
-	border: var(--border);
-	border-radius: var(--border-radius-md);
+	backdrop-filter: blur(var(--blur));
+	transition: height var(--duration-medium) ease;
 
 	// Visually hide the a11y title while keeping it in the accessibility tree.
 	.command-palette-title {
+		@include size(1px);
+		@include size(-1px, 0);
+
 		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
 		overflow: hidden;
 		clip-path: inset(50%);
 		white-space: nowrap;
 	}
 
-	.command-palette-input {
-		width: 100%;
+	input {
+		@include rounding(var(--border-radius-md), 1, 0.25rem);
 	}
 
 	// Scrolls once the result list outgrows the box.
 	.command-palette-list {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-xs);
-		min-height: 0;
+		@include scroll-fade(block);
+
+		gap: var(--space-md);
 		overflow-y: auto;
 		scrollbar-width: thin;
 	}
 
 	.command-palette-item {
-		@include rounding(var(--border-radius-sm));
+		@include rounding(var(--border-radius-md), 1, 0.25rem);
 
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
 		gap: var(--space-md);
 		cursor: default;
 
@@ -62,11 +90,10 @@
 
 	// Native hotkey hint, pushed to the trailing edge of its row.
 	.command-palette-hint {
-		margin-inline-start: auto;
-		padding-inline: var(--space-sm);
+		@include rounding(var(--border-radius-md), 2, 0.25rem);
+
+		padding: var(--space-sm);
 		border: var(--border);
-		border-radius: var(--border-radius-sm);
-		opacity: 0.7;
 		font-size: 0.85em;
 		white-space: nowrap;
 	}

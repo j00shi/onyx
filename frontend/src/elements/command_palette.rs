@@ -61,7 +61,6 @@ pub fn CommandPalette() -> Element {
 			DialogTitle { class: "command-palette-title", "Command palette" }
 
 			Input {
-				class: "command-palette-input",
 				value: "{query}",
 				placeholder: "Run a command...",
 				oninput: move |e: FormEvent| {
@@ -89,6 +88,7 @@ pub fn CommandPalette() -> Element {
 				},
 			}
 
+		if match_count > 0 {
 			ItemGroup { class: "command-palette-list",
 				for (i, (id, name, hotkey)) in matches.iter().enumerate() {
 					Item {
@@ -106,6 +106,7 @@ pub fn CommandPalette() -> Element {
 					}
 				}
 			}
+		}
 		}
 	}
 }
