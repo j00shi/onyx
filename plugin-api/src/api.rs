@@ -2,6 +2,7 @@
 
 use crate::command::{invoke_command, Command, COMMANDS};
 use crate::hotkey::HOTKEYS;
+use crate::ribbon::{RibbonItemSpec, RIBBON_ITEMS};
 
 /// Handle passed to a plugin's [`crate::Plugin::setup`].
 ///
@@ -31,5 +32,10 @@ impl App {
 	/// cannot call directly.
 	pub fn run_command(&self, id: &str) {
 		invoke_command(id);
+	}
+
+	/// Contributes a button to the ribbon. Its `command` is invoked when the button is clicked.
+	pub fn add_ribbon_item(&self, item: RibbonItemSpec) {
+		RIBBON_ITEMS.write().push(item);
 	}
 }

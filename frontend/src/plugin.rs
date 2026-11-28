@@ -6,7 +6,8 @@
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use plugin_api::{run_setup, App, Command, KeyChord, Plugin};
+use dioxus_icons::lucide::{Search, Settings};
+use plugin_api::{run_setup, App, Command, KeyChord, Plugin, RibbonItemSpec, RibbonSection};
 
 use crate::elements::{COMMAND_PALETTE_OPEN, PRIMARY_SIDEBAR_TOGGLE, SECONDARY_SIDEBAR_TOGGLE};
 use crate::workspace::model::View;
@@ -68,6 +69,20 @@ impl Plugin for ShellPlugin {
 				}
 			}),
 			default_hotkey: Some(KeyChord::new("b").mod_key().shift()),
+		});
+
+		app.add_ribbon_item(RibbonItemSpec {
+			icon: || rsx! { Search { size: "1.25rem" } },
+			tooltip: "Command palette".to_string(),
+			section: RibbonSection::Top,
+			command: "app:open-command-palette".to_string(),
+		});
+
+		app.add_ribbon_item(RibbonItemSpec {
+			icon: || rsx! { Settings { size: "1.25rem" } },
+			tooltip: "Settings".to_string(),
+			section: RibbonSection::Bottom,
+			command: "app:open-settings".to_string(),
 		});
 	}
 }

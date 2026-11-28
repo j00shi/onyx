@@ -1,9 +1,10 @@
 use dioxus::prelude::*;
-use dioxus_icons::lucide::{Bell, Bookmark, Calendar, Folder, House, Mail, Search, Settings, Square, User, Vault};
+use dioxus_icons::lucide::{Bookmark, Folder, House, Search};
+use plugin_api::RibbonSection;
 
 use crate::components::sidebar::SidebarSide;
 use crate::elements::{
-	BaseSidebar, Ribbon, RibbonItem, RibbonItemKind, RibbonMenuItem, SidebarTab, SidebarTabs, PRIMARY_SIDEBAR_TOGGLE,
+	BaseSidebar, Ribbon, RibbonItem, RibbonItemKind, SidebarTab, SidebarTabs, PRIMARY_SIDEBAR_TOGGLE,
 };
 use crate::views::SIDEBAR_SWAPPED;
 
@@ -60,86 +61,29 @@ fn PrimaryTabs() -> Element {
 		},
 	];
 
-	// Placeholder ribbon content. Later these lists come from the plugin registry.
-	let noop = EventHandler::new(|()| {});
-
-	let mut ribbon_top = vec![
-		RibbonItem {
-			icon: rsx! { Search {} },
-			tooltip: "Command palette".to_string(),
-			kind: RibbonItemKind::Action(EventHandler::new(|()| {
-				plugin_api::invoke_command("app:open-command-palette");
-			})),
-		},
-		RibbonItem {
-			icon: rsx! { img { src: asset!("/assets/icons/favicon.ico") } },
-			tooltip: "I wonder how long I can type before this gets cut off".to_string(),
-			kind: RibbonItemKind::Action(noop),
-		},
-		RibbonItem {
-			icon: rsx! { Calendar {} },
-			tooltip: "Calendar".to_string(),
-			kind: RibbonItemKind::Menu(vec![
-				menu_item("Day", false),
-				menu_item("Week", false),
-				menu_item("Month", false),
-				menu_item("Year", false),
-				menu_item("Decade", false),
-				menu_item("Century", false),
-				menu_item("Millennium", false),
-				menu_item("New event", true),
-			]),
-		},
-		RibbonItem { icon: rsx! { Mail {} }, tooltip: "Mail".to_string(), kind: RibbonItemKind::Action(noop) },
-		RibbonItem { icon: rsx! { Bell {} }, tooltip: "Notifications".to_string(), kind: RibbonItemKind::Action(noop) },
-	];
-	// Example filler buttons
-	ribbon_top.extend((0..10).map(|i| RibbonItem {
-		icon: rsx! { Square {} },
-		tooltip: format!("Example {}", i + 1),
-		kind: RibbonItemKind::Action(noop),
-	}));
-
-	// Top-to-bottom visual order; the toggle is pinned below these by `Ribbon`.
-	let mut ribbon_bottom = vec![
-		RibbonItem {
-			icon: rsx! { Settings {} },
-			tooltip: "Settings".to_string(),
-			kind: RibbonItemKind::Action(EventHandler::new(|()| {
-				plugin_api::invoke_command("app:open-settings");
-			})),
-		},
-		RibbonItem { icon: rsx! { User {} }, tooltip: "Account".to_string(), kind: RibbonItemKind::Action(noop) },
-	];
-	// Example filler buttons
-	ribbon_bottom.extend((0..5).map(|i| RibbonItem {
-		icon: rsx! { Square {} },
-		tooltip: format!("Example {}", i + 1),
-		kind: RibbonItemKind::Action(noop),
-	}));
-	ribbon_bottom.push(RibbonItem {
-		icon: rsx! { Vault {} },
-		tooltip: "Vault".to_string(),
-		kind: RibbonItemKind::Menu(vec![
-			menu_item("Personal", false),
-			menu_item("Work", false),
-			menu_item("University", false),
-			menu_item("Monoversity", false),
-			menu_item("IDK", false),
-			menu_item("Cool vault", false),
-			menu_item("Habmurger", false),
-			menu_item("Manage Vaults", true),
-		]),
-	});
+	// Ribbon buttons come from the plugin registry (`App::add_ribbon_item`). Each spec's icon
+	// builder runs here, and its command id becomes the click handler, in this render scope.
+	let specs = plugin_api::RIBBON_ITEMS.read();
+	let build = |section: RibbonSection| {
+		specs
+			.iter()
+			.filter(|s| s.section == section)
+			.map(|s| {
+				let command = s.command.clone();
+				RibbonItem {
+					icon: (s.icon)(),
+					tooltip: s.tooltip.clone(),
+					kind: RibbonItemKind::Action(EventHandler::new(move |()| plugin_api::invoke_command(&command))),
+				}
+			})
+			.collect::<Vec<_>>()
+	};
+	let ribbon_top = build(RibbonSection::Top);
+	let ribbon_bottom = build(RibbonSection::Bottom);
 
 	rsx! {
 		SidebarTabs { tabs,
 			Ribbon { top: ribbon_top, bottom: ribbon_bottom }
 		}
 	}
-}
-
-/// Builds a placeholder dropdown row (no action wired yet).
-fn menu_item(label: &str, separator_before: bool) -> RibbonMenuItem {
-	RibbonMenuItem { label: label.to_string(), on_select: EventHandler::new(|()| {}), separator_before }
 }

@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 plugin-api = { workspace = true }
+dioxus = { workspace = true }
+dioxus-icons = "0.1"
 
 [lints]
 workspace = true

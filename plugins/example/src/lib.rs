@@ -6,7 +6,9 @@
 
 use std::rc::Rc;
 
-use plugin_api::{App, Command, Plugin};
+use dioxus::prelude::*;
+use dioxus_icons::lucide::Puzzle;
+use plugin_api::{App, Command, Plugin, RibbonItemSpec, RibbonSection};
 
 /// A minimal demo plugin.
 #[derive(Default)]
@@ -27,6 +29,14 @@ impl Plugin for ExamplePlugin {
 			// Uses only the public `App` capability to trigger the app-shell command.
 			callback: Rc::new(move || app.run_command("app:open-settings")),
 			default_hotkey: None,
+		});
+
+		// Proves a plugin crate (depending only on `plugin-api`) can contribute real ribbon UI.
+		app.add_ribbon_item(RibbonItemSpec {
+			icon: || rsx! { Puzzle { size: "1.25rem" } },
+			tooltip: "Example plugin".to_string(),
+			section: RibbonSection::Top,
+			command: "example:open-settings".to_string(),
 		});
 	}
 }
