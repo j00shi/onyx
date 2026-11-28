@@ -1,11 +1,13 @@
 //! In-leaf tab operations that don't change the tree's shape: adding, activating, and the
 //! focus-or-open helper behind "open here" actions.
 
-use super::{Node, NodeId, Tab, View, Workspace};
+use plugin_api::ViewId;
+
+use super::{Node, NodeId, Tab, Workspace};
 
 impl Workspace {
 	/// Append a tab to `leaf` and make it active.
-	pub fn add_tab(&mut self, leaf: NodeId, view: View) {
+	pub fn add_tab(&mut self, leaf: NodeId, view: ViewId) {
 		let id = self.alloc_tab_id();
 		if let Some(Node::Leaf { tabs, active, .. }) = self.nodes.get_mut(&leaf) {
 			tabs.push(Tab { id, view });
@@ -24,7 +26,7 @@ impl Workspace {
 	}
 
 	/// Focus an existing tab showing `view` in the focused leaf, or open a new one there.
-	pub fn open_view(&mut self, view: View) {
+	pub fn open_view(&mut self, view: ViewId) {
 		let leaf = self.focused_leaf;
 		if let Some(Node::Leaf { tabs, active, .. }) = self.nodes.get_mut(&leaf) {
 			if let Some(idx) = tabs.iter().position(|t| t.view == view) {

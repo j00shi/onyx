@@ -2,7 +2,10 @@
 //! (which may prune empty leaves and collapse one-child splits). These keep the parent links and
 //! per-split fraction sums intact.
 
-use super::{Edge, Node, NodeId, Tab, View, Workspace};
+use plugin_api::ViewId;
+
+use super::{Edge, Node, NodeId, Tab, Workspace};
+use crate::views::NEW_TAB_VIEW;
 
 impl Workspace {
 	/// Split `target`'s pane toward `edge`, putting a new tab of `view` in the new leaf.
@@ -10,7 +13,7 @@ impl Workspace {
 	/// Splitting along the parent split's own axis *flattens* (the new leaf joins its siblings and
 	/// all fractions reset to equal, so half→thirds→quarters); any other case *nests* a fresh
 	/// split. Returns the new leaf's ID.
-	pub fn split(&mut self, target: NodeId, edge: Edge, view: View) -> Option<NodeId> {
+	pub fn split(&mut self, target: NodeId, edge: Edge, view: ViewId) -> Option<NodeId> {
 		let tab = Tab { id: self.alloc_tab_id(), view };
 		self.split_with_tab(target, edge, tab)
 	}
@@ -152,7 +155,7 @@ impl Workspace {
 		} else {
 			let id = self.alloc_tab_id();
 			if let Some(Node::Leaf { tabs, active, .. }) = self.nodes.get_mut(&leaf) {
-				tabs.push(Tab { id, view: View::NewTab });
+				tabs.push(Tab { id, view: NEW_TAB_VIEW.to_string() });
 				*active = 0;
 			}
 		}

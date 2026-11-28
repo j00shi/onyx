@@ -8,7 +8,7 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 use dioxus_icons::lucide::Puzzle;
-use plugin_api::{App, Command, Plugin, RibbonItemSpec, RibbonSection};
+use plugin_api::{App, Command, Plugin, RibbonItemSpec, RibbonSection, ViewSpec};
 
 /// A minimal demo plugin.
 #[derive(Default)]
@@ -23,20 +23,35 @@ impl Plugin for ExamplePlugin {
 	}
 
 	fn setup(&mut self, app: App) {
+		// Proves a plugin crate (depending only on `plugin-api`) can contribute a whole page.
+		app.add_view(
+			"example:view".to_string(),
+			ViewSpec {
+				title: "Example".to_string(),
+				render: || {
+					rsx! {
+						div { class: "example-view",
+							h1 { "Example plugin view" }
+							p { "This whole page is rendered by the `example` plugin crate — it depends only on plugin-api." }
+						}
+					}
+				},
+			},
+		);
+
 		app.add_command(Command {
-			id: "example:open-settings".to_string(),
-			name: "Example: open settings".to_string(),
-			// Uses only the public `App` capability to trigger the app-shell command.
-			callback: Rc::new(move || app.run_command("app:open-settings")),
+			id: "example:open-view".to_string(),
+			name: "Example: open view".to_string(),
+			// Opens the plugin's own view through the public `App` capability.
+			callback: Rc::new(move || app.open_view("example:view".to_string())),
 			default_hotkey: None,
 		});
 
-		// Proves a plugin crate (depending only on `plugin-api`) can contribute real ribbon UI.
 		app.add_ribbon_item(RibbonItemSpec {
 			icon: || rsx! { Puzzle { size: "1.25rem" } },
 			tooltip: "Example plugin".to_string(),
 			section: RibbonSection::Top,
-			command: "example:open-settings".to_string(),
+			command: "example:open-view".to_string(),
 		});
 	}
 }

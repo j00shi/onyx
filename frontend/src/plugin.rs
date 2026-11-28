@@ -7,15 +7,21 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 use dioxus_icons::lucide::{Search, Settings};
-use plugin_api::{run_setup, App, Command, KeyChord, Plugin, RibbonItemSpec, RibbonSection};
+use plugin_api::{run_setup, App, Command, KeyChord, Plugin, RibbonItemSpec, RibbonSection, ViewId, ViewSpec};
 
 use crate::elements::{COMMAND_PALETTE_OPEN, PRIMARY_SIDEBAR_TOGGLE, SECONDARY_SIDEBAR_TOGGLE};
-use crate::workspace::model::View;
+use crate::views::{Home, NewTab, Settings as SettingsView, HOME_VIEW, NEW_TAB_VIEW, SETTINGS_VIEW};
 use crate::workspace::WORKSPACE;
 
 /// Runs every built-in and core plugin's `setup`. Must run inside the Dioxus runtime (it writes
 /// global signals), so it is called from `App`'s `use_hook`.
 pub fn bootstrap() {
+	// Install the "open a view in the focused pane" capability so sandboxed plugins can open views
+	// via `App::open_view` without reaching into `WORKSPACE`.
+	*plugin_api::OPEN_VIEW.write() = Some(Callback::new(|id: ViewId| {
+		WORKSPACE.write().open_view(id);
+	}));
+
 	let plugins: Vec<Box<dyn Plugin>> = vec![Box::new(ShellPlugin), Box::new(example::ExamplePlugin)];
 	run_setup(plugins);
 }
@@ -35,7 +41,7 @@ impl Plugin for ShellPlugin {
 			id: "app:open-settings".to_string(),
 			name: "Open settings".to_string(),
 			callback: Rc::new(|| {
-				WORKSPACE.write().open_view(View::Settings);
+				WORKSPACE.write().open_view(SETTINGS_VIEW.to_string());
 			}),
 			default_hotkey: Some(KeyChord::new(",").mod_key()),
 		});
@@ -70,6 +76,17 @@ impl Plugin for ShellPlugin {
 			}),
 			default_hotkey: Some(KeyChord::new("b").mod_key().shift()),
 		});
+
+		// The app shell's own pages, registered as views so panes render them from the registry.
+		app.add_view(HOME_VIEW.to_string(), ViewSpec { title: "Home".to_string(), render: || rsx! { Home {} } });
+		app.add_view(
+			NEW_TAB_VIEW.to_string(),
+			ViewSpec { title: "New Tab".to_string(), render: || rsx! { NewTab {} } },
+		);
+		app.add_view(
+			SETTINGS_VIEW.to_string(),
+			ViewSpec { title: "Settings".to_string(), render: || rsx! { SettingsView {} } },
+		);
 
 		app.add_ribbon_item(RibbonItemSpec {
 			icon: || rsx! { Search { size: "1.25rem" } },

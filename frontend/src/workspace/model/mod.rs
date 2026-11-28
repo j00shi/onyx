@@ -12,13 +12,15 @@
 
 use std::collections::HashMap;
 
+use crate::views::HOME_VIEW;
+
 mod tabs;
 #[cfg(test)]
 mod tests;
 mod tree;
 mod types;
 
-pub use types::{Axis, DropZone, Edge, Node, NodeId, Tab, TabId, View};
+pub use types::{Axis, DropZone, Edge, Node, NodeId, Tab, TabId};
 
 /// The content workspace: the pane tree, its root, and the focused leaf.
 #[derive(Clone, PartialEq, Debug)]
@@ -41,7 +43,7 @@ impl Workspace {
 		ws.focused_leaf = root;
 		ws.nodes.insert(
 			root,
-			Node::Leaf { id: root, parent: None, tabs: vec![Tab { id: tab, view: View::Home }], active: 0 },
+			Node::Leaf { id: root, parent: None, tabs: vec![Tab { id: tab, view: HOME_VIEW.to_string() }], active: 0 },
 		);
 		ws
 	}

@@ -1,4 +1,6 @@
-//! Value types for the pane tree: node/tab IDs, the [`View`] a tab shows, and the [`Node`] enum.
+//! Value types for the pane tree: node/tab IDs, the [`ViewId`] a tab shows, and the [`Node`] enum.
+
+use plugin_api::ViewId;
 
 /// Stable identifier for a tree node. Never recycled, so handles stay valid across edits.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -8,31 +10,12 @@ pub struct NodeId(pub u64);
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct TabId(pub u64);
 
-/// What a single tab displays. Replaces the old `Route` enum for content; extend as new
-/// view kinds are added.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum View {
-	Home,
-	NewTab,
-	Settings,
-}
-
-impl View {
-	/// Human-readable label shown on the tab.
-	pub const fn title(self) -> &'static str {
-		match self {
-			Self::Home => "Home",
-			Self::NewTab => "New Tab",
-			Self::Settings => "Settings",
-		}
-	}
-}
-
-/// One open tab inside a leaf. The title is derived from `view` for now.
+/// One open tab inside a leaf. Its `view` is an opaque id into the view registry; the renderer and
+/// title are looked up there at render time (see `pane/leaf.rs`).
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Tab {
 	pub id: TabId,
-	pub view: View,
+	pub view: ViewId,
 }
 
 /// Orientation of a split: `Horizontal` lays its children out left→right (a vertical divider),

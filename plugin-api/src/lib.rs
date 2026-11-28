@@ -10,9 +10,11 @@ mod command;
 mod hotkey;
 mod plugin;
 mod ribbon;
+mod view;
 
 pub use api::App;
 pub use command::{invoke_command, Command, CommandId, CommandRegistry, COMMANDS};
 pub use hotkey::{KeyChord, HOTKEYS};
 pub use plugin::{run_setup, Plugin, PLUGINS};
 pub use ribbon::{RibbonItemSpec, RibbonSection, RIBBON_ITEMS};
+pub use view::{ViewId, ViewSpec, OPEN_VIEW, VIEWS};

@@ -1,8 +1,11 @@
 //! The app-facing handle a plugin uses to contribute.
 
+use dioxus::prelude::ReadableExt;
+
 use crate::command::{invoke_command, Command, COMMANDS};
 use crate::hotkey::HOTKEYS;
 use crate::ribbon::{RibbonItemSpec, RIBBON_ITEMS};
+use crate::view::{ViewId, ViewSpec, OPEN_VIEW, VIEWS};
 
 /// Handle passed to a plugin's [`crate::Plugin::setup`].
 ///
@@ -37,5 +40,17 @@ impl App {
 	/// Contributes a button to the ribbon. Its `command` is invoked when the button is clicked.
 	pub fn add_ribbon_item(&self, item: RibbonItemSpec) {
 		RIBBON_ITEMS.write().push(item);
+	}
+
+	/// Registers a view (a whole page) under `id`, so it can be opened in a pane by id.
+	pub fn add_view(&self, id: ViewId, view: ViewSpec) {
+		VIEWS.write().insert(id, view);
+	}
+
+	/// Opens a registered view in the focused pane, via the capability the frontend installed.
+	pub fn open_view(&self, id: ViewId) {
+		if let Some(open) = *OPEN_VIEW.read() {
+			open.call(id);
+		}
 	}
 }

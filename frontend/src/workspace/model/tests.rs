@@ -1,4 +1,7 @@
-use super::{Axis, Edge, Node, NodeId, View, Workspace};
+use plugin_api::ViewId;
+
+use super::{Axis, Edge, Node, NodeId, Workspace};
+use crate::views::{HOME_VIEW, NEW_TAB_VIEW, SETTINGS_VIEW};
 
 /// A split's `(axis, children, fractions)`, or `None` if `id` isn't a split.
 fn split_of(ws: &Workspace, id: NodeId) -> Option<(Axis, Vec<NodeId>, Vec<f32>)> {
@@ -34,7 +37,7 @@ fn single_home_is_one_root_leaf() {
 fn split_on_root_leaf_nests_a_split() {
 	let mut ws = Workspace::single_home();
 	let leaf = ws.root();
-	ws.split(leaf, Edge::Right, View::NewTab);
+	ws.split(leaf, Edge::Right, NEW_TAB_VIEW.to_string());
 
 	let split = split_of(&ws, ws.root());
 	assert_eq!(split.as_ref().map(|s| s.0), Some(Axis::Horizontal));
@@ -46,9 +49,9 @@ fn split_on_root_leaf_nests_a_split() {
 fn same_axis_split_flattens_to_equal_thirds() {
 	let mut ws = Workspace::single_home();
 	let leaf = ws.root();
-	ws.split(leaf, Edge::Right, View::NewTab); // root → horizontal split of 2
+	ws.split(leaf, Edge::Right, NEW_TAB_VIEW.to_string()); // root → horizontal split of 2
 	if let Some(&child) = children_of(&ws, ws.root()).first() {
-		ws.split(child, Edge::Right, View::NewTab); // same axis → flatten to 3
+		ws.split(child, Edge::Right, NEW_TAB_VIEW.to_string()); // same axis → flatten to 3
 	}
 
 	let split = split_of(&ws, ws.root());
@@ -60,10 +63,10 @@ fn same_axis_split_flattens_to_equal_thirds() {
 fn perpendicular_split_nests_inside_the_child() {
 	let mut ws = Workspace::single_home();
 	let leaf = ws.root();
-	ws.split(leaf, Edge::Right, View::NewTab); // root → horizontal split of 2
+	ws.split(leaf, Edge::Right, NEW_TAB_VIEW.to_string()); // root → horizontal split of 2
 	let first = children_of(&ws, ws.root()).first().copied();
 	if let Some(child) = first {
-		ws.split(child, Edge::Bottom, View::NewTab); // perpendicular → nests a vertical split
+		ws.split(child, Edge::Bottom, NEW_TAB_VIEW.to_string()); // perpendicular → nests a vertical split
 	}
 
 	// Root is still a horizontal split of 2; its first child became a vertical split of 2.
@@ -83,7 +86,7 @@ fn leaf_count(ws: &Workspace) -> usize {
 fn closing_a_split_leaf_collapses_back_to_the_other() {
 	let mut ws = Workspace::single_home();
 	let root_leaf = ws.root();
-	let new = ws.split(root_leaf, Edge::Right, View::NewTab);
+	let new = ws.split(root_leaf, Edge::Right, NEW_TAB_VIEW.to_string());
 	assert!(matches!(ws.node(ws.root()), Some(Node::Split { .. })));
 
 	// Close the lone tab in the new pane; its leaf is removed and the split collapses.
@@ -101,10 +104,10 @@ fn closing_a_split_leaf_collapses_back_to_the_other() {
 fn closing_one_of_three_keeps_a_normalized_two_child_split() {
 	let mut ws = Workspace::single_home();
 	let root_leaf = ws.root();
-	ws.split(root_leaf, Edge::Right, View::NewTab); // 2 children
+	ws.split(root_leaf, Edge::Right, NEW_TAB_VIEW.to_string()); // 2 children
 	let victim = children_of(&ws, ws.root()).get(1).copied();
 	if let Some(v) = victim {
-		ws.split(v, Edge::Right, View::NewTab); // same axis → 3 children
+		ws.split(v, Edge::Right, NEW_TAB_VIEW.to_string()); // same axis → 3 children
 	}
 	assert_eq!(split_of(&ws, ws.root()).map(|s| s.1.len()), Some(3));
 
@@ -130,7 +133,7 @@ fn closing_the_last_tab_of_the_root_leaf_reseeds_a_new_tab() {
 	match ws.node(root) {
 		Some(Node::Leaf { tabs, .. }) => {
 			assert_eq!(tabs.len(), 1);
-			assert_eq!(tabs.first().map(|t| t.view), Some(View::NewTab));
+			assert_eq!(tabs.first().map(|t| t.view.clone()), Some(NEW_TAB_VIEW.to_string()));
 		},
 		_ => assert!(ws.node(root).is_some()),
 	}
@@ -140,7 +143,7 @@ fn closing_the_last_tab_of_the_root_leaf_reseeds_a_new_tab() {
 fn move_tab_to_edge_on_own_pane_splits_it() {
 	let mut ws = Workspace::single_home();
 	let leaf = ws.root();
-	ws.add_tab(leaf, View::Settings); // two tabs so the pane can give one away
+	ws.add_tab(leaf, SETTINGS_VIEW.to_string()); // two tabs so the pane can give one away
 	ws.move_tab_to_edge(leaf, 0, leaf, Edge::Right);
 	assert_eq!(leaf_count(&ws), 2);
 	assert!(matches!(ws.node(ws.root()), Some(Node::Split { .. })));
@@ -159,7 +162,7 @@ fn move_tab_to_edge_is_noop_for_a_single_tab_own_pane() {
 fn moving_a_leafs_only_tab_into_another_collapses_the_split() {
 	let mut ws = Workspace::single_home();
 	let root_leaf = ws.root();
-	let right = ws.split(root_leaf, Edge::Right, View::Home);
+	let right = ws.split(root_leaf, Edge::Right, HOME_VIEW.to_string());
 	assert_eq!(leaf_count(&ws), 2);
 
 	// Move the left pane's only tab into the right pane: left empties and the split collapses.
@@ -175,9 +178,9 @@ fn moving_a_leafs_only_tab_into_another_collapses_the_split() {
 }
 
 /// Views of a leaf's tabs, for order assertions.
-fn tab_views(ws: &Workspace, leaf: NodeId) -> Vec<View> {
+fn tab_views(ws: &Workspace, leaf: NodeId) -> Vec<ViewId> {
 	match ws.node(leaf) {
-		Some(Node::Leaf { tabs, .. }) => tabs.iter().map(|t| t.view).collect(),
+		Some(Node::Leaf { tabs, .. }) => tabs.iter().map(|t| t.view.clone()).collect(),
 		_ => Vec::new(),
 	}
 }
@@ -186,10 +189,10 @@ fn tab_views(ws: &Workspace, leaf: NodeId) -> Vec<View> {
 fn move_within_leaf_to_end_reorders_and_follows_focus() {
 	let mut ws = Workspace::single_home(); // [Home]
 	let leaf = ws.root();
-	ws.add_tab(leaf, View::Settings); // [Home, Settings]
-	ws.add_tab(leaf, View::NewTab); // [Home, Settings, NewTab]
+	ws.add_tab(leaf, SETTINGS_VIEW.to_string()); // [Home, Settings]
+	ws.add_tab(leaf, NEW_TAB_VIEW.to_string()); // [Home, Settings, NewTab]
 	ws.move_tab_to_leaf_at(leaf, 0, leaf, 3); // move Home to the end
-	assert_eq!(tab_views(&ws, leaf), vec![View::Settings, View::NewTab, View::Home]);
+	assert_eq!(tab_views(&ws, leaf), vec![SETTINGS_VIEW.to_string(), NEW_TAB_VIEW.to_string(), HOME_VIEW.to_string()]);
 	assert!(matches!(ws.node(leaf), Some(Node::Leaf { active: 2, .. })));
 }
 
@@ -197,7 +200,7 @@ fn move_within_leaf_to_end_reorders_and_follows_focus() {
 fn move_within_leaf_to_front_reorders() {
 	let mut ws = Workspace::single_home(); // [Home]
 	let leaf = ws.root();
-	ws.add_tab(leaf, View::Settings); // [Home, Settings]
+	ws.add_tab(leaf, SETTINGS_VIEW.to_string()); // [Home, Settings]
 	ws.move_tab_to_leaf_at(leaf, 1, leaf, 0); // move Settings to the front
-	assert_eq!(tab_views(&ws, leaf), vec![View::Settings, View::Home]);
+	assert_eq!(tab_views(&ws, leaf), vec![SETTINGS_VIEW.to_string(), HOME_VIEW.to_string()]);
 }

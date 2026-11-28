@@ -3,8 +3,9 @@
 
 use dioxus::prelude::*;
 use dioxus_icons::lucide::{Columns2, PanelLeft, PanelRight, Plus, X};
+use plugin_api::ViewId;
 
-use super::super::model::{Edge, Node, NodeId, View};
+use super::super::model::{Edge, Node, NodeId};
 use super::super::WORKSPACE;
 use super::{
 	commit_drag, drop_zone, set_hint, set_over, zone_rect, DropHint, DropTarget, GapShift, TabDrag, DRAG,
@@ -13,7 +14,7 @@ use super::{
 use crate::components::button::{Button, ButtonSize, ButtonVariant};
 use crate::components::dropdown_menu::{DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger};
 use crate::elements::{PRIMARY_SIDEBAR_TOGGLE, SECONDARY_SIDEBAR_TOGGLE};
-use crate::views::{Home, NewTab, Settings, SIDEBAR_SWAPPED};
+use crate::views::{NEW_TAB_VIEW, SIDEBAR_SWAPPED};
 
 /// A single tab group: its own tab bar plus the active tab's content below it. `merged` means an
 /// ancestor split paints one continuous glass bar across this leaf's top, so this bar drops its own
@@ -32,7 +33,7 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 	// when swapped — so only that corner's bar steps aside for it.
 	let inner_top = if SIDEBAR_SWAPPED() { top_right } else { top_left };
 
-	let active_view = tabs.get(active).map(|t| t.view);
+	let active_view = tabs.get(active).map(|t| t.view.clone());
 
 	// A pending tab press: (index, start x, start y). Promoted to a drag once the pointer moves
 	// past `DRAG_THRESHOLD`; `moved` then suppresses the click that would fire selection.
@@ -193,7 +194,15 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 									WORKSPACE.write().set_active(id, i);
 								}
 							},
-							span { class: "leaf-tab-title", "{tab.view.title()}" }
+							span { class: "leaf-tab-title",
+								{
+									let title = plugin_api::VIEWS
+										.read()
+										.get(&tab.view)
+										.map_or_else(|| tab.view.clone(), |s| s.title.clone());
+									rsx! { "{title}" }
+								}
+							}
 							button {
 								class: "leaf-tab-close",
 								"aria-label": "Close tab",
@@ -210,7 +219,7 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 					class: "leaf-tab-add",
 					variant: ButtonVariant::Ghost,
 					size: ButtonSize::IconSm,
-					onclick: move |_| WORKSPACE.write().add_tab(id, View::NewTab),
+					onclick: move |_| WORKSPACE.write().add_tab(id, NEW_TAB_VIEW.to_string()),
 					Plus { size: "1rem" }
 				}
 				// Split this pane toward a side, duplicating the active tab's view into the new pane.
@@ -222,25 +231,37 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 						DropdownMenuItem::<String> {
 							value: "right".to_string(),
 							index: 0usize,
-							on_select: move |_| split_toward(id, active_view, Edge::Right),
+							on_select: {
+								let view = active_view.clone();
+								move |_| split_toward(id, view.clone(), Edge::Right)
+							},
 							"Split right"
 						}
 						DropdownMenuItem::<String> {
 							value: "left".to_string(),
 							index: 1usize,
-							on_select: move |_| split_toward(id, active_view, Edge::Left),
+							on_select: {
+								let view = active_view.clone();
+								move |_| split_toward(id, view.clone(), Edge::Left)
+							},
 							"Split left"
 						}
 						DropdownMenuItem::<String> {
 							value: "down".to_string(),
 							index: 2usize,
-							on_select: move |_| split_toward(id, active_view, Edge::Bottom),
+							on_select: {
+								let view = active_view.clone();
+								move |_| split_toward(id, view.clone(), Edge::Bottom)
+							},
 							"Split down"
 						}
 						DropdownMenuItem::<String> {
 							value: "up".to_string(),
 							index: 3usize,
-							on_select: move |_| split_toward(id, active_view, Edge::Top),
+							on_select: {
+								let view = active_view.clone();
+								move |_| split_toward(id, view.clone(), Edge::Top)
+							},
 							"Split up"
 						}
 					}
@@ -264,7 +285,7 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 				}
 			}
 			div { class: "leaf-content",
-				if let Some(view) = active_view {
+				if let Some(view) = &active_view {
 					{render_view(view)}
 				}
 				// While a tab drag is in progress, the content area is a drop target: edges split the
@@ -296,23 +317,18 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 }
 
 /// Split `leaf` toward `edge`, duplicating `view` into the new pane. No-op if the leaf is empty.
-fn split_toward(leaf: NodeId, view: Option<View>, edge: Edge) {
+fn split_toward(leaf: NodeId, view: Option<ViewId>, edge: Edge) {
 	if let Some(view) = view {
 		WORKSPACE.write().split(leaf, edge, view);
 	}
 }
 
-/// Map a [`View`] to its content element.
-fn render_view(view: View) -> Element {
-	match view {
-		View::Home => rsx! {
-			Home {}
-		},
-		View::NewTab => rsx! {
-			NewTab {}
-		},
-		View::Settings => rsx! {
-			Settings {}
+/// Render a view id into its content element, looked up in the registry (`App::add_view`).
+fn render_view(view: &ViewId) -> Element {
+	match plugin_api::VIEWS.read().get(view) {
+		Some(spec) => (spec.render)(),
+		None => rsx! {
+			div { class: "view-missing", "View “{view}” is unavailable." }
 		},
 	}
 }
