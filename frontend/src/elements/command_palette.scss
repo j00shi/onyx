@@ -1,0 +1,59 @@
+@use "../mixins" as *;
+
+// Styling for the `CommandPalette`: the modal content box, its filter input and the scrollable
+// result list. Scoped under `.command-palette` with the doubled-class trick so these stay more
+// specific than the vendored `.dx-dialog`/`.dx-input`/`.dx-item` defaults.
+
+.command-palette.command-palette {
+	@include color(var(--primary-color-2), var(--secondary-color-1));
+	@include space($padding: var(--space-md));
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+	width: min(40rem, 90vw);
+	max-height: min(28rem, 70vh);
+	border: var(--border);
+	border-radius: var(--border-radius-md);
+
+	// Visually hide the a11y title while keeping it in the accessibility tree.
+	.command-palette-title {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.command-palette-input {
+		width: 100%;
+	}
+
+	// Scrolls once the result list outgrows the box.
+	.command-palette-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+		min-height: 0;
+		overflow-y: auto;
+		scrollbar-width: thin;
+	}
+
+	.command-palette-item {
+		@include rounding(var(--border-radius-sm));
+
+		cursor: default;
+
+		&:hover {
+			@include color(var(--primary-color-4), var(--secondary-color));
+		}
+
+		// Keyboard selection highlight (driven by `data-selected` from the component).
+		&[data-selected="true"] {
+			@include color(var(--primary-color-5), var(--secondary-color));
+		}
+	}
+}

@@ -7,6 +7,7 @@ use std::rc::Rc;
 
 use plugin_api::{run_setup, App, Command, Plugin};
 
+use crate::elements::COMMAND_PALETTE_OPEN;
 use crate::workspace::model::View;
 use crate::workspace::WORKSPACE;
 
@@ -33,6 +34,14 @@ impl Plugin for ShellPlugin {
 			name: "Open settings".to_string(),
 			callback: Rc::new(|| {
 				WORKSPACE.write().open_view(View::Settings);
+			}),
+		});
+
+		app.add_command(Command {
+			id: "app:open-command-palette".to_string(),
+			name: "Open command palette".to_string(),
+			callback: Rc::new(|| {
+				*COMMAND_PALETTE_OPEN.write() = true;
 			}),
 		});
 	}

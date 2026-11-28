@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::components::sidebar::SidebarVariant;
+use crate::elements::CommandPalette;
 use crate::elements::PrimarySidebar;
 use crate::elements::SecondarySidebar;
 use crate::elements::TitleBar;
@@ -69,6 +70,7 @@ pub fn Frame() -> Element {
 					}
 				}
 			}
+			CommandPalette {}
 		}
 	}
 }

@@ -65,6 +65,13 @@ fn PrimaryTabs() -> Element {
 
 	let mut ribbon_top = vec![
 		RibbonItem {
+			icon: rsx! { Search {} },
+			tooltip: "Command palette".to_string(),
+			kind: RibbonItemKind::Action(EventHandler::new(|()| {
+				plugin_api::invoke_command("app:open-command-palette");
+			})),
+		},
+		RibbonItem {
 			icon: rsx! { img { src: asset!("/assets/icons/favicon.ico") } },
 			tooltip: "I wonder how long I can type before this gets cut off".to_string(),
 			kind: RibbonItemKind::Action(noop),
