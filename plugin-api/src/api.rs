@@ -1,6 +1,7 @@
 //! The app-facing handle a plugin uses to contribute.
 
 use crate::command::{invoke_command, Command, COMMANDS};
+use crate::hotkey::HOTKEYS;
 
 /// Handle passed to a plugin's [`crate::Plugin::setup`].
 ///
@@ -18,8 +19,11 @@ impl App {
 	}
 
 	/// Registers a command so hotkeys, the command palette, ribbon buttons and menu items can
-	/// invoke it by id.
+	/// invoke it by id. A `default_hotkey` on the command seeds [`crate::HOTKEYS`].
 	pub fn add_command(&self, command: Command) {
+		if let Some(chord) = command.default_hotkey.clone() {
+			HOTKEYS.write().insert(chord, command.id.clone());
+		}
 		COMMANDS.write().insert(command);
 	}
 

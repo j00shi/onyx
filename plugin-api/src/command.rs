@@ -6,6 +6,8 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 
+use crate::hotkey::KeyChord;
+
 /// Identifier for a command, namespaced like `"app:open-settings"` or `"example:hello"`.
 pub type CommandId = String;
 
@@ -19,6 +21,8 @@ pub struct Command {
 	/// Runs when the command is invoked. A plain `Rc<dyn Fn()>` so it stays runtime-agnostic — a
 	/// future JS plugin's callback is a trampoline of the same type.
 	pub callback: Rc<dyn Fn()>,
+	/// Optional default hotkey. When set, registering the command seeds [`crate::HOTKEYS`].
+	pub default_hotkey: Option<KeyChord>,
 }
 
 /// All registered commands, keyed by id.

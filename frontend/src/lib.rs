@@ -9,6 +9,7 @@ use crate::views::Frame;
 #[allow(clippy::all, clippy::pedantic, clippy::nursery, clippy::restriction, clippy::cargo)]
 pub mod components;
 pub mod elements;
+pub mod hotkeys;
 pub mod platform;
 pub mod plugin;
 pub mod views;

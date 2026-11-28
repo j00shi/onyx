@@ -3,7 +3,7 @@ use dioxus_icons::lucide::{Bell, Bookmark, Calendar, Folder, House, Mail, Search
 
 use crate::components::sidebar::SidebarSide;
 use crate::elements::{
-	BaseSidebar, Ribbon, RibbonItem, RibbonItemKind, RibbonMenuItem, SidebarTab, SidebarTabs, PRIMARY_SIDEBAR_CTX,
+	BaseSidebar, Ribbon, RibbonItem, RibbonItemKind, RibbonMenuItem, SidebarTab, SidebarTabs, PRIMARY_SIDEBAR_TOGGLE,
 };
 use crate::views::SIDEBAR_SWAPPED;
 
@@ -18,7 +18,7 @@ pub fn PrimarySidebar(children: Element) -> Element {
 		BaseSidebar {
 			name: "primary".to_string(),
 			side: if SIDEBAR_SWAPPED() { SidebarSide::Right } else { SidebarSide::Left },
-			register: move |ctx| *PRIMARY_SIDEBAR_CTX.write() = Some(ctx),
+			register: move |toggle| *PRIMARY_SIDEBAR_TOGGLE.write() = Some(toggle),
 			body: rsx! {
 				PrimaryTabs {}
 			},

@@ -22,6 +22,9 @@ const BACKGROUND: Asset = asset!("/assets/media/pexels-167691936-37955298.jpg");
 
 #[component]
 pub fn Frame() -> Element {
+	// Mounts the single global keydown listener for registered hotkeys.
+	crate::hotkeys::use_global_hotkeys();
+
 	use_effect(move || {
 		let theme = if DARK_MODE() { "dark" } else { "light" };
 		let hue = ACCENT_HUE();

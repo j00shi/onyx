@@ -5,9 +5,10 @@
 
 use std::rc::Rc;
 
-use plugin_api::{run_setup, App, Command, Plugin};
+use dioxus::prelude::*;
+use plugin_api::{run_setup, App, Command, KeyChord, Plugin};
 
-use crate::elements::COMMAND_PALETTE_OPEN;
+use crate::elements::{COMMAND_PALETTE_OPEN, PRIMARY_SIDEBAR_TOGGLE, SECONDARY_SIDEBAR_TOGGLE};
 use crate::workspace::model::View;
 use crate::workspace::WORKSPACE;
 
@@ -35,6 +36,7 @@ impl Plugin for ShellPlugin {
 			callback: Rc::new(|| {
 				WORKSPACE.write().open_view(View::Settings);
 			}),
+			default_hotkey: Some(KeyChord::new(",").mod_key()),
 		});
 
 		app.add_command(Command {
@@ -43,6 +45,29 @@ impl Plugin for ShellPlugin {
 			callback: Rc::new(|| {
 				*COMMAND_PALETTE_OPEN.write() = true;
 			}),
+			default_hotkey: Some(KeyChord::new("p").mod_key()),
+		});
+
+		app.add_command(Command {
+			id: "app:toggle-primary-sidebar".to_string(),
+			name: "Toggle primary sidebar".to_string(),
+			callback: Rc::new(|| {
+				if let Some(toggle) = *PRIMARY_SIDEBAR_TOGGLE.read() {
+					toggle.call(());
+				}
+			}),
+			default_hotkey: Some(KeyChord::new("b").mod_key()),
+		});
+
+		app.add_command(Command {
+			id: "app:toggle-secondary-sidebar".to_string(),
+			name: "Toggle secondary sidebar".to_string(),
+			callback: Rc::new(|| {
+				if let Some(toggle) = *SECONDARY_SIDEBAR_TOGGLE.read() {
+					toggle.call(());
+				}
+			}),
+			default_hotkey: Some(KeyChord::new("b").mod_key().shift()),
 		});
 	}
 }

@@ -26,6 +26,7 @@ impl Plugin for ExamplePlugin {
 			name: "Example: open settings".to_string(),
 			// Uses only the public `App` capability to trigger the app-shell command.
 			callback: Rc::new(move || app.run_command("app:open-settings")),
+			default_hotkey: None,
 		});
 	}
 }

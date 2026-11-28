@@ -35,13 +35,16 @@ pub fn CommandPalette() -> Element {
 		}
 	});
 
-	// Clone `(id, name)` out so no `COMMANDS` read borrow is held into the rsx or handlers.
+	// Clone `(id, name, hotkey)` out so no `COMMANDS` read borrow is held into the rsx or handlers.
 	let q = query().to_lowercase();
-	let matches: Vec<(String, String)> = plugin_api::COMMANDS
+	let matches: Vec<(String, String, Option<String>)> = plugin_api::COMMANDS
 		.read()
 		.iter()
 		.filter(|command| command.name.to_lowercase().contains(&q))
-		.map(|command| (command.id.clone(), command.name.clone()))
+		.map(|command| {
+			let hotkey = command.default_hotkey.as_ref().map(|chord| chord.display(crate::hotkeys::IS_MAC()));
+			(command.id.clone(), command.name.clone(), hotkey)
+		})
 		.collect();
 	let match_count = matches.len();
 	let matches_for_key = matches.clone();
@@ -77,7 +80,7 @@ pub fn CommandPalette() -> Element {
 						}
 						Key::Enter => {
 							e.prevent_default();
-							if let Some((id, _)) = matches_for_key.get(selected()) {
+							if let Some((id, _, _)) = matches_for_key.get(selected()) {
 								run_command(id);
 							}
 						}
@@ -87,7 +90,7 @@ pub fn CommandPalette() -> Element {
 			}
 
 			ItemGroup { class: "command-palette-list",
-				for (i, (id, name)) in matches.iter().enumerate() {
+				for (i, (id, name, hotkey)) in matches.iter().enumerate() {
 					Item {
 						key: "{id}",
 						class: "command-palette-item",
@@ -96,7 +99,10 @@ pub fn CommandPalette() -> Element {
 							let id = id.clone();
 							move |_| run_command(&id)
 						},
-						"{name}"
+						span { class: "command-palette-item-name", "{name}" }
+						if let Some(hotkey) = hotkey {
+							kbd { class: "command-palette-hint", "{hotkey}" }
+						}
 					}
 				}
 			}

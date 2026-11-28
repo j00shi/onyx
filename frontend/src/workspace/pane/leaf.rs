@@ -12,7 +12,7 @@ use super::{
 };
 use crate::components::button::{Button, ButtonSize, ButtonVariant};
 use crate::components::dropdown_menu::{DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger};
-use crate::elements::{PRIMARY_SIDEBAR_CTX, SECONDARY_SIDEBAR_CTX};
+use crate::elements::{PRIMARY_SIDEBAR_TOGGLE, SECONDARY_SIDEBAR_TOGGLE};
 use crate::views::{Home, NewTab, Settings, SIDEBAR_SWAPPED};
 
 /// A single tab group: its own tab bar plus the active tab's content below it. `merged` means an
@@ -88,9 +88,9 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 						size: ButtonSize::IconSm,
 						"aria-label": "Toggle left sidebar",
 						onclick: move |_| {
-							let ctx = if SIDEBAR_SWAPPED() { SECONDARY_SIDEBAR_CTX() } else { PRIMARY_SIDEBAR_CTX() };
-							if let Some(ctx) = ctx {
-								ctx.toggle();
+							let toggle = if SIDEBAR_SWAPPED() { SECONDARY_SIDEBAR_TOGGLE() } else { PRIMARY_SIDEBAR_TOGGLE() };
+							if let Some(toggle) = toggle {
+								toggle.call(());
 							}
 						},
 						PanelLeft { size: "1rem" }
@@ -254,9 +254,9 @@ pub(super) fn LeafPane(id: NodeId, merged: bool, top_left: bool, top_right: bool
 						size: ButtonSize::IconSm,
 						"aria-label": "Toggle right sidebar",
 						onclick: move |_| {
-							let ctx = if SIDEBAR_SWAPPED() { PRIMARY_SIDEBAR_CTX() } else { SECONDARY_SIDEBAR_CTX() };
-							if let Some(ctx) = ctx {
-								ctx.toggle();
+							let toggle = if SIDEBAR_SWAPPED() { PRIMARY_SIDEBAR_TOGGLE() } else { SECONDARY_SIDEBAR_TOGGLE() };
+							if let Some(toggle) = toggle {
+								toggle.call(());
 							}
 						},
 						PanelRight { size: "1rem" }

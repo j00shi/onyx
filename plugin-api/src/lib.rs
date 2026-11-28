@@ -7,8 +7,10 @@
 
 mod api;
 mod command;
+mod hotkey;
 mod plugin;
 
 pub use api::App;
 pub use command::{invoke_command, Command, CommandId, CommandRegistry, COMMANDS};
+pub use hotkey::{KeyChord, HOTKEYS};
 pub use plugin::{run_setup, Plugin, PLUGINS};

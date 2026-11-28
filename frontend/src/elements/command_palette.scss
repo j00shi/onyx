@@ -45,6 +45,9 @@
 	.command-palette-item {
 		@include rounding(var(--border-radius-sm));
 
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
 		cursor: default;
 
 		&:hover {
@@ -55,5 +58,16 @@
 		&[data-selected="true"] {
 			@include color(var(--primary-color-5), var(--secondary-color));
 		}
+	}
+
+	// Native hotkey hint, pushed to the trailing edge of its row.
+	.command-palette-hint {
+		margin-inline-start: auto;
+		padding-inline: var(--space-sm);
+		border: var(--border);
+		border-radius: var(--border-radius-sm);
+		opacity: 0.7;
+		font-size: 0.85em;
+		white-space: nowrap;
 	}
 }
