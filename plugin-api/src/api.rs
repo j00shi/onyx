@@ -5,6 +5,7 @@ use dioxus::prelude::ReadableExt;
 use crate::command::{invoke_command, Command, COMMANDS};
 use crate::hotkey::HOTKEYS;
 use crate::ribbon::{RibbonItemSpec, RIBBON_ITEMS};
+use crate::sidebar_tab::{SidebarTabSpec, SIDEBAR_TABS};
 use crate::view::{ViewId, ViewSpec, OPEN_VIEW, VIEWS};
 
 /// Handle passed to a plugin's [`crate::Plugin::setup`].
@@ -40,6 +41,11 @@ impl App {
 	/// Contributes a button to the ribbon. Its `command` is invoked when the button is clicked.
 	pub fn add_ribbon_item(&self, item: RibbonItemSpec) {
 		RIBBON_ITEMS.write().push(item);
+	}
+
+	/// Contributes a tab to the primary sidebar. Its `content` builder renders when the tab is active.
+	pub fn add_sidebar_tab(&self, tab: SidebarTabSpec) {
+		SIDEBAR_TABS.write().push(tab);
 	}
 
 	/// Registers a view (a whole page) under `id`, so it can be opened in a pane by id.

@@ -6,8 +6,10 @@
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use dioxus_icons::lucide::{Search, Settings};
-use plugin_api::{run_setup, App, Command, KeyChord, Plugin, RibbonItemSpec, RibbonSection, ViewId, ViewSpec};
+use dioxus_icons::lucide::{House, Search, Settings};
+use plugin_api::{
+	run_setup, App, Command, KeyChord, Plugin, RibbonItemSpec, RibbonSection, SidebarTabSpec, ViewId, ViewSpec,
+};
 
 use crate::elements::{COMMAND_PALETTE_OPEN, PRIMARY_SIDEBAR_TOGGLE, SECONDARY_SIDEBAR_TOGGLE};
 use crate::views::{Home, NewTab, Settings as SettingsView, HOME_VIEW, NEW_TAB_VIEW, SETTINGS_VIEW};
@@ -87,6 +89,16 @@ impl Plugin for ShellPlugin {
 			SETTINGS_VIEW.to_string(),
 			ViewSpec { title: "Settings".to_string(), render: || rsx! { SettingsView {} } },
 		);
+
+		// The Home sidebar tab. Registered first so it stays the default (leftmost) tab.
+		app.add_sidebar_tab(SidebarTabSpec {
+			id: "app:home".to_string(),
+			icon: || rsx! { House { size: "1rem" } },
+			label: "Home".to_string(),
+			content: || rsx! {
+				p { "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda?" }
+			},
+		});
 
 		app.add_ribbon_item(RibbonItemSpec {
 			icon: || rsx! { Search { size: "1.25rem" } },

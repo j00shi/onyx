@@ -7,8 +7,8 @@
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use dioxus_icons::lucide::Puzzle;
-use plugin_api::{App, Command, Plugin, RibbonItemSpec, RibbonSection, ViewSpec};
+use dioxus_icons::lucide::{Bookmark, Folder, Puzzle, Search};
+use plugin_api::{App, Command, Plugin, RibbonItemSpec, RibbonSection, SidebarTabSpec, ViewSpec};
 
 /// A minimal demo plugin.
 #[derive(Default)]
@@ -52,6 +52,29 @@ impl Plugin for ExamplePlugin {
 			tooltip: "Example plugin".to_string(),
 			section: RibbonSection::Top,
 			command: "example:open-view".to_string(),
+		});
+
+		// Proves a plugin crate can also contribute sidebar panels. Real plugins (file explorer,
+		// search, bookmarks) will replace these.
+		app.add_sidebar_tab(SidebarTabSpec {
+			id: "example:files".to_string(),
+			icon: || rsx! { Folder { size: "1rem" } },
+			label: "Files".to_string(),
+			content: || rsx! { p { "Files tab — contributed by the example plugin." } },
+		});
+
+		app.add_sidebar_tab(SidebarTabSpec {
+			id: "example:search".to_string(),
+			icon: || rsx! { Search { size: "1rem" } },
+			label: "Search".to_string(),
+			content: || rsx! { p { "Search tab — contributed by the example plugin." } },
+		});
+
+		app.add_sidebar_tab(SidebarTabSpec {
+			id: "example:bookmarks".to_string(),
+			icon: || rsx! { Bookmark { size: "1rem" } },
+			label: "Bookmarks".to_string(),
+			content: || rsx! { p { "Bookmarks tab — contributed by the example plugin." } },
 		});
 	}
 }

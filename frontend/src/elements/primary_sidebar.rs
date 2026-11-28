@@ -1,5 +1,4 @@
 use dioxus::prelude::*;
-use dioxus_icons::lucide::{Bookmark, Folder, House, Search};
 use plugin_api::RibbonSection;
 
 use crate::components::sidebar::SidebarSide;
@@ -31,35 +30,13 @@ pub fn PrimarySidebar(children: Element) -> Element {
 /// Builds the primary sidebar's concrete tabs and ribbon and hands them to [`SidebarTabs`].
 #[component]
 fn PrimaryTabs() -> Element {
-	// Placeholder tabs. Later these come from the plugin registry.
-	let tabs = vec![
-		SidebarTab {
-			id: "home".to_string(),
-			icon: rsx! { House { size: "1rem" } },
-			label: "Home".to_string(),
-			content: rsx! {
-				p { "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae velit ipsam praesentium nostrum enim ad neque, optio autem dolorum perferendis nemo eveniet obcaecati suscipit nihil ratione! Dolorum quos expedita assumenda?" }
-			},
-		},
-		SidebarTab {
-			id: "files".to_string(),
-			icon: rsx! { Folder { size: "1rem" } },
-			label: "Files".to_string(),
-			content: rsx! { "Files tab content" },
-		},
-		SidebarTab {
-			id: "search".to_string(),
-			icon: rsx! { Search { size: "1rem" } },
-			label: "Search".to_string(),
-			content: rsx! { "Search tab content" },
-		},
-		SidebarTab {
-			id: "bookmarks".to_string(),
-			icon: rsx! { Bookmark { size: "1rem" } },
-			label: "Bookmarks".to_string(),
-			content: rsx! { "Bookmarks tab content" },
-		},
-	];
+	// Sidebar tabs come from the plugin registry (`App::add_sidebar_tab`). Each spec's icon/content
+	// builder runs here, in this render scope.
+	let tab_specs = plugin_api::SIDEBAR_TABS.read();
+	let tabs = tab_specs
+		.iter()
+		.map(|s| SidebarTab { id: s.id.clone(), icon: (s.icon)(), label: s.label.clone(), content: (s.content)() })
+		.collect::<Vec<_>>();
 
 	// Ribbon buttons come from the plugin registry (`App::add_ribbon_item`). Each spec's icon
 	// builder runs here, and its command id becomes the click handler, in this render scope.
